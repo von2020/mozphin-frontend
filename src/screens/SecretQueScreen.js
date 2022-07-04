@@ -404,7 +404,6 @@ class SecretQueScreen extends Component {
     //   } catch(e) {
     //     // clear error
     //   }
-    
       console.log('Done.')
     }
 

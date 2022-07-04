@@ -89,11 +89,11 @@ class StartUpScreen extends Component {
     let Splash_Screen = (
         <View style={styles.container}>
           <StatusBar backgroundColor="#045135" barStyle="light-content"/>
-          <ImageBackground
+          {/* <ImageBackground
             source={require("../assets/taylor_.jpeg")}
             style={styles.imageBgd}>
 
-        </ImageBackground>
+        </ImageBackground> */}
         
         <Image source={require('../assets/mozfin_logo.jpg')} resizeMode={'cover'} margin={10} top={height * 0.37} position={"absolute"} alignSelf={"center"} />
         <Text style={styles.titleBottom}>Developed by Softworks Limited</Text>
@@ -335,8 +335,8 @@ class StartUpScreen extends Component {
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor:'#f3f3f3',
-        opacity: 0.7
+        backgroundColor:'#FFF',
+        // opacity: 0.7
     },
     MainContainer:{  
         flex: 1,  
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
         fontSize:13,
         margin: 10,
         bottom: 10,
-        position: "relative",
+        position: "absolute",
         alignSelf:"center",
         fontWeight: "700"
     },

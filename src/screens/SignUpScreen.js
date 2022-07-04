@@ -13,11 +13,13 @@ import {
   Dimensions,
   LogBox,
   FlatList,
+  Modal
 } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment';
 import  Loader  from './../config/Loader';
 // import { Checkbox, TextInput } from 'react-native-paper';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { CheckBox } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -26,7 +28,9 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { Dropdown } from "react-native-material-dropdown";
 // import DateTimePicker from '@react-native-community/datetimepicker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { width, height } = Dimensions.get("window");
 
@@ -48,6 +52,8 @@ const initialState = {
   tellUs: "Tell us",
   tu: "",
   errors: {}, 
+  otp: "",
+  otpCode: "",
   data: [],
   checked: false,
   isChecked: false,
@@ -55,9 +61,14 @@ const initialState = {
   isAuthorized: false, 
   isLoading: false, 
   secureTextEntry: true,
+  modalVisible_: false,
+  // minutes: 0,
+  // seconds: 60,
   modeDateOfBirth: "date",
   token: "",
+  dataDisplay: "",
   DateOfBirthShow: false,
+  // time: {}, seconds: 5,
   categoryList: [],
   flagList: [
     {
@@ -116,7 +127,65 @@ tellUsList: [
 };
 
 class SignUpScreen extends Component {
-  state = initialState;
+  constructor() {
+    super();
+    this.state = { 
+      time: {}, 
+      seconds: 30, 
+      isLoading: false, 
+      otpCode: "",
+      otp: "",
+      phonenum: "",
+      pn: "",
+      country: "",
+      item: {},
+      co: "",
+      tellUs: "Tell us",
+      tu: "",
+      data: [],
+      dataDisplay: "",
+      DateOfBirthShow: false,
+      showCountDown: false,
+      modalVisible_: false,
+  categoryList: [],
+    flagList: [
+      {
+        value: "United Kingdom",
+        label: "United Kingdom",
+        code: "+44",
+        flag: require("../assets/ukkflag.png")
+      },
+      {
+          value: "United States",
+          label: "United States",
+          code: "+1",
+          flag: require("../assets/usflag.png")
+      },
+      {
+          value: "Canada",
+          label: "Canada",
+          code: "+1",
+          flag: require("../assets/canadaflag.png")
+      },
+      {
+          value: "Israel",
+          label: "Israel",
+          code: "+972",
+          flag: require("../assets/israelflag.png")
+      },
+      {
+        value: "Nigeria",
+        label: "Nigeria",
+        code: "+234",
+        flag: require("../assets/naijaflag.png")
+    }
+    ]
+     };
+    this.timer = 0;
+    this.startTimer = this.startTimer.bind(this);
+    this.countDown = this.countDown.bind(this);
+  }
+  // state = initialState;
 
   handleEmail = (email) => {
     if(email != ""){
@@ -181,13 +250,19 @@ class SignUpScreen extends Component {
     }
   };
 
+  handleOTPCode = (otpCode) => {  
+    if(otpCode != ""){
+      this.setState({ otpCode: otpCode, otp: "" });
+    }else {
+      this.setState({ otpCode: otpCode, otp: "empty" });
+    }
+  };
+
   updateSecureTextEntry(){
     this.setState({ secureTextEntry: !this.state.secureTextEntry})
   };
 
-  onPressSignUp() {
-    // this.setState({ isLoading: true });
-
+  thereIsData(){
     const { phonenum, item,  } = this.state;
     // {
     //   "email": "valid_email@domain.com",
@@ -201,9 +276,30 @@ class SignUpScreen extends Component {
       this.setState({ isLoading: false, pn: "empty" });
       Alert.alert(null,'Phone number field is empty')
     }else{
-      this.props.navigation.push("SecretQueScreen", {
-        phonenum: item.code+phonenum
-      })
+    this.setState({ dataDisplay: "yes" })
+    }
+  }
+
+  onPressSignUp() {
+    // this.setState({ isLoading: true });
+
+    const { phonenum, item, otpCode} = this.state;
+    // {
+    //   "email": "valid_email@domain.com",
+    //   "username": "any_username",
+    //   "country": "name",
+    //   "birth_year": "YYYY-MM-DD",
+    //   "why_here": "answer to why user wants to join BlackTrust",
+    //   "password": "any_password"
+    // }
+    if(otpCode == ""){
+      this.setState({ isLoading: false, otp: "empty" });
+      // Alert.alert(null,'OTP field is empty')
+    }else{
+      this.setState({
+        modalVisible_: true
+      });
+
       // const birth_year = moment(birthYear).format("YYYY-MM-DD")
 
       const payload = { 
@@ -296,6 +392,14 @@ class SignUpScreen extends Component {
     //     });
     }
 
+    visibleView(){
+      const { phonenum, item, otpCode} = this.state;
+      this.setState({ view: true, modalVisible_: false });
+      this.props.navigation.navigate("Register", {
+        phonenum: item.code+phonenum
+      })
+    }
+
   getNonFieldErrorMessage() {
     let message = null;
     const { errors } = this.state;
@@ -351,42 +455,6 @@ class SignUpScreen extends Component {
 
   };
 
-  _retrieveData() {
-    this.setState({initialState})
-        
-    // AsyncStorage.getItem("userDetails").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     this.setState({
-    //       role: response.role,
-    //       first_name: response.first_name,
-    //       last_name: response.last_name,
-    //     });
-
-    //     console.log("There is no role dey...", response);
-    //     console.log("I role to make role o", this.state.role);
-    //   } else {
-    //     console.log("There is no role dey...", response);
-    //   }
-    // });
-  
-    // AsyncStorage.getItem("checkedBoxBoolean").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     if(response != null && response.checked == true){
-    //       console.log("Reached.......----",this.state);
-    //         this.setState({
-    //         username: response.username,
-    //         password: response.password,
-    //         checked: response.checked,
-    //         });       
-    //     }
-    //   } else {
-    //     console.log("Check box response... Error...", response);
-    //   }
-    // });
-  }
-
   selectCountry(item){
     // Alert.alert(item.label)
     this.setState({country: item.label, item: item})
@@ -412,11 +480,6 @@ class SignUpScreen extends Component {
     this.showStartMode('date');
     };
 
-  componentWillMount = ()=> {
-    console.log("I don mount o");
-    this._retrieveData();
-  }
-
   search = txt => {
     if(txt == ""){
       this.setState({ data: this.state.flagList })
@@ -436,12 +499,12 @@ class SignUpScreen extends Component {
     }
   }
 
-  componentDidMount(){
-    this.categoryList();  
-    if(this.state.checked == false){
-      this.clearAll()
-    }
-    }
+  // componentDidMount(){
+  //   this.categoryList();  
+  //   if(this.state.checked == false){
+  //     this.clearAll()
+  //   }
+  //   }
 
     FlatListItemSeparator = () => {
       return (
@@ -465,9 +528,52 @@ class SignUpScreen extends Component {
       console.log('Done.')
     }
 
+    secondsToTime(secs){
+      let hours = Math.floor(secs / (60 * 60));
+  
+      let divisor_for_minutes = secs % (60 * 60);
+      let minutes = Math.floor(divisor_for_minutes / 60);
+  
+      let divisor_for_seconds = divisor_for_minutes % 60;
+      let seconds = Math.ceil(divisor_for_seconds);
+  
+      let obj = {
+        "h": hours,
+        "m": minutes,
+        "s": seconds
+      };
+      return obj;
+    }
+  
+    componentDidMount() {
+      let timeLeftVar = this.secondsToTime(this.state.seconds);
+      this.setState({ time: timeLeftVar });
+    }
+  
+    startTimer() {
+      this.setState({ seconds: 30, showCountDown: true })
+      // if (this.timer == 0 && this.state.seconds > 0) {
+        this.timer = setInterval(this.countDown, 1000);
+      // }
+    }
+  
+    countDown() {
+      // Remove one second, set state so a re-render happens.
+      let seconds = this.state.seconds - 1;
+      this.setState({
+        time: this.secondsToTime(seconds),
+        seconds: seconds,
+      });
+      
+      // Check if we're at zero.
+      if (seconds == 0) { 
+        clearInterval(this.timer);
+      }
+    }
+
   render() {
     LogBox.ignoreAllLogs(true);
-    const { country, isChecked, pn, phonenum } = this.state;
+    const { country, isChecked, pn, phonenum, data, dataDisplay, item, showCountDown, otp, otpCode } = this.state;
     return (
       <ImageBackground
         source={require("../assets/mozfin_logo.jpg")}
@@ -478,6 +584,51 @@ class SignUpScreen extends Component {
           keyboardShouldPersistTaps="always">
         <StatusBar backgroundColor="#045135" barStyle="light-content"/>
         <Loader loading={this.state.isLoading} />
+
+              <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.modalVisible_}
+                    onRequestClose={() => {
+                      this.setState({ modalVisible_: false });
+                    }}
+                  >
+                <View style={styles.modalBackground}>
+                <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                <View>
+                    <AntDesign
+                      name="checkcircle"
+                      color="green"
+                      alignSelf="center"
+                      style={{ alignSelf: "center", marginBottom: 10 }}
+                      size={60}/>
+
+                <View flexDirection={"row"} alignItems={"center"}>
+                <Text style={styles.modalText}>Your OTP code was successful{"\n**Few steps remaining to finish..**"}
+                </Text>
+                </View>
+                </View>
+                
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ marginStart: 10, position: "absolute", marginTop: 13, bottom: 12, alignSelf: "center" }}
+                  onPress={() => this.visibleView()}>
+                  <LinearGradient
+                      colors={['#FFF','green', '#808080']} style={{ width: 90, height: 40, alignSelf: "center", borderRadius: 12 }}>
+                    <Text style={styles.textStylee}>Continue</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+                {/* <TouchableOpacity
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={this.visibleView.bind(this)}>
+                  <Text style={styles.textStylee}>View Center</Text>
+                </TouchableOpacity> */}
+           
+                </View>
+              </View>
+              </View>
+              </Modal>
 
         {country == ""
         && <View>
@@ -510,7 +661,6 @@ class SignUpScreen extends Component {
                     }}
                     placeholder={'Search'}
                     placeholderTextColor={'#DDDDD'}
-                    // value={this.state.country}
                     onChangeText={(value) => this.search(value)}
                   />
 
@@ -544,7 +694,8 @@ class SignUpScreen extends Component {
                   </TouchableOpacity>
                   )}/>
             </View>}
-            {country != "" && 
+
+            {country != "" && dataDisplay == "" &&
             <View width={width} height={height} flex={1} backgroundColor={"#FFF"}>
               <View padding={10}>
               <Text style={{ color: '#111A30', fontSize: 18, marginLeft: 15, fontWeight: "700", marginTop: 30, textAlign: "left",}}>Enter your Phone number</Text>
@@ -584,7 +735,7 @@ class SignUpScreen extends Component {
                   />
                   </View>
 
-                  <View flexDirection={"row"} marginTop={40}>
+                  {/* <View flexDirection={"row"} marginTop={40}>
                   <CheckBox
                     checked={isChecked}
                     uncheckedColor={"#045135"}
@@ -598,16 +749,103 @@ class SignUpScreen extends Component {
                     <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms & Conditions</Text>{" "}and{" "}
                     <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Privacy Policy</Text>
                     </Text> 
-                    </View>
+                    </View> */}
 
-                    {isChecked && <TouchableOpacity
-                      onPress={this.onPressSignUp.bind(this)}>
+                    {/* {isChecked &&  */}
+                    <TouchableOpacity
+                      onPress={this.thereIsData.bind(this)}>
                     <View style={styles.buttonView}>
                       <View style={styles.loginButton}>
                         <Text style={styles.loginButtonText}>Send OTP</Text>
                       </View>
                     </View>
-                  </TouchableOpacity>}
+                  </TouchableOpacity>
+                  {/* } */}
+
+                  <Text style={{color: "#111A30", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", alignSelf: "center", marginTop: 20 }}>Already a registered user? Please{" "}
+                    <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("SignIn")}>Sign in</Text>{" "}here
+                  </Text>
+              </View>
+            </View>}
+
+            {country != "" && dataDisplay == "yes" &&
+            <View width={width} height={height} flex={1} backgroundColor={"#FFF"}>
+              <View padding={10}>
+              <Text style={{ color: '#111A30', fontSize: 18, marginLeft: 15, fontWeight: "700", marginTop: 30, textAlign: "left",}}>Enter OTP code</Text>
+              <Text style={{color: "grey", fontWeight: "100", fontSize: 15, width: width * 0.8, marginLeft: 15, textAlign: "left", }}>You will receive a verification code to this number{" "}
+              <Text style={{color: "green", fontWeight: "100", fontSize: 15, width: width * 0.8, marginLeft: 15, textAlign: "left", }}>{item.code}{phonenum}</Text>.
+              </Text>
+
+              <View marginTop={15}>
+                {/* <Text style={{ color: '#111A30', fontSize: 16, marginLeft: 35, fontWeight: "700", marginTop: 10, }}>Enter OTP</Text> */}
+                <TextInput
+                    style={{
+                      borderRadius: 16,
+                      marginHorizontal: 10,
+                      color: '#000',
+                      backgroundColor: otpCode == "" && otp == "empty" ? 'pink' : '#FFF',
+                      // shadowColor: "#000000",
+                      shadowOffset: { width: 0, height: 0 },
+                      shadowOpacity: 0.5,
+                      height: 50,
+                      marginBottom: 5,
+                      marginTop: 5,
+                      marginHorizontal: 30,
+                      paddingStart: 60,
+                      paddingVertical: 10,
+                      paddingEnd: 10,
+                      fontSize: 14,
+                      alignContent: "center",
+                      opacity: 1,
+                      shadowColor: otpCode == "" && otp == "empty" ? 'red':'#000000',
+                      // borderColor: otpCode == "" && otp == "empty" ? 'red':'#808080', // Add this to specify bottom border color
+                      // borderWidth: 1,
+                      shadowOffset: { width: 0, height: 0 },
+                      shadowOpacity: 0.2,
+                      elevation: 5,
+                    }}
+                    keyboardType={"numeric"}
+                    placeholder={'e.g 123456'}
+                    placeholderTextColor={'#DDDDD'}
+                    value={this.state.otpCode}
+                    onChangeText={(value) => this.handleOTPCode(value)}
+                  />
+
+                <MaterialCommunityIcons name="numeric" style={styles.numIconStyle}/>
+                </View>
+                <TouchableOpacity onPress={this.startTimer} disabled={this.state.time.s == 30 | this.state.time.s == 0 ? false : true}>
+                <View flexDirection={"row"} alignSelf={"center"}>
+                {showCountDown == true ? <Text style={{color: "grey", fontWeight: "600", fontSize: 17, marginLeft: 30, textAlign: "left", }}>{this.state.time.s} sec</Text> : null}
+                <SimpleLineIcons name="reload" style={styles.reloadIconStyle}/>
+                <Text style={{color: "black", fontWeight: "100", fontSize: 15, marginLeft: 30, textAlign: "left", }}>{" "}Resend OTP code?</Text>
+                </View>
+                </TouchableOpacity>
+                  {/* <View flexDirection={"row"} marginTop={40}>
+                  <CheckBox
+                    checked={isChecked}
+                    uncheckedColor={"#045135"}
+                    checkedColor={"#045135"}
+                    size={20}
+                    onPress={() => {
+                      this.setState({ isChecked: !isChecked })
+                    }}
+                    /> 
+                    <Text style={{color: "#111A30", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", top: 5 }}>By Signing up you agree to our{" "}
+                    <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms & Conditions</Text>{" "}and{" "}
+                    <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Privacy Policy</Text>
+                    </Text> 
+                    </View> */}
+
+                    {/* {isChecked &&  */}
+                    <TouchableOpacity
+                      onPress={this.onPressSignUp.bind(this)}>
+                    <View style={styles.buttonView_}>
+                      <View style={styles.loginButton}>
+                        <Text style={styles.loginButtonText}>Submit OTP</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                  {/* } */}
 
                   <Text style={{color: "#111A30", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", alignSelf: "center", marginTop: 20 }}>Already a registered user? Please{" "}
                     <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("SignIn")}>Sign in</Text>{" "}here
@@ -652,6 +890,73 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginStart: 20,
     elevation: 5,
+  },
+  reloadIconStyle: {
+    fontSize: 20,
+    color: "#045135",
+    left: 20,
+    alignSelf: "flex-start",
+    marginStart: 10,
+    elevation: 5,
+  },
+  numIconStyle: {
+    fontSize: 20,
+    color: "#045135",
+    left: 25,
+    top: -40,
+    alignSelf: "flex-start",
+    marginStart: 20,
+    elevation: 5,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 40,
+    width: width * 0.8,
+    height: height * 0.35,
+    backgroundColor: "white",
+    borderRadius: 20,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.95,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  textStylee: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 10,
+    fontSize: 14,
+  },
+  modalText: {
+    marginBottom: 15,
+    width: width * 0.6,
+    marginHorizontal: 15,
+    fontFamily: "Nunito_400Regular",
+    alignSelf: "center",
+    textAlign: "justify"
+  },
+  statusModalText: {
+    color: "green",
+    fontFamily: "Nunito_400Regular",
+  },
+  modalBackground:{
+    flex:1,
+    alignItems:'center',
+    flexDirection:'column',
+    justifyContent:'space-around',
+    backgroundColor:'#00000040'
   },
   iconViewStyle: {
     fontSize: 20,
@@ -850,7 +1155,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: "center",
     flexDirection: "row",
-    marginTop: 15,
+    marginTop: 40,
+    marginBottom: 10,
+    width: width * 0.8,
+  },
+  buttonView_: {
+    borderWidth: 1,
+    borderColor: "#fff",
+    borderRadius: 8,
+    alignSelf: "center",
+    flexDirection: "row",
+    marginTop: 30,
     marginBottom: 10,
     width: width * 0.8,
   },

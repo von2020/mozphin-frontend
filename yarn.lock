@@ -5933,6 +5933,11 @@ react-native-phone-call@^1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-phone-call/-/react-native-phone-call-1.2.0.tgz#11c28120f9528647167b58742ebb7225f52d28c1"
   integrity sha512-M1CiocX8w7YNsh3Cwcnwc3eUkIJOPaBIQji3P9Uv/ZWAwb6XGI2NtV2UBSAa4Prvn6ooXeFPZs/YXmeTHmVHKg==
 
+react-native-pin-view@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-pin-view/-/react-native-pin-view-3.0.2.tgz#cc233c4b7da7f69ad3817b631e3e7f2a14198e0d"
+  integrity sha512-6lu/TCRgT7SjFPLdb7nCScAgJPLeeUU3k3qBoqn3oz8eTOUKcZnT4lWm22z5V+OLreL6BDCz7xFzvOLwUoI3ow==
+
 react-native-ratings@8.0.4:
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/react-native-ratings/-/react-native-ratings-8.0.4.tgz#efd5ebad8acc08bf98d34d39b18fb7a6813ef991"

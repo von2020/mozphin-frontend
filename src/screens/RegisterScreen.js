@@ -8,16 +8,16 @@ import {
   ScrollView,
   ImageBackground,
   StatusBar,
-  Image,
+  Modal,
   Alert,
   Dimensions,
   LogBox,
 } from "react-native";
 import moment from 'moment';
 import  Loader  from './../config/Loader';
-import { Checkbox } from 'react-native-paper';
+import { CheckBox } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { Dropdown } from "react-native-material-dropdown";
@@ -29,6 +29,7 @@ import RadioForm, {
   } from "react-native-simple-radio-button";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { width, height } = Dimensions.get("window");
 
@@ -47,6 +48,10 @@ const initialState = {
   co: "",
   tellUs: "",
   tu: "",
+  ch: "",
+  modalVisible_: false,
+  minutes: 0,
+  isChecked: false,
   errors: {}, 
   checked: false,
   checkedDB: false,
@@ -180,7 +185,7 @@ class RegisterScreen extends Component {
   onPressSignUp() {
     // this.setState({ isLoading: true });
 
-    const { email, username, password, birthYear, city, tellUs } = this.state;
+    const { email, username, password, birthYear, city, tellUs, isChecked } = this.state;
     // {
     //   "email": "valid_email@domain.com",
     //   "username": "any_username",
@@ -204,17 +209,23 @@ class RegisterScreen extends Component {
     }else if(tellUs == ""){
       this.setState({ isLoading: false, tu: "empty" });
       // Alert.alert(null,'Phone Number field is empty')
+    }else if(isChecked == false){
+      this.setState({ isLoading: false, ch: "empty" });
+      // Alert.alert(null,'Phone Number field is empty')
     }else{
       const why_here = tellUs
       const birth_year = moment(birthYear).format("YYYY-MM-DD")
-      Alert.alert("Info: ", this.props.navigation.state.params.phonenum+' Your sign up was successful..', [
-        {
-            text: "Ok",
-            onPress: () => this.props.navigation.push("SignIn", {
-              token: "token"
-            }),
-        },
-    ]);
+    //   Alert.alert("Info: ", this.props.navigation.state.params.phonenum+' Your sign up was successful..', [
+    //     {
+    //         text: "Ok",
+    //         onPress: () => this.props.navigation.push("SignIn", {
+    //           token: "token"
+    //         }),
+    //     },
+    // ]);
+    this.setState({
+      modalVisible_: true
+    });
       const payload = { 
         email, 
         username, 
@@ -421,7 +432,6 @@ class RegisterScreen extends Component {
   }
 
   componentDidMount(){
-    this.categoryList();  
     if(this.state.checked == false){
       this.clearAll()
     }
@@ -437,9 +447,16 @@ class RegisterScreen extends Component {
       console.log('Done.')
     }
 
+    visibleView(){
+      this.setState({ view: true, modalVisible_: false });
+      this.props.navigation.push("PasswordScreen", {
+                  token: "token"
+                });
+    } 
+    
   render() {
     LogBox.ignoreAllLogs(true);
-    const { modeDateOfBirth, DateOfBirthShow, } = this.state;
+    const { modeDateOfBirth, DateOfBirthShow, isChecked } = this.state;
     return (
     //   <ImageBackground
     //     source={require("./../../assets/download.jpeg")}
@@ -450,7 +467,52 @@ class RegisterScreen extends Component {
           keyboardShouldPersistTaps="always">
         <StatusBar backgroundColor="#045135" barStyle="light-content"/>
         <Loader loading={this.state.isLoading} />
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.modalVisible_}
+                    onRequestClose={() => {
+                      this.setState({ modalVisible_: false });
+                    }}
+                  >
+                <View style={styles.modalBackground}>
+                <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                <View>
+                    <AntDesign
+                      name="checkcircle"
+                      color="green"
+                      alignSelf="center"
+                      style={{ alignSelf: "center", marginBottom: 10 }}
+                      size={60}/>
 
+                <View flexDirection={"row"} alignItems={"center"}>
+                <Text style={styles.modalText}>Yaaaay!!!{" "}
+                <Text style={styles.statusModalText}>{this.props.navigation.state.params.phonenum}</Text>
+                {" "}Your sign up was successful..{" "}Click "Continue" to enter your password{" \n** Few steps remaining **"}
+                </Text>
+                </View>
+                </View>
+                
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ marginStart: 10, position: "absolute", marginTop: 13, bottom: 12, alignSelf: "center" }}
+                  onPress={() => this.visibleView()}>
+                  <LinearGradient
+                      colors={['#FFF','green', '#808080']} style={{ width: 90, height: 40, alignSelf: "center", borderRadius: 12 }}>
+                    <Text style={styles.textStylee}>Continue</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
+                {/* <TouchableOpacity
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={this.visibleView.bind(this)}>
+                  <Text style={styles.textStylee}>View Center</Text>
+                </TouchableOpacity> */}
+           
+                </View>
+              </View>
+              </View>
+              </Modal>
         <View>
             <View style={styles.cardStyleLong}>
             <Text style={styles.headerTextStyleView}>Before we start...</Text>
@@ -646,7 +708,7 @@ class RegisterScreen extends Component {
             </View>
 
               <View style={styles.emailTextStyleView}>
-              <Text style={styles.emailTextStyle}>City</Text>
+              <Text style={styles.emailTextStyle}>Address</Text>
               <View style={{
                 borderColor: this.state.co == "empty" ? 'pink' : this.state.co == "good" ? 'lime' : "transparent",
                 borderWidth: 1,
@@ -671,7 +733,7 @@ class RegisterScreen extends Component {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                placeholder="Enter your City"
+                placeholder="Enter your Address"
                 placeholderTextColor="#CCC"
                 autoCapitalize="sentences"
                 value={this.state.city}
@@ -695,7 +757,7 @@ class RegisterScreen extends Component {
         }}>
         </View>
               </View>
-              {this.state.co == "empty" && this.state.city == "" && <Text style={styles.invalidPasswordTextStyle}>City field is empty</Text>}
+              {this.state.co == "empty" && this.state.city == "" && <Text style={styles.invalidPasswordTextStyle}>Address field is empty</Text>}
             </View>
 
               <View style={styles.genderTextStyleView}>
@@ -728,13 +790,29 @@ class RegisterScreen extends Component {
                 </View>
               {this.state.tu == "empty" && this.state.tellUs == "" && <Text style={styles.invalidPasswordTextStyle}>Please select an option</Text>}
             </View>
-            
+            <View flexDirection={"row"} marginTop={20} backgroundColor={this.state.ch == "empty" && this.state.isChecked == false ? "pink" : "transparent"}>
+                  <CheckBox
+                    checked={isChecked}
+                    uncheckedColor={this.state.ch == "empty" && this.state.isChecked == false ? "red" : "#045135"} 
+                    checkedColor={"#045135"}
+                    size={20}
+                    onPress={() => {
+                      this.setState({ isChecked: !isChecked })
+                    }}
+                    /> 
+                    <Text style={{color: "#111A30", fontWeight: "100", fontSize: 15, width: width * 0.65, textAlign: "left", top: 5 }}>By Signing up you agree to our{" "}
+                    <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms & Conditions</Text>{" "}and{" "}
+                    <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Privacy Policy</Text>
+                    </Text> 
+                    {/* {this.state.ch == "empty" && this.state.isChecked == false && <Text style={styles.invalidPasswordTextStyle}>Please check our Terms and Conditions..</Text>} */}
+              </View>
+
             <TouchableOpacity
                 onPress={this.onPressSignUp.bind(this)}
               >
             <View style={styles.buttonView}>
               <View style={styles.loginButton}>
-                <Text style={styles.loginButtonText}>Let's do this</Text>
+                <Text style={styles.loginButtonText}>Submit</Text>
               </View>
             </View>
             </TouchableOpacity>
@@ -773,6 +851,56 @@ const styles = StyleSheet.create({
     paddingBottom: 17,
     paddingStart: 30,
     paddingEnd: 40,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 40,
+    width: width * 0.8,
+    height: height * 0.35,
+    backgroundColor: "white",
+    borderRadius: 20,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.95,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  textStylee: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 10,
+    fontSize: 14,
+  },
+  modalText: {
+    marginBottom: 15,
+    width: width * 0.6,
+    marginHorizontal: 15,
+    fontFamily: "Nunito_400Regular",
+    alignSelf: "center",
+    textAlign: "justify"
+  },
+  statusModalText: {
+    color: "green",
+    fontFamily: "Nunito_400Regular",
+  },
+  modalBackground:{
+    flex:1,
+    alignItems:'center',
+    flexDirection:'column',
+    justifyContent:'space-around',
+    backgroundColor:'#00000040'
   },
   iconViewStyle: {
     fontSize: 20,

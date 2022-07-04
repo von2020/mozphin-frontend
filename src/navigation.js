@@ -16,6 +16,8 @@ import TermsAndConditions from '../src/screens/TermsAndConditions';
 import SecretQueScreen from '../src/screens/SecretQueScreen';
 import RegisterScreen from '../src/screens/RegisterScreen';
 import SideMenuScreen from '../src/screens/SideMenuScreen';
+import TransactionPinScreen from '../src/screens/TransactionPinScreen';
+import PasswordScreen from '../src/screens/PasswordScreen';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -243,6 +245,30 @@ const StartUpStackMain = createStackNavigator(
               },
               },
         },
+        TransactionPin: {
+            screen: TransactionPinScreen,
+            navigationOptions: {
+                headerShown: true,
+                headerStyle: { backgroundColor: '#045135' },
+                title: "",
+                headerTintColor: "#FFF",
+                headerTitleStyle: {
+                    fontWeight: "100",
+                },
+                },
+          },
+          PasswordScreen: {
+            screen: PasswordScreen,
+            navigationOptions: {
+                headerShown: true,
+                headerStyle: { backgroundColor: '#045135' },
+                title: "",
+                headerTintColor: "#FFF",
+                headerTitleStyle: {
+                    fontWeight: "100",
+                },
+                },
+          },
     }
   );
 
