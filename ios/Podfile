@@ -21,6 +21,10 @@ target 'Mozfin_App' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
+  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   target 'Mozfin_AppTests' do
     inherit! :complete
     # Pods for testing

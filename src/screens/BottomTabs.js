@@ -13,8 +13,9 @@ const DashboardStack = createStackNavigator({
     Dashboard: { 
       screen: DashboardScreen,  
       navigationOptions: {
-        headerShown: false,
-        headerStyle: { backgroundColor: '#DE9803' },
+        headerShown: true,
+        headerTransparent: true,
+        headerStyle: { backgroundColor: 'transparent', },
         title: "",
         headerTintColor: "#000",
         headerTitleStyle: {
@@ -61,20 +62,21 @@ const DashboardStack = createStackNavigator({
   
   });
   
-//   const AcademicsStack = createStackNavigator({
-//     "Grading & Attendance": {
-//       screen: AcademicsScreen,  
-//       navigationOptions: {
-//         headerShown: true,
-//       }, 
+  const AcademicsStack = createStackNavigator({
+    "Grading & Attendance": {
+      screen: DashboardScreen,  
+      navigationOptions: {
+        headerShown: true,
+      }, 
        
-//     },
-//     "Add Subject": {
-//       screen: AddSubjectScreen,
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
+    },
+    "Add Subject": {
+      screen: DashboardScreen,
+      navigationOptions: {
+        headerShown: true
+      },
+    },
+  })
 //     "Added Subjects": {
 //       screen: AddSubjectList,
 //       navigationOptions: {
@@ -149,19 +151,20 @@ const DashboardStack = createStackNavigator({
 //     },
 //   });
 
-//   const AdministrationStack = createStackNavigator({
-//     "Administration ": { 
-//       screen: AdministrationScreen,  
-//       navigationOptions: {
-//         headerShown: true
-//       },  
-//     },
-//     "All Students": {
-//       screen: AllStudents,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
+  const AdministrationStack = createStackNavigator({
+    "Administration ": { 
+      screen: DashboardScreen,  
+      navigationOptions: {
+        headerShown: true
+      },  
+    },
+    "All Students": {
+      screen: DashboardScreen,  
+      navigationOptions: {
+        headerShown: true
+      },
+    },
+  })
 //     "Add Students": {
 //       screen: AddStudents,  
 //       navigationOptions: {
@@ -325,7 +328,7 @@ const TabNavigator = createMaterialBottomTabNavigator({
       }  
     },   
     Academics:{  
-      screen:DashboardStack,  
+      screen:AdministrationStack,  
       navigationOptions:{  
         tabBarLabel:'Academics',  
         tabBarIcon:({focused})=>(  
@@ -334,7 +337,7 @@ const TabNavigator = createMaterialBottomTabNavigator({
       }  
     },  
     Administration:{  
-      screen:DashboardStack,  
+      screen:AcademicsStack,  
       navigationOptions:{  
         tabBarLabel:'Administration',  
         tabBarIcon:({focused})=>(  

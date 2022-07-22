@@ -25,7 +25,7 @@ import Feather from 'react-native-vector-icons/Feather';
 // } from "../service/BlackTrustService";
 import  Loader  from './../config/Loader';
 // import { Checkbox } from 'react-native-paper';
-import LockIcon from '../assets/svgs/lock';
+import BellIcon from '../assets/svgs/bell';
 import PhoneIcon from '../assets/svgs/phone';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
@@ -52,7 +52,7 @@ const initialState = {
   secureTextEntry: true,
 };
 
-class SignInScreen extends Component {
+class BVNQuestionScreen extends Component {
   state = initialState;
 
   handleEmail = (username) => {
@@ -110,7 +110,7 @@ class SignInScreen extends Component {
       console.log(data);
       // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "username": "Chibubu"}
       if (data != null ) {
-        this.props.navigation.push("SideMenuScreen", {
+        this.props.navigation.push("Dashboard", {
           data: data,
         });
       }
@@ -197,7 +197,7 @@ class SignInScreen extends Component {
     //   .then(onSuccess)
     //   .catch(onFailure);
   }
-  } 
+  }
 
 //   async removeItemValue(key) {
 //     try {
@@ -270,12 +270,7 @@ class SignInScreen extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-
     return (
-    //   <ImageBackground
-    //     source={require("./../../assets/download.jpeg")}
-    //     style={styles.image}
-    //   >
         <ScrollView
           style={styles.scrollView}
           keyboardShouldPersistTaps="always">
@@ -284,189 +279,38 @@ class SignInScreen extends Component {
           <Loader loading={this.state.isLoading} />
           
             <View style={styles.cardStyleLong}>
-            <Image source={require('../assets/main_icon.png')} resizeMode={'cover'} top={-1} alignSelf={"center"} height={20} width={20}/>
-            <Text style={styles.welcomeTextStyle}>Welcome Back!</Text>
-            <View style={styles.emailTextStyleView}>
-              <Text style={{
-                fontSize: 12,
-                fontFamily: "JosefinSans-Bold",
-                textAlign: "left",
-                paddingBottom: 3,
-                paddingLeft: 5,
-                opacity: 1,
-                fontWeight: "400",
-                color: this.state.us == "empty" ? 'red' : "#002A14"
-                }}>Phone Number</Text>
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>  
-
-              <TextInput
-                backgroundColor = "#FFF"
-                borderWidth = {1}
-                borderColor={this.state.us == "empty" ? 'red' : "#B2BE35"}
-                width = {width * 0.81}
-                height= {56}
-                borderRadius = {10}
-                textAlign = "left"
-                paddingTop = {8}
-                paddingBottom ={8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                fontSize={16}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                keyboardType="number-pad"
-                returnKeyType="next"
-                onSubmitEditing={() => { this.secondTextInput.focus(); }}
-                blurOnSubmit={false}
-                value={this.state.username}
-                onChangeText={this.handleEmail}
-              />
-              
-                <View      
-                  style={styles.iconViewStyle}>
-                <PhoneIcon/>
-              </View>
-              </View>
-              {this.state.username == "chibu@yahoo.com" && this.state.us == "good" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
-              {this.state.us == "empty" && this.state.username == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
-            </View>
-            {/* fontSize: 12,
-              fontFamily: "JosefinSans-Bold",
-              textAlign: "left",
-              paddingBottom: 3,
-              paddingLeft: 5,
-              opacity: 1,
-              fontWeight: "400",
-              color: this.state.us == "empty" ? 'red' : "#002A14" */}
-
-            <View style={styles.passwordTextStyleView}>
-              <Text style={{
-                fontSize: 12,
-                color: this.state.pa == "empty" ? 'red' : "#002A14",
-                // fontFamily: "JosefinSans-Bold",
-                textAlign: "left",
-                paddingBottom: 5,
-                paddingLeft: 5,
-                opacity: 1,
-                fontWeight: "400",
-                marginTop: 8,
-              }}>Password</Text>
-
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>
-              <View style={{flexDirection: "row", }}>
-              <TextInput
-                backgroundColor= "#FFF"
-                borderWidth = {1}
-                fontSize={16}
-                borderColor={this.state.pa == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                ref={(input) => { this.secondTextInput = input; }}
-                value={this.state.password}
-                secureTextEntry={this.state.secureTextEntry?true:false}
-                onChangeText={this.handlePassword}
-              />
-              {this.state.password ? 
-              <TouchableOpacity 
-              onPress={this.updateSecureTextEntry.bind(this)}>
-                {this.state.secureTextEntry ?
-                <View
-                style={{alignSelf: "flex-end", right: 33, marginTop: 20, }}>
-                <EyeOpenIcon/>
-                </View>
-                 :
-                 <View
-                 style={{alignSelf: "flex-end", right: 33, marginTop: 20, }}>
-                 <EyeCloseIcon/>
-                 </View>
-                }
-                
-              </TouchableOpacity> : null} 
-              </View>
-              
-              <View      
-                  style={styles.iconViewStyle}>
-                  <LockIcon/>
-              </View>
-                      {/* {!this.state.secureTextEntry ?
-                      <TouchableOpacity 
-                      onPress={this.updateSecureTextEntry.bind(this)}>
-                        
-                        <Feather
-                          name="eye-off"
-                          color="#000000"
-                          size={15}
-                          style={{alignSelf: "flex-end", marginEnd: 10, bottom: 50, }}
-                          />
-                        </TouchableOpacity>
-                        :
-                        <TouchableOpacity 
-                      onPress={this.updateTrueSecureTextEntry.bind(this)}>
-                        <Feather
-                          name="eye"
-                          color="#000000"
-                          size={15}
-                          style={{alignSelf: "flex-end", marginEnd: 10, bottom: 50, }}
-                        />
-                       </TouchableOpacity>} */}
-
-              </View>
-              {this.state.password == "12345" && this.state.pa == "empty" && <Text style={styles.invalidPasswordTextStyle}>Invalid Password</Text>}
-            {this.state.pa == "empty" && this.state.password == "" && <Text style={styles.invalidPasswordTextStyle}>Password is empty</Text>}
-            <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate("ForgotPasswordScreen")
-                }>             
-              <Text style={styles.forgetTextStyle}>Forgot Password?</Text>
-              </TouchableOpacity>
-              
-            </View>
-
-            <TouchableOpacity
-                onPress={this.onPressLogin.bind(this)}
-                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
-                <Text style={styles.loginButtonText}>LOG IN</Text>
-            </TouchableOpacity>
-
+            <Text style={styles.welcomeTextStyle}>Do You Have A Bank Verification Number?</Text>
             
-            <View flexDirection="row" alignSelf="center" marginTop={10} marginBottom={10}>
-            <Text style={styles.dontHaveAccountTextStyle}>Don{"'t"} have an account?{" "}</Text>
-            <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate("Register")
-                }>
-            <Text style={styles.dontHaveAccountMintTextStyle}>Sign up</Text>
-            </TouchableOpacity>
-            </View>
+                <Text style={{
+                    fontSize: 12,
+                    fontFamily: "JosefinSans-Bold",
+                    textAlign: "center",
+                    paddingHorizontal: 5,
+                    opacity: 1,
+                    fontWeight: "600",
+                    color: "#002A14",
+                    width: 243,
+                    alignSelf: "center",
+                    marginTop: 13,
+                    marginBottom: 21,
+                    }}>Please indicate if you have a valid bank verification number (BVN)</Text>
 
+                <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate("BVNVerification")} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                    <Text style={styles.getStarted}>YES</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate("OTPCode")} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                    <Text style={styles.getStarted}>NO</Text>
+                </TouchableOpacity>
+              </View>
             </View>
         </ScrollView>
-    // {/* </ImageBackground> */}
     );
   }
 }
 
 
-export default SignInScreen;
+export default BVNQuestionScreen;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
@@ -527,15 +371,31 @@ const styles = StyleSheet.create({
     paddingEnd: 22,
     opacity: 1,
   },
+  getStarted: {
+    color:'#FFF',
+    fontSize: 20,
+    fontWeight: "500",
+    padding: 5, 
+    textAlign: "center",
+    alignSelf: "center"
+    },
+    getStarted_: {
+    color:'#002A14',
+    fontSize: 20,
+    fontWeight: "500",
+    padding: 5, 
+    textAlign: "center",
+    alignSelf: "center"
+    },
   cardStyleLong: {
-    marginTop: height * 0.12,
+    marginTop: height * 0.3,
     marginBottom: 10,
     alignSelf: "center",
-    width: width * 0.92,
-    // height: height * 0.718,
+    width: 310,
+    height: 216,// height: height * 0.718,
     padding: 15,
     color: "#ffffff",
-    borderRadius: 6,
+    borderRadius: 10,
     backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 0 },
@@ -635,8 +495,7 @@ const styles = StyleSheet.create({
     right: 10,
     fontFamily: "Nunito-Black",
     textAlign: "right",
-    marginTop: 18, 
-    marginBottom: 22
+    top: 18, 
   },
   dontHaveAccountTextStyle: {
     fontSize: 12,

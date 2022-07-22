@@ -6,7 +6,7 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  ImageBackground,
+  Image,
   StatusBar,
   Modal,
   Alert,
@@ -30,25 +30,41 @@ import RadioForm, {
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
+import CheckCloseIcon from '../assets/svgs/checkclose';
+import CheckOpenIcon from '../assets/svgs/checkopen';
+import PhoneIcon from '../assets/svgs/phone';
+import UserIcon from '../assets/svgs/user';
+import EmailIcon from '../assets/svgs/email';
+import DobIcon from '../assets/svgs/dob';
+import LinkIcon from '../assets/svgs/link';
+import mozfinService, {
+  setClientToken,
+} from "../service/MozfinService";
+
 
 const { width, height } = Dimensions.get("window");
 
 const initialState = {
-  email: "",
+  Email: "",
   em: "",
-  username: "",
-  us: "",
+  FirstName: "",
+  fn: "",
+  LastName: "",
+  ln: "",
+  PhoneNo: "",
+  pn: "",
   password: "",
   pa: "",
-  birthYear: "dd/mm/yyyy",
+  DateOfBirth_: "dd/mm/yyyy",
   by: "",
   usersRole: "",
   id: "10",
-  city: "",
-  co: "",
+  referralCode: "",
+  rc: "",
   tellUs: "",
   tu: "",
   ch: "",
+  item: {},
   modalVisible_: false,
   minutes: 0,
   isChecked: false,
@@ -61,11 +77,23 @@ const initialState = {
   modeDateOfBirth: "date",
   token: "",
   DateOfBirthShow: false,
+  OtherNames: "-",
+  City: "City",
+  Address: "Address",
+  PlaceOfBirth: "-",
+  NationalIdentityNo: "-",
+  NextOfKinName: "-",
+  NextOfKinPhoneNumber: "-",
+  ReferralName: "",
+  ReferralPhoneNO: "-",
+  CustomerType: 1,
+  Gender: 1,
+  AccountOfficerCode: "123",
   categoryList: [],
   flagList: [
     {
-      value: "Select city",
-      label: "Select city",
+      value: "Select Country",
+      label: "Select Country",
     },
     {
         value: "United States",
@@ -115,58 +143,63 @@ class RegisterScreen extends Component {
     { label: "Female", value: "female" },
 ];
 
-  handleEmail = (email) => {
-    if(email != ""){
-      if(email == "chibu@yahoo.com"){
-        this.setState({ email: email, em: "good" });
+  handleEmail = (Email) => {
+    if(Email != ""){
+      if(Email == "chibu@yahoo.com"){
+        this.setState({ Email: Email, em: "good" });
       }else{
-      this.setState({ email: email, em: "" });
+      this.setState({ Email: Email, em: "" });
       }
     }else {
-      this.setState({ email: email, em: "empty" });
+      this.setState({ Email: Email, em: "empty" });
     }
   };
 
-  handleUsername = (username) => {
-    if(username != ""){
-      if(username == "iamchibu"){
-        this.setState({ username: username, us: "good" });
-      }else if(username == "chibu"){
-        this.setState({ username: username, us: "empty" });
-      }else{
-      this.setState({ username: username, us: "" });
-      }
+  handleFirstname = (FirstName) => {
+    if(FirstName != ""){
+      this.setState({ FirstName: FirstName, fn: "" });
     }else {
-      this.setState({ username: username, us: "empty" });
+      this.setState({ FirstName: FirstName, fn: "empty" });
+    }
+  };
+
+  handleLastname = (LastName) => {
+    if(LastName != ""){
+      this.setState({ LastName: LastName, ln: "" });
+    }else {
+      this.setState({ LastName: LastName, ln: "empty" });
     }
   };
 
   handlePassword = (password) => {  
     if(password != ""){
-      if(password == "12345"){
-        this.setState({ password: password, pa: "empty" });
-      }else{
       this.setState({ password: password, pa: "" });
-      }
     }else {
       this.setState({ password: password, pa: "empty" });
     } 
-    // this.setState({ password: password, pa: "" });//good
   };
 
-  handleBirthYear = (birthYear) => {  
-    if(birthYear != new Date()){
-      this.setState({ birthYear: birthYear, by: "" });
+  handlePhoneNo = (PhoneNo) => {  
+    if(PhoneNo != ""){
+      this.setState({ PhoneNo: PhoneNo, pn: "" });
     }else {
-      this.setState({ birthYear: birthYear, by: "empty" });
+      this.setState({ PhoneNo: PhoneNo, pn: "empty" });
+    } 
+  };
+
+  handleDateOfBirth = (DateOfBirth_) => {  
+    if(DateOfBirth_ != new Date()){
+      this.setState({ DateOfBirth_: DateOfBirth_, by: "" });
+    }else {
+      this.setState({ DateOfBirth_: DateOfBirth_, by: "empty" });
     }
   };
 
-  handleCity = (city) => {  
-    if(city != ""){
-      this.setState({ city: city, co: "" });
+  handleReferral = (ReferralName) => {  
+    if(ReferralName != ""){
+      this.setState({ ReferralName: ReferralName, rc: "" });
     }else {
-      this.setState({ city: city, co: "empty" });
+      this.setState({ ReferralName: ReferralName, rc: "empty" });
     }
   };
 
@@ -183,38 +216,39 @@ class RegisterScreen extends Component {
   };
 
   onPressSignUp() {
-    // this.setState({ isLoading: true });
+    this.setState({ isLoading: true });
+    setClientToken("94aa5c7b-feec-4f30-bd68-df1b405d40e1");
 
-    const { email, username, password, birthYear, city, tellUs, isChecked } = this.state;
-    // {
-    //   "email": "valid_email@domain.com",
-    //   "username": "any_username",
-    //   "city": "name",
-    //   "birth_year": "YYYY-MM-DD",
-    //   "why_here": "answer to why user wants to join BlackTrust",
-    //   "password": "any_password"
-    // }
-    if(username == ""){
-      this.setState({ isLoading: false, us: "empty" });
-      // Alert.alert(null,'Username field is empty')
-    }else if(email == ""){
+    const { Email, FirstName, LastName, PhoneNo, DateOfBirth_, referralCode, tellUs, isChecked, 
+    OtherNames,City,
+    Address,
+    PlaceOfBirth,
+    NationalIdentityNo,
+    NextOfKinName,
+    NextOfKinPhoneNumber,
+    ReferralName,
+    ReferralPhoneNO,
+    CustomerType,
+    AccountOfficerCode,
+    Gender } = this.state;
+    
+    if(FirstName == ""){
+      this.setState({ isLoading: false, fn: "empty" });
+    }else if(LastName == ""){
+      this.setState({ isLoading: false, ln: "empty" });
+    }else if(Email == ""){
         this.setState({ isLoading: false, em: "empty" });
-        // Alert.alert(null,'Email field is empty')
-    }else if(birthYear == "dd/mm/yyyy"){
+    }else if(PhoneNo == ""){
+      this.setState({ isLoading: false, pn: "empty" });
+    }else if(DateOfBirth_ == "dd/mm/yyyy"){
       this.setState({ isLoading: false, by: "empty" });
-      // Alert.alert(null,'Middle Name field is empty')
-    }else if(city == ""){
-      this.setState({ isLoading: false, co: "empty" });
-      // Alert.alert(null,'Please Select a Role ')
-    }else if(tellUs == ""){
-      this.setState({ isLoading: false, tu: "empty" });
-      // Alert.alert(null,'Phone Number field is empty')
+    }else if(ReferralName == ""){
+      this.setState({ isLoading: false, rc: "empty" });
     }else if(isChecked == false){
       this.setState({ isLoading: false, ch: "empty" });
-      // Alert.alert(null,'Phone Number field is empty')
     }else{
-      const why_here = tellUs
-      const birth_year = moment(birthYear).format("YYYY-MM-DD")
+      // const why_here = tellUs
+      const DateOfBirth = moment(DateOfBirth_).format("YYYY-MM-DD")
     //   Alert.alert("Info: ", this.props.navigation.state.params.phonenum+' Your sign up was successful..', [
     //     {
     //         text: "Ok",
@@ -223,34 +257,36 @@ class RegisterScreen extends Component {
     //         }),
     //     },
     // ]);
-    this.setState({
-      modalVisible_: true
-    });
+    
       const payload = { 
-        email, 
-        username, 
-        city,
-        birth_year, 
-        why_here, 
-        password
+        Email, 
+        FirstName, 
+        LastName,
+        DateOfBirth, 
+        PhoneNo,
+        OtherNames,City,
+        Address,
+        PlaceOfBirth,
+        NationalIdentityNo,
+        NextOfKinName,
+        NextOfKinPhoneNumber,
+        ReferralName,
+        ReferralPhoneNO,
+        CustomerType,
+        AccountOfficerCode,
+        Gender
         };
     
     console.log(payload);
 
     const onSuccess = ({ data }) => {  
-      setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
-      
       if (data != null) {
-        Alert.alert("Info: ", data.response+"😁", [
-          {
-              text: "Ok",
-              onPress: () => this.props.navigation.push("SignIn", {
-                token: "token"
-              }),
-          },
-      ]);
+        this.setState({
+          item: data,
+          modalVisible_: true
+        });
       }
     };
 
@@ -274,46 +310,12 @@ class RegisterScreen extends Component {
       this.setState({ errors: error.response.data, isLoading: false });
     };
 
-    // this.setState({ isLoading: true });
-
-    // blackTrustService
-    //   .post("/accounts/register", payload)
-    //   .then(onSuccess)
-    //   .catch(onFailure);
+    mozfinService
+      .post(`/BankOneWebAPI/api/Customer/CreateCustomer/2?authtoken=${"94aa5c7b-feec-4f30-bd68-df1b405d40e1"}`, payload)
+      .then(onSuccess)
+      .catch(onFailure);
   }
   }
-
-  categoryList() {
-    // this.setState({ isLoading: true });
-
-    const categoryList = [];
-    categoryList.push({
-      value: "Tell us",
-      label: "Tell us",
-    });
-    // blackTrustService
-    //     .get(`/report/categories`)
-    //     .then(data => {
-    //       console.log("list: categoryList", data);
-
-    //       data.data.forEach(element => {
-    //         categoryList.push({
-    //           value: `${element.id}`,
-    //           label: `${element.name}`,
-    //         }); 
-    //         this.setState((state) => (state.categoryList = categoryList));
-    //         this.setState({ isLoading: false });
-
-    //     })
-    //     this.setState({categoryList : categoryList});
-    //       console.log("list: categoryList", categoryList);
-    //     })  
-    //     .catch((err) => {
-    //       console.log(err)
-    //       this.setState({ isLoading: false, isAuthorized: true });
-  
-    //     });
-    }
 
   getNonFieldErrorMessage() {
     let message = null;
@@ -346,74 +348,14 @@ class RegisterScreen extends Component {
     return message;
   }
 
-//   async removeItemValue(key) {
-//     try {
-//       await AsyncStorage.removeItem(key);
-//       return true;
-//     } catch (exception) {
-//       return false;
-//     }
-//   }
-
-  _storeData = async (value, payload) => {
-    // await this.removeItemValue("userDetails");
-    // await this.removeItemValue("checkedBoxBoolean");
-
-    // try {
-    //   await AsyncStorage.setItem("userDetails", JSON.stringify(value));
-    //   await AsyncStorage.setItem("checkedBoxBoolean", JSON.stringify(payload));
-
-    // } catch (error) {
-    // }
-    // console.log("This is for storing data...", value);
-    // console.log("This is for storing data...", payload);
-
-  };
-
-  _retrieveData() {
-    this.setState({initialState})
-        
-    // AsyncStorage.getItem("userDetails").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     this.setState({
-    //       role: response.role,
-    //       first_name: response.first_name,
-    //       last_name: response.last_name,
-    //     });
-
-    //     console.log("There is no role dey...", response);
-    //     console.log("I role to make role o", this.state.role);
-    //   } else {
-    //     console.log("There is no role dey...", response);
-    //   }
-    // });
-  
-    // AsyncStorage.getItem("checkedBoxBoolean").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     if(response != null && response.checked == true){
-    //       console.log("Reached.......----",this.state);
-    //         this.setState({
-    //         username: response.username,
-    //         password: response.password,
-    //         checked: response.checked,
-    //         });       
-    //     }
-    //   } else {
-    //     console.log("Check box response... Error...", response);
-    //   }
-    // });
-  }
-
   onChangeDateOfBirth = (event, selectedDate) => {
-    const currentDate = selectedDate || this.state.birthYear;
+    const currentDate = selectedDate || this.state.DateOfBirth_;
     this.setState({ DateOfBirthShow: Platform.OS === 'ios'});
-    this.setState({ birthYear: currentDate, by: "" });
+    this.setState({ DateOfBirth_: currentDate, by: "" });
     // if(selectedDate != new Date()){
-    //   this.setState({ birthYear: selectedDate, by: "" });
+    //   this.setState({ DateOfBirth: selectedDate, by: "" });
     // }else {
-    //   this.setState({ birthYear: selectedDate, by: "empty" });
+    //   this.setState({ DateOfBirth: selectedDate, by: "empty" });
     // }
   };
 
@@ -428,7 +370,6 @@ class RegisterScreen extends Component {
 
   componentWillMount = ()=> {
     console.log("I don mount o");
-    this._retrieveData();
   }
 
   componentDidMount(){
@@ -449,7 +390,7 @@ class RegisterScreen extends Component {
 
     visibleView(){
       this.setState({ view: true, modalVisible_: false });
-      this.props.navigation.push("PasswordScreen", {
+      this.props.navigation.push("UpgradeContinue", {
                   token: "token"
                 });
     } 
@@ -458,14 +399,10 @@ class RegisterScreen extends Component {
     LogBox.ignoreAllLogs(true);
     const { modeDateOfBirth, DateOfBirthShow, isChecked } = this.state;
     return (
-    //   <ImageBackground
-    //     source={require("./../../assets/download.jpeg")}
-    //     style={styles.image}
-    //   >
         <ScrollView
           style={styles.scrollView}
           keyboardShouldPersistTaps="always">
-        <StatusBar backgroundColor="#045135" barStyle="light-content"/>
+        <StatusBar backgroundColor="#E5E5E5" barStyle="dark-content"/>
         <Loader loading={this.state.isLoading} />
                 <Modal
                     animationType="slide"
@@ -481,20 +418,22 @@ class RegisterScreen extends Component {
                 <View>
                     <AntDesign
                       name="checkcircle"
-                      color="green"
+                      color="#002A14"
                       alignSelf="center"
                       style={{ alignSelf: "center", marginBottom: 10 }}
                       size={60}/>
 
                 <View flexDirection={"row"} alignItems={"center"}>
-                <Text style={styles.modalText}>Yaaaay!!!{" "}
-                <Text style={styles.statusModalText}>{this.props.navigation.state.params.phonenum}</Text>
-                {" "}Your sign up was successful..{" "}Click "Continue" to enter your password{" \n** Few steps remaining **"}
+                <Text style={styles.modalText}>
+                <Text style={styles.statusModalText}>Your Customer ID is {this.state.item.CustomerID},{"\n"} and CustomerType is {this.state.item.CustomerType}
+                </Text>
+                {" "}Your sign up was successful..{" "}Click to "Continue"{" \n** Few steps remaining **"}
                 </Text>
                 </View>
                 </View>
-                
-                <TouchableOpacity
+
+                {/* <View flexDirection="row" justifyContent={"space-between"}> */}
+                {/* <TouchableOpacity
                   activeOpacity={0.5}
                   style={{ marginStart: 10, position: "absolute", marginTop: 13, bottom: 12, alignSelf: "center" }}
                   onPress={() => this.visibleView()}>
@@ -502,199 +441,286 @@ class RegisterScreen extends Component {
                       colors={['#FFF','green', '#808080']} style={{ width: 90, height: 40, alignSelf: "center", borderRadius: 12 }}>
                     <Text style={styles.textStylee}>Continue</Text>
                     </LinearGradient>
-                </TouchableOpacity>
-                {/* <TouchableOpacity
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={this.visibleView.bind(this)}>
-                  <Text style={styles.textStylee}>View Center</Text>
                 </TouchableOpacity> */}
-           
+
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ marginStart: 10, position: "absolute", marginTop: 50, bottom: 12, alignSelf: "center" }}
+                  onPress={() => this.visibleView()}>
+                  <LinearGradient
+                      colors={['#FFF','#002A14', '#002A14']} style={{ width: 90, height: 40, alignSelf: "center", borderRadius: 12 }}>
+                    <Text style={styles.textStylee}>Update</Text>
+                    </LinearGradient>
+                </TouchableOpacity>   
+                {/* </View> */}
+                        
                 </View>
               </View>
               </View>
               </Modal>
-        <View>
+            <View>
+
             <View style={styles.cardStyleLong}>
-            <Text style={styles.headerTextStyleView}>Before we start...</Text>
-            <Text style={styles.infooTextStyle}>A couple of details</Text>
-            <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate("SignIn")
-                }>
-            <View flexDirection="row" alignSelf="flex-start">
-            <Text style={styles.dontHaveAccountTextStyle}>Already have an account?</Text>
-            <Text style={styles.dontHaveAccountMintTextStyle}>{" "}Login</Text>
-            </View>
-            </TouchableOpacity>
+            <Image source={require('../assets/main_icon.png')} resizeMode={'cover'} top={-1} alignSelf={"center"} height={20} width={20}/>
+            <Text style={styles.welcomeTextStyle}>Getting Started!</Text>
 
             <View style={styles.emailTextStyleView_}>
-              <Text style={styles.emailTextStyle}>Your full name</Text>
+              <Text style={{
+                fontSize: 12,
+                color: this.state.fn == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "400",
+                lineHeight: 14.4,
+                marginTop: 10,}}>First Name</Text>
+
               <View style={{
-                borderColor: this.state.us == "empty" ? 'pink' : this.state.us == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
                 width: width * 0.81,
                 height: 54,
                 padding: 1,
-                backgroundColor: this.state.us == "empty" ? 'pink' : this.state.us == "good" ? 'green' : "transparent",
                 borderRadius: 10
               }}>
               <TextInput
-                // style={{ borderColor: this.state.username == '' ? 'red' : '#EEF4FE' }}
-                backgroundColor = "#FFF"
+                backgroundColor= "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.us == "empty" ? 'red' : "#DDD"}
-                width = {width * 0.80}
-                height= {50}
-                borderRadius = {10}
-                textAlign = "left"
-                paddingTop = {10}
-                paddingBottom ={17}
-                paddingStart ={50}
+                fontSize={16}
+                borderColor={this.state.fn == "empty" ? 'red' : "#B2BE35"}
+                width= {width * 0.81}
+                height= {56}
+                borderRadius= {10}
+                paddingTop = {8}
+                paddingBottom = {8}
+                paddingStart ={54}
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                placeholder="Enter your full name"
-                placeholderTextColor="#CCC"
-                autoCapitalize="sentences"
-                value={this.state.username}
-                onChangeText={this.handleUsername}
+                autoCapitalize="none"
+                returnKeyType="next"
+                keyboardType="text"
+                onSubmitEditing={() => { this.lastNameTextInput.focus(); }}
+                blurOnSubmit={false}                
+                value={this.state.FirstName}
+                onChangeText={this.handleFirstname}
               />
-                <MaterialIcons      
-                  name="person"
-                  color="#000000"
-                  style={styles.iconViewStyle}
-                  size={22}/>
+                <View      
+                  style={styles.iconViewStyle}>
+                <UserIcon/>
               </View>
-              {this.state.username == "chibu" && this.state.us == "empty" && <Text style={styles.invalidPasswordTextStyle}>{this.state.username} has already been taken</Text>}
-              {this.state.username == "iamchibu" && this.state.us == "good" && <Text style={styles.invalidPasswordTextStyle}>{this.state.username} is available</Text>}
-
-              {this.state.us == "empty" && this.state.username == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your name</Text>}
+              </View>
+              
+              {this.state.fn == "empty" && this.state.FirstName == "" && <Text style={styles.invalidPasswordTextStyle}>First name is empty</Text>}
 
             </View>
 
             <View style={styles.emailTextStyleView}>
-              <Text style={styles.emailTextStyle}>Phone Number</Text>
+              <Text style={{
+                fontSize: 12,
+                color: this.state.ln == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "400",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Last Name</Text>
+
               <View style={{
-                borderColor: this.state.pa == "empty" ? 'pink' : this.state.pa == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
                 width: width * 0.81,
                 height: 54,
                 padding: 1,
-                backgroundColor: this.state.pa == "empty" ? 'pink' : this.state.pa == "good" ? 'green' : "transparent",
+                borderRadius: 10
+              }}>
+              <TextInput
+                backgroundColor= "#FFF"
+                borderWidth = {1}
+                fontSize={16}
+                borderColor={this.state.ln == "empty" ? 'red' : "#B2BE35"}
+                width= {width * 0.81}
+                height= {56}
+                borderRadius= {10}
+                paddingTop = {8}
+                paddingBottom = {8}
+                paddingStart ={54}
+                paddingEnd= {22}
+                opacity= {1}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                returnKeyType="next"
+                onSubmitEditing={() => { this.emailTextInput.focus(); }}
+                blurOnSubmit={false}                
+                ref={(input) => { this.lastNameTextInput = input; }}
+                value={this.state.LastName}
+                onChangeText={this.handleLastname}
+              />
+                <View      
+                  style={styles.iconViewStyle}>
+                <UserIcon/>
+              </View>
+              </View>
+              
+              {this.state.ln == "empty" && this.state.LastName == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your last name</Text>}
+
+            </View>
+            
+            <View style={styles.emailTextStyleView}>
+              <Text style={{
+                fontSize: 12,
+                color: this.state.em == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "400",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Email</Text>
+              <View style={{
+                width: width * 0.81,
+                height: 54,
+                padding: 1,
+                borderRadius: 10
+              }}>
+              <TextInput
+                backgroundColor= "#FFF"
+                borderWidth = {1}
+                fontSize={16}
+                borderColor={this.state.em == "empty" ? 'red' : "#B2BE35"}
+                width= {width * 0.81}
+                height= {56}
+                borderRadius= {10}
+                paddingTop = {8}
+                paddingBottom = {8}
+                paddingStart ={54}
+                paddingEnd= {22}
+                opacity= {1}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                returnKeyType="next"
+                onSubmitEditing={() => { this.PhoneNoTextInput.focus(); }}
+                blurOnSubmit={false}                
+                keyboardType="email-address"
+                ref={(input) => { this.emailTextInput = input; }}
+                value={this.state.Email}
+                onChangeText={this.handleEmail}
+              />
+              <View      
+                  style={styles.iconViewStyle}>
+                <EmailIcon/>
+              </View>
+              </View>
+              {this.state.em == "empty" && this.state.Email == "" && <Text style={styles.invalidPasswordTextStyle}>Email is empty</Text>}
+            </View>
+            
+            <View style={styles.emailTextStyleView}>
+              <Text style={{
+                fontSize: 12,
+                color: this.state.pn == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "400",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Phone Number</Text>
+              <View style={{
+                width: width * 0.81,
+                height: 54,
+                padding: 1,
                 borderRadius: 10
               }}>
               <View style={{flexDirection: "row", }}>
-              <Text
-                style={{ 
-                    borderColor: '#DDD', 
-                    height: 50, 
-                    width: width * 0.80, 
-                    backgroundColor: "#C4F4CD", 
-                    borderRadius: 10, 
-                    borderWidth: 1, 
-                    paddingTop: 14, 
-                    paddingBottom: 10, 
-                    paddingStart: 50, 
-                    paddingEnd: 22
-                      }}>{this.props.navigation.state.params.phonenum}
-                    </Text>
-              </View>
-              
-              <FontAwesome     
-                  name="phone"
-                  color="#000000"
-                  style={styles.iconViewStyle}
-                  size={22}/>
-              </View>
-
-            </View>
-            
-            <View style={styles.emailTextStyleView}>
-              <Text style={styles.emailTextStyle}>Email</Text>
-              <View style={{
-                borderColor: this.state.em == "empty" ? 'pink' : this.state.em == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                backgroundColor: this.state.em == "empty" ? 'pink' : this.state.em == "good" ? 'green' : "transparent",
-                borderRadius: 10
-              }}>
               <TextInput
-                // style={{ borderColor: this.state.username == '' ? 'red' : '#EEF4FE' }}
                 backgroundColor = "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.em == "empty" ? 'red' : "#DDD"}
-                width = {width * 0.80}
-                height= {50}
+                borderColor={this.state.pn == "empty" ? 'red' : "#B2BE35"}
+                width = {width * 0.81}
+                height= {56}
                 borderRadius = {10}
                 textAlign = "left"
-                paddingTop = {10}
-                paddingBottom ={17}
-                paddingStart ={50}
+                paddingTop = {8}
+                paddingBottom ={8}
+                paddingStart ={54}
                 paddingEnd= {22}
                 opacity= {1}
+                fontSize={16}
                 underlineColorAndroid="transparent"
-                placeholder="Johndoe@gmail.com"
-                placeholderTextColor="#CCC"
                 autoCapitalize="none"
-                keyboardType="email-address"
-                value={this.state.email}
-                onChangeText={this.handleEmail}
+                keyboardType="number-pad"
+                returnKeyType="next"
+                onSubmitEditing={() => { this.dobTextInput.focus(); }}
+                blurOnSubmit={false}
+                ref={(input) => { this.PhoneNoTextInput = input; }}
+                value={this.state.PhoneNo}
+                onChangeText={this.handlePhoneNo}
               />
-              <MaterialIcons      
-                  name="email"
-                  color="#000000"
-                  style={styles.iconViewStyle}
-                  size={22}/>
+              </View>              
+              <View      
+                  style={styles.iconViewStyle}>
+                <PhoneIcon/>
               </View>
-              {this.state.em == "empty" && this.state.email == "" && <Text style={styles.invalidPasswordTextStyle}>Email is empty</Text>}
+              </View>
+              {this.state.pn == "empty" && this.state.PhoneNo == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
             </View>
-            
+
               <View style={styles.emailTextStyleView}>
-              <Text style={styles.emailTextStyle}>Select Date of Birth</Text>
+              <Text style={{
+                fontSize: 12,
+                color: this.state.by == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "400",
+                lineHeight: 14.4,
+                marginTop: 10,
+              }}>Date of Birth</Text>
               <View style={{
-                borderColor: this.state.by == "empty" ? 'pink' : this.state.by == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
                 width: width * 0.81,
                 height: 54,
                 padding: 1,
-                backgroundColor: this.state.by == "empty" ? 'pink' : this.state.by == "good" ? 'green' : "transparent",
                 borderRadius: 10
               }}>
                 <TouchableOpacity onPress={this.showDateOfBirthPicker.bind(this)}>
                 <TextInput
                   backgroundColor = "#FFF"
                   borderWidth = {1}
-                  borderColor={this.state.by == "empty" ? 'red' : "#DDD"}
-                  width = {width * 0.80}
-                  height= {50}
-                  borderRadius = {10}
-                  textAlign = "left"
-                  paddingTop = {10}
-                  paddingBottom ={17}
-                  paddingStart ={50}
+                  borderColor={this.state.by == "empty" ? 'red' : "#B2BE35"}
+                  width= {width * 0.81}
+                  height= {56}
+                  borderRadius= {10}
+                  paddingTop = {8}
+                  paddingBottom = {8}
+                  paddingStart ={54}
                   paddingEnd= {22}
                   opacity= {1}
                   underlineColorAndroid="transparent"
-                  placeholder={this.state.birthYear != "dd/mm/yyyy" ? this.state.birthYear.toDateString() : "Choose year"}
-                  placeholderTextColor="grey"
                   autoCapitalize="none"
-                  keyboardType="text"
+                  returnKeyType="next"
+                  onSubmitEditing={() => { this.ReferralNameTextInput.focus(); }}
+                  blurOnSubmit={false}                
+                  placeholder={this.state.DateOfBirth_ != "dd/mm/yyyy" ? this.state.DateOfBirth_.toDateString() : "Choose year"}
+                  placeholderTextColor={"grey"}
                   editable={false}
-                  value={this.state.birthYear}
-                  onChangeText={this.handleBirthYear}
+                  color={"#000"}
+                  ref={(input) => { this.dobTextInput = input; }}
+                  value={this.state.DateOfBirth_}
+                  onChangeText={this.handleDateOfBirth}
                 />
-              <MaterialIcons      
-                  name="date-range"
-                  color="#000000"
-                  style={styles.iconViewStyle}
-                  size={22}/>
+              <View      
+                  style={styles.iconViewStyle}>
+                <DobIcon/>
+              </View>
                 </TouchableOpacity>
                 {DateOfBirthShow && (
                       <DateTimePicker
                         testID="dateTimePicker"
-                        value={this.state.birthYear ? new Date() : this.state.birthYear}
+                        value={this.state.DateOfBirth_ ? new Date() : this.state.DateOfBirth_}
                         mode={modeDateOfBirth}
                         is24Hour={true}
                         maximumDate={new Date()}
@@ -704,63 +730,62 @@ class RegisterScreen extends Component {
                     )}
 
                 </View>
-                {this.state.by == "empty" && this.state.birthYear == "dd/mm/yyyy" && <Text style={styles.invalidPasswordTextStyle}>Birth year is empty. Click to select..</Text>}
+                {this.state.by == "empty" && this.state.DateOfBirth_ == "dd/mm/yyyy" && <Text style={styles.invalidPasswordTextStyle}>Date of Birth is empty. Click to select..</Text>}
             </View>
-
+            
               <View style={styles.emailTextStyleView}>
-              <Text style={styles.emailTextStyle}>Address</Text>
+              <Text style={{fontSize: 12,
+                color: this.state.rc == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "400",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Referral Name</Text>
               <View style={{
-                borderColor: this.state.co == "empty" ? 'pink' : this.state.co == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
                 width: width * 0.81,
                 height: 54,
                 padding: 1,
-                backgroundColor: this.state.co == "empty" ? 'pink' : this.state.co == "good" ? 'green' : "transparent",
                 borderRadius: 10
               }}>
               <TextInput
-                // style={{ borderColor: this.state.username == '' ? 'red' : '#EEF4FE' }}
                 backgroundColor = "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.co == "empty" ? 'red' : "#DDD"}
-                width = {width * 0.80}
-                height= {50}
-                borderRadius = {10}
-                textAlign = "left"
-                paddingTop = {10}
-                paddingBottom ={17}
-                paddingStart ={50}
+                borderColor={this.state.rc == "empty" ? 'red' : "#B2BE35"}
+                width= {width * 0.81}
+                height= {56}
+                borderRadius= {10}
+                paddingTop = {8}
+                paddingBottom = {8}
+                paddingStart ={54}
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                placeholder="Enter your Address"
-                placeholderTextColor="#CCC"
                 autoCapitalize="sentences"
-                value={this.state.city}
-                onChangeText={this.handleCity}
+                ref={(input) => { this.ReferralNameTextInput = input; }}
+                value={this.state.ReferralName}
+                onChangeText={this.handleReferral}
               />
-              <Entypo      
-                  name="location"
-                  color="#000000"
-                  style={styles.iconViewStyle}
-                  size={22}/>
-        <View style={{
-          height: 45,
-          width: 45,
-          borderRadius: 50,
-          borderWidth: 1,
-          borderColor: this.state.city == "Select city" ? "black": "transparent",
-          backgroundColor: this.state.city == "Select city" ? "black": "transparent",
-          position: "absolute",
-          marginLeft: 10,
-          top: 2,
-        }}>
-        </View>
+              <View      
+                  style={styles.iconViewStyle}>
+                <LinkIcon/>
               </View>
-              {this.state.co == "empty" && this.state.city == "" && <Text style={styles.invalidPasswordTextStyle}>Address field is empty</Text>}
+            <View style={{
+              height: 45,
+              width: 45,
+              borderRadius: 50,
+              position: "absolute",
+              marginLeft: 10,
+              top: 2,
+            }}>
+            </View>
+              </View>
+              {this.state.rc == "empty" && this.state.ReferralName == "" && <Text style={styles.invalidPasswordTextStyle}>Referral Code field is empty</Text>}
             </View>
 
-              <View style={styles.genderTextStyleView}>
+              {/* <View style={styles.genderTextStyleView}>
               <Text style={styles.emailTextStyle}>Gender</Text>
               <View style={{ alignSelf: "flex-start", marginStart: 10, }}>
                 <RadioForm
@@ -789,9 +814,17 @@ class RegisterScreen extends Component {
 
                 </View>
               {this.state.tu == "empty" && this.state.tellUs == "" && <Text style={styles.invalidPasswordTextStyle}>Please select an option</Text>}
-            </View>
-            <View flexDirection={"row"} marginTop={20} backgroundColor={this.state.ch == "empty" && this.state.isChecked == false ? "pink" : "transparent"}>
-                  <CheckBox
+            </View> */}
+            <View flexDirection={"row"} marginTop={8} left={-15}>
+              {/* backgroundColor={this.state.ch == "empty" && this.state.isChecked == false ? "pink" : "transparent"} */}
+              <CheckBox
+                checkedIcon={<CheckOpenIcon />}
+                uncheckedIcon={<CheckCloseIcon
+                                  red={this.state.ch == "empty" ? "red": ""} />}
+                checked={isChecked}
+                onPress={() =>this.setState({ isChecked: !isChecked })}
+                />
+                  {/* <CheckBox
                     checked={isChecked}
                     uncheckedColor={this.state.ch == "empty" && this.state.isChecked == false ? "red" : "#045135"} 
                     checkedColor={"#045135"}
@@ -799,23 +832,27 @@ class RegisterScreen extends Component {
                     onPress={() => {
                       this.setState({ isChecked: !isChecked })
                     }}
-                    /> 
-                    <Text style={{color: "#111A30", fontWeight: "100", fontSize: 15, width: width * 0.65, textAlign: "left", top: 5 }}>By Signing up you agree to our{" "}
-                    <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms & Conditions</Text>{" "}and{" "}
-                    <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Privacy Policy</Text>
+                    />  */}
+                    <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.65, textAlign: "left", top: 20, left: -10 }}>I agree to the{" "}
+                    <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms and Conditions</Text>
                     </Text> 
-                    {/* {this.state.ch == "empty" && this.state.isChecked == false && <Text style={styles.invalidPasswordTextStyle}>Please check our Terms and Conditions..</Text>} */}
               </View>
 
             <TouchableOpacity
                 onPress={this.onPressSignUp.bind(this)}
-              >
-            <View style={styles.buttonView}>
-              <View style={styles.loginButton}>
-                <Text style={styles.loginButtonText}>Submit</Text>
-              </View>
+                style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: !isChecked ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                <Text style={styles.loginButtonText}>SUBMIT</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() =>
+                  this.props.navigation.navigate("SignIn")
+                }>
+            <View flexDirection="row" alignSelf="center" marginTop={20} marginBottom={5}>
+            <Text style={styles.dontHaveAccountTextStyle}>Already have account?{" "}</Text>
+            <Text style={styles.dontHaveAccountMintTextStyle}>Log in</Text>
             </View>
             </TouchableOpacity>
+
             </View>
             </View>
         </ScrollView>
@@ -852,6 +889,15 @@ const styles = StyleSheet.create({
     paddingStart: 30,
     paddingEnd: 40,
   },
+  welcomeTextStyle: {
+    fontSize: 20,
+    color: "#002A14",
+    alignSelf: "center",
+    paddingLeft: 5,
+    marginTop: 15,
+    fontWeight: "700",
+    opacity: 1,
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -872,7 +918,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2
     },
-    shadowOpacity: 0.95,
+    shadowopacity: 0.95,
     shadowRadius: 4,
     elevation: 5
   },
@@ -894,6 +940,7 @@ const styles = StyleSheet.create({
   statusModalText: {
     color: "green",
     fontFamily: "Nunito_400Regular",
+    fontWeight: "700"
   },
   modalBackground:{
     flex:1,
@@ -904,9 +951,17 @@ const styles = StyleSheet.create({
   },
   iconViewStyle: {
     fontSize: 20,
-    bottom: 38,
-    marginLeft: 18,
+    bottom: 56,
+    marginLeft: 0,
     alignSelf: "flex-start",
+    backgroundColor: "#507C543D",
+    borderColor: "#507C543D",
+    height: 56,
+    width: 52,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 16,
   },
   passwordInput: {
     borderColor: "#EEF4FE",
@@ -933,7 +988,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
+    shadowopacity: 0.2,
     elevation: 5
   },
   dropDownInput: {
@@ -948,14 +1003,14 @@ const styles = StyleSheet.create({
     width: width * 0.80,
   },
   invalidPasswordTextStyle: {
-    fontSize: 13,
-    color: "#000000",
+    fontSize: 12,
+    color: "#FF0000",
     fontFamily: "JosefinSans-Bold",
     alignSelf: "flex-start",
-    paddingLeft: 10,
+    paddingLeft: 5,
     textAlign: "left",
-    letterSpacing: -0.38,
     opacity: 1,
+    top: 5,
   },
   invalidPasswordTextStylee: {
     fontSize: 13,
@@ -969,13 +1024,13 @@ const styles = StyleSheet.create({
   },
   dontHaveAccountTextStyle: {
     fontSize: 12,
-    color: "#CCCCCC",
+    color: "#002A14",
     marginBottom: 1,
     opacity: 1,
     marginStart: 5,
-    fontWeight: "bold",
+    fontWeight: "400",
     fontFamily: "JosefinSans-Bold",
-    alignSelf: "center",
+    textAlign: "center",
   },
   infooTextStyle: {
     fontSize: 13,
@@ -992,10 +1047,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#000",
     marginBottom: 1,
-    fontWeight: "bold",
+    fontWeight: "500",
     opacity: 1,
     fontFamily: "JosefinSans-Bold",
     alignSelf: "center",
+    textDecorationLine: "underline"
   },
   textStyle: {
     fontSize: 25,
@@ -1031,7 +1087,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   emailTextStyleView_: {
-    marginTop: 30,
+    marginTop: 20,
     alignSelf: "center",
   },
   emailTextStyleView: {
@@ -1111,7 +1167,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
+    shadowopacity: 0.2,
     elevation: 5,
   },
   signUpButton: {
@@ -1124,15 +1180,17 @@ const styles = StyleSheet.create({
     opacity: 1,
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
+    shadowopacity: 0.2,
     elevation: 5,
   },
   loginButtonText: {
     color: "white",
     textAlign: "center",
     alignItems: "center",
-    fontWeight: "bold",
     fontFamily: "JosefinSans-Bold",
+    padding: 5,
+    fontWeight: "400",
+    fontSize: 20,
   },
   signUpButtonText: {
     color: "#4848FF",
@@ -1141,7 +1199,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#045135",
+    backgroundColor: "#E5E5E5",
   },
   errorMessageContainerStyle: {
     backgroundColor: "#fee8e6",

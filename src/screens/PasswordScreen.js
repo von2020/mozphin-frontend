@@ -13,25 +13,12 @@ import {
   Dimensions,
   LogBox,
 } from "react-native";
-import moment from 'moment';
 import  Loader  from './../config/Loader';
-import { CheckBox } from 'react-native-elements';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { Dropdown } from "react-native-material-dropdown";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import RadioForm, {
-    RadioButton,
-    RadioButtonInput,
-    RadioButtonLabel,
-  } from "react-native-simple-radio-button";
 import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import LinearGradient from 'react-native-linear-gradient';
-
+import LockIcon from '../assets/svgs/lock';
+import EyeCloseIcon from '../assets/svgs/eye_close';
+import EyeOpenIcon from '../assets/svgs/eye_open';
 const { width, height } = Dimensions.get("window");
 
 const initialState = {
@@ -371,147 +358,142 @@ class PasswordScreen extends Component {
         <ScrollView
           style={styles.scrollView}
           keyboardShouldPersistTaps="always">
-        <StatusBar backgroundColor="#045135" barStyle="light-content"/>
+        <StatusBar backgroundColor="#E5E5E5" barStyle="dark-content"/>
         <Loader loading={this.state.isLoading} />
 
         <View>
             <View style={styles.cardStyleLong}>
-            <Text style={styles.headerTextStyleView}>Password Confirmation...</Text>
-            <Text style={styles.infooTextStyle}>Enter password to Sign in into Mozfin</Text>
+            <Text style={styles.headerTextStyleView}>Set Password</Text>
+            <Text style={styles.infooTextStyle}>Set account password to complete sign up process</Text>
 
             <View style={styles.emailTextStyleView_}>
-              <Text style={styles.emailTextStyle}>Password</Text>
+              <Text style={{fontSize: 13,
+                            color: this.state.pa == "empty" ? 'red' : "#002A14",
+                            fontFamily: "JosefinSans-Bold",
+                            textAlign: "left",
+                            paddingBottom: 5,
+                            paddingLeft: 5,
+                            opacity: 1,
+                            fontWeight: "400",}}>Password</Text>
               <View style={{
-                borderColor: this.state.pa == "empty" ? 'pink' : this.state.pa == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
                 width: width * 0.81,
                 height: 54,
                 padding: 1,
-                backgroundColor: this.state.pa == "empty" ? 'pink' : this.state.pa == "good" ? 'green' : "transparent",
                 borderRadius: 10
               }}>
               <TextInput
-                // style={{ borderColor: this.state.username == '' ? 'red' : '#EEF4FE' }}
-                backgroundColor = "#FFF"
+                backgroundColor= "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.pa == "empty" ? 'red' : "#DDD"}
-                width = {width * 0.80}
-                height= {50}
-                borderRadius = {10}
-                textAlign = "left"
-                paddingTop = {10}
-                paddingBottom ={17}
-                paddingStart ={50}
+                fontSize={16}
+                borderColor={this.state.pa == "empty" ? 'red' : "#B2BE35"}
+                width= {width * 0.81}
+                height= {56}
+                borderRadius= {10}
+                paddingTop = {8}
+                paddingBottom = {8}
+                paddingStart ={54}
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                placeholder="Enter your password"
-                placeholderTextColor="#CCC"
-                value={this.state.password}
                 autoCapitalize="none"
+                returnKeyType="next"
+                onSubmitEditing={() => { this.secondTextInput.focus(); }}
+                blurOnSubmit={false}
+                value={this.state.password}
                 secureTextEntry={this.state.secureTextEntry?true:false}
                 onChangeText={this.handlePassword}
               />
-                <Entypo      
-                  name="lock"
-                  color="#000000"
-                  style={styles.iconViewStyle}
-                  size={22}/>
+                <View style={styles.iconViewStyle}>
+                  <LockIcon />
+                </View>
                 </View>
 
                   {this.state.password ? 
               <TouchableOpacity 
               onPress={this.updateSecureTextEntry.bind(this)}>
                 {this.state.secureTextEntry ?
-                <Feather
-                name="eye-off"
-                color="#000000"
-                size={15}
-                style={{alignSelf: "flex-end", right: 25, top: -35, }}
-                />:
-                <Feather
-                name="eye"
-                color="#000000"
-                size={15}
-                style={{alignSelf: "flex-end", right: 25, top: -35, }}
-                />
+                <View
+                style={{alignSelf: "flex-end", right: 25, top: -35, }}>
+                <EyeOpenIcon/>
+                </View> :
+                <View
+                style={{alignSelf: "flex-end", right: 25, top: -35, }}>
+                <EyeCloseIcon/>
+                </View>
                 }
                 
               </TouchableOpacity> : null} 
               {this.state.pa == "empty" && this.state.password == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your password</Text>}
-
+              {this.state.password != this.state.passwordConfirm && this.state.click && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
             </View>
             
             <View style={styles.emailTextStyleView}>
-            <Text style={styles.emailTextStyle}>Confirm Password</Text>
+            <Text style={{fontSize: 13,
+                          color: this.state.pac == "empty" ? 'red' : "#002A14",
+                          fontFamily: "JosefinSans-Bold",
+                          textAlign: "left",
+                          paddingBottom: 5,
+                          paddingLeft: 5,
+                          opacity: 1,
+                          fontWeight: "400",}}>Confirm Password</Text>
               <View style={{
-                borderColor: this.state.pac == "empty" ? 'pink' : this.state.pac == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
                 width: width * 0.81,
                 height: 54,
                 padding: 1,
-                backgroundColor: this.state.pac == "empty" ? 'pink' : this.state.pac == "good" ? 'green' : "transparent",
                 borderRadius: 10
               }}>
               <TextInput
-                // style={{ borderColor: this.state.username == '' ? 'red' : '#EEF4FE' }}
-                backgroundColor = "#FFF"
+                backgroundColor= "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.pac == "empty" ? 'red' : "#DDD"}
-                width = {width * 0.80}
-                height= {50}
-                borderRadius = {10}
-                textAlign = "left"
-                paddingTop = {10}
-                paddingBottom ={17}
-                paddingStart ={50}
+                fontSize={16}
+                borderColor={this.state.pac == "empty" ? 'red' : "#B2BE35"}
+                width= {width * 0.81}
+                height= {56}
+                borderRadius= {10}
+                paddingTop = {8}
+                paddingBottom = {8}
+                paddingStart ={54}
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                placeholder="Confirm password"
-                placeholderTextColor="#CCC"
                 autoCapitalize="none"
-                secureTextEntry={this.state.secureConfirmTextEntry?true:false}
+                ref={(input) => { this.secondTextInput = input; }}
+                secureTextEntry={this.state.secureTextEntry?true:false}
                 value={this.state.passwordConfirm}
                 onChangeText={this.handlePasswordConfirm}
               />
-              <Entypo      
-                  name="lock-open"
-                  color="#000000"
-                  style={styles.iconViewStyle}
-                  size={22}/>
+              <View style={styles.iconViewStyle}>
+                <LockIcon/>
+              </View>
               </View>
               {this.state.pac == "empty" && this.state.passwordConfirm == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
-              {this.state.password != this.state.passwordConfirm && this.state.click && <Text style={styles.invalidPasswordTextStyle}>Passwords don't match</Text>}
+              {this.state.password != this.state.passwordConfirm && this.state.click && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
               {this.state.passwordConfirm ? 
               <TouchableOpacity 
               onPress={this.updateConfirmSecureTextEntry.bind(this)}>
                 {this.state.secureConfirmTextEntry ?
-                <Feather
-                name="eye-off"
-                color="#000000"
-                size={15}
-                style={{alignSelf: "flex-end", right: 25, top: -35, }}
-                />:
-                <Feather
-                name="eye"
-                color="#000000"
-                size={15}
-                style={{alignSelf: "flex-end", right: 25, top: -35, }}
-                />
+                <View
+                style={{alignSelf: "flex-end", right: 25, top: -35, }}>
+                <EyeOpenIcon/>
+                </View> :
+                <View
+                style={{alignSelf: "flex-end", right: 25, top: -35, }}>
+                <EyeCloseIcon/>
+                </View>
                 }
                 
               </TouchableOpacity> : null} 
             </View>
+            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 20, paddingTop: 5 }}>* Password must be 8 characters long Password</Text>
+            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 5, paddingTop: 5 }}>* Password must contain an uppercase letter</Text>
+            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 5, paddingTop: 5 }}>* Password must contain a lowercase letter </Text>
+            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 5, paddingTop: 5 }}>* Password must contain a number </Text>
+            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 5, paddingTop: 5, marginBottom: 32 }}>* Password must contain a special character </Text>
             
-              <TouchableOpacity
+            <TouchableOpacity
                 onPress={this.onPressSignUp.bind(this)}
-              >
-            <View style={styles.buttonView}>
-              <View style={styles.loginButton}>
-                <Text style={styles.loginButtonText}>Let's do this</Text>
-              </View>
-            </View>
+                style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: this.state.password != this.state.passwordConfirm ? "rgba(0,42,20,0.81)" : this.state.password == "" && this.state.passwordConfirm == "" ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                <Text style={styles.loginButtonText}>SIGN UP</Text>
             </TouchableOpacity>
             </View>
             </View>
@@ -551,9 +533,17 @@ const styles = StyleSheet.create({
   },
   iconViewStyle: {
     fontSize: 20,
-    bottom: 38,
-    marginLeft: 18,
+    bottom: 56,
+    marginLeft: 0,
     alignSelf: "flex-start",
+    backgroundColor: "#507C543D",
+    borderColor: "#507C543D",
+    height: 56,
+    width: 52,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 16,
   },
   passwordInput: {
     borderColor: "#EEF4FE",
@@ -596,10 +586,11 @@ const styles = StyleSheet.create({
   },
   invalidPasswordTextStyle: {
     fontSize: 13,
-    color: "#000000",
+    color: "#FF0000",
     fontFamily: "JosefinSans-Bold",
     alignSelf: "flex-start",
     paddingLeft: 10,
+    paddingTop: 5,
     textAlign: "left",
     letterSpacing: -0.38,
     opacity: 1,
@@ -625,15 +616,15 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   infooTextStyle: {
-    fontSize: 13,
-    color: "#FAD46C",
-    marginBottom: 1,
+    fontSize: 12,
+    lineHeight: 15.6,
+    color: "#838E08",
+    marginTop: 8,
     opacity: 1,
-    marginStart: 5,
-    fontWeight: "bold",
+    marginHorizontal: 30,
+    fontWeight: "600",
     fontFamily: "JosefinSans-Bold",
-    paddingBottom: 5,
-    bottom: 3
+    textAlign: "center",
   },
   dontHaveAccountMintTextStyle: {
     fontSize: 12,
@@ -678,7 +669,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   emailTextStyleView_: {
-    marginTop: 30,
+    marginTop: 14,
     alignSelf: "center",
   },
   emailTextStyleView: {
@@ -690,15 +681,16 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   headerTextStyleView: {
-    fontSize: 18,
+    fontSize: 20,
+    lineHeight: 24,
     color: "#042504",
     fontFamily: "JosefinSans-Bold",
-    textAlign: "left",
-    fontWeight: "bold",
-    alignSelf: "flex-start",
+    textAlign: "center",
+    fontWeight: "700",
+    alignSelf: "center",
     paddingLeft: 5,
     opacity: 1,
-    marginTop: 15
+    marginTop: 29
   },
   passwordTextStyleView: {
     marginTop: 20,
@@ -778,8 +770,10 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     alignItems: "center",
-    fontWeight: "bold",
     fontFamily: "JosefinSans-Bold",
+    padding: 5,
+    fontWeight: "400",
+    fontSize: 20,
   },
   signUpButtonText: {
     color: "#4848FF",
@@ -788,7 +782,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#045135",
+    backgroundColor: "#E5E5E5",
   },
   errorMessageContainerStyle: {
     backgroundColor: "#fee8e6",

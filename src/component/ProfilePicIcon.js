@@ -3,6 +3,7 @@ import { withNavigation } from 'react-navigation';
 import {
     TouchableOpacity,
     StatusBar,
+    Image,
     Alert,
     Dimensions,
     LogBox
@@ -10,7 +11,7 @@ import {
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 const { width } = Dimensions.get("window");
 
-class HamburgerIcon extends Component{
+class ProfilePicIcon extends Component{
     constructor(props) {
         super(props);
         this.state = { 
@@ -24,21 +25,20 @@ class HamburgerIcon extends Component{
         <TouchableOpacity
         style={{
             width: 44,
-            // width: width * 0.90,
             height: 44,
-            marginLeft: 20,
-            // marginEnd: 20,
+            marginEnd: 0,
             marginTop: 20,
-            // alignItems: "flex-end"
         }}
         onPress={()=>{
-            Alert.alert(null,"No side menu yet..")
-            //this.props.navigation.openDrawer();
+            Alert.alert(null,"No side Profile screen yet..")
+            this.props.navigation.navigate("ProfileUpdateDetails");
         }}>
-            <Icon name='menu' size={20} color={this.props.colour}/>
+              <Image
+                  source={require("../assets/profilesmall.png")}
+                  style={{ }} />
         </TouchableOpacity>
  	 )
     };
 }
 
-export default withNavigation(HamburgerIcon);
+export default withNavigation(ProfilePicIcon);

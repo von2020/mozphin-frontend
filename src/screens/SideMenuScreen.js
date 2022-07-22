@@ -29,10 +29,9 @@ const HamburgerNavigation = createDrawerNavigator(
     {
         Tabs: BottomTabs,
     },{ 
-        drawerPosition: 'right',
+        drawerPosition: 'left',
         initialRouteName: 'Tabs',
         contentComponent: props => {
-
             return (
                 <ScrollView backgroundColor={"#252C57"}>
                     <SafeAreaView

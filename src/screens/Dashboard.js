@@ -10,18 +10,25 @@ import {
   TouchableOpacity,
   ScrollView,
   LogBox,
-  LinearGradient,
   Image,
   StatusBar
 } from "react-native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import Carousel from 'react-native-banner-carousel';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import HamburgerIcon from '../component/HamburgerIcon';
+import ProfilePicIcon from '../component/ProfilePicIcon';
+import LinearGradient from 'react-native-linear-gradient';
+import BillPaymentIcon from '../assets/svgs/bill_payment';
+import DataIcon from '../assets/svgs/data_n_airtime';
+import TransHistIcon from '../assets/svgs/trans_history';
+import SendMoneyIcon from '../assets/svgs/send_money';
+import FundAccountIcon from '../assets/svgs/fund_account';
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -35,6 +42,7 @@ const initialState = {
   isFetching: false,
   errors: {}, 
   isAuthorized: false, 
+  secureTextEntry: false,
   isLoading: false, 
 };
 class Dashboard extends Component {
@@ -109,11 +117,17 @@ list = [
 
   static navigationOptions = () => {
     return {
-        headerRight: ()=> <HamburgerIcon
-        colour="white"/>
+        headerLeft: <HamburgerIcon colour="white"/>,
+        headerRight: <ProfilePicIcon/>
     }
     }
 
+    // static navigationOptions = () => {
+    //   return {
+    //       headerRight: ()=> <ProfilePicIcon/>
+    //   }
+    //   }
+  
   greetingMessage(ndate) {
     var greeting = "";
     // var ndate = new Date();
@@ -129,24 +143,80 @@ list = [
       return greeting;
   }
 
+  updateSecureTextEntry(){
+    this.setState({ secureTextEntry: !this.state.secureTextEntry})
+  }
+
   render() {
       LogBox.ignoreAllLogs(true);
       // console.disableYellowBox = true;
     return (
       <ScrollView
       style={styles.scrollView}
-      backgroundColor="#DDDDDD"
-      paddingBottom={30}
-    >
-      <View backgroundColor="#DDDDDD" width={width}>
-      {/* <Spinner
-            visible={this.state.isLoading}
-            textContent={"Loading..."}
-            textStyle={styles.spinnerTextStyle}
-          /> */}
-          
+      backgroundColor="#FFFFFF"
+      paddingBottom={30}>
+          <StatusBar backgroundColor="#002A14" barStyle="light-content"/>
+
+      <View backgroundColor="#FFFFFF" width={width}>    
         <View style={styles.headerContainer}>
-          <View
+          <LinearGradient
+                    colors={['#EBF1AC','#B2BE35','#EBF1AC']} start={{x: 0, y: 0}} end={{x: 1, y: 1}}  style={{ width: 263, height: 158, top: 22, borderRadius: 8, padding: 14, marginTop: 40, opacity: 0.7}}>
+                      <View>
+                      <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                        <View>
+                        <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>Account number</Text>
+                        <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>0102030405</Text>
+                        </View>
+                        <Image
+                          source={require("../assets/dashicon.png")}
+                          style={{ width: 24, height: 24, }}/>
+                      </View>
+
+                      <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 19 }}>
+                      <View style={{ flexDirection: "row" }}>
+                          <View>
+                            <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>Balance</Text>
+                            {!this.state.secureTextEntry ? <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>80,000</Text> : <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>{" "}******</Text>}
+                          </View>
+                          
+                        <TouchableOpacity 
+                          onPress={this.updateSecureTextEntry.bind(this)}>
+                          {!this.state.secureTextEntry ?  
+                        <Feather
+                          name="eye-off"
+                          color="#002A14"
+                          size={15}
+                          style={{alignSelf: "flex-end", marginStart: 10, top: 20, }}
+                          />
+                        :
+                        <Feather
+                          name="eye"
+                          color="#002A14"
+                          size={15}
+                          style={{alignSelf: "flex-end", marginStart: 10, top: 20, }}
+                        />}
+                       </TouchableOpacity>
+                       </View>
+
+                        <View>
+                        <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>Type</Text>
+                        <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>Tier-3</Text>
+                        </View>
+                        </View>
+
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
+                        <View>
+                        <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>John Doe</Text>
+                        </View>
+                        <Image
+                          source={require("../assets/doublecircle.png")}
+                          style={{ width: 53, height: 32, bottom: 14 }}/>
+                        </View>
+
+                      </View>
+          </LinearGradient>
+
+          {/* <View  onPress={this.notifications.bind(this)} 
             style={styles.pageContainer}
             flexDirection="row"
             justifyContent="space-between"
@@ -156,16 +226,121 @@ list = [
           >
             <View style={styles.headerTextContainer}>
               <Text style={styles.helloHaderText}>Hello,</Text>
-              <Text style={styles.headerText}>{this.greetingMessage(new Date())} </Text>
+              <Text style={styles.headerText}>{this.greetingMessage(new Date())} {"\nYour balance is ₦******"}</Text>
           
-              </View>
-           </View>
+              </View> */}
+              
+           {/* </View> */}
          
         </View>
+
+        <View>
+        <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "700", lineHeight: 12, marginTop: 24, marginStart: 22 }}>Banking Quick Links</Text>
+        <View marginBottom={24}>
+
+        <View flexDirection={"row"} justifyContent={"space-evenly"} marginTop={16}>
+        <View>
+        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+          <BillPaymentIcon style={{margin: 32}}/>
+        </TouchableOpacity>
+        <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Bills payment</Text>
+        </View>
+
+        <View>
+        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+          <TransHistIcon/>
+        </TouchableOpacity>
+        <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Transaction history</Text>
+        </View>
+
+        <View>
+        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+          <SendMoneyIcon/>
+        </TouchableOpacity>
+        <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Send Money</Text>
+        </View>
+        </View>
+
+        <View flexDirection={"row"} justifyContent={"space-evenly"} marginTop={8}>
+        <View>
+        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+          <DataIcon/>
+        </TouchableOpacity>
+        <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Data/Airtime</Text>
+        </View>
+
+        <View>
+        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+          <FundAccountIcon/>
+        </TouchableOpacity>
+        <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Fund account</Text>
+        </View>
+
+        <View style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "transparent", paddingVertical: 25, paddingHorizontal: 35 }}>
+        </View>
+        </View>
         
-        
-        <View marginTop={50}>
-              <ScrollView horizontal={true}>
+        </View>
+        {/* <View margin={30} flexDirection={"row"} justifyContent={"space-around"}>
+        <TouchableOpacity alignSelf={"center"}>
+          <MaterialCommunityIcons
+            name="bank-transfer"
+            color="#1e5228"
+            style={styles.iconViewStyle}
+            bottom={10}
+            size={70}/>
+          <Text style={{ color: "#1e5228", textAlign: "center", alignSelf: "center", top: -18 }}>Transfer</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity alignSelf={"center"}>
+          <FontAwesome5
+            name="money-bill"
+            color="#1e5228"
+            margin={5}
+            style={styles.iconViewStyle}
+            size={50}/>
+          <Text style={{ color: "#1e5228", textAlign: "center", alignSelf: "center" }}>Bill Payment</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity alignSelf={"center"}>
+          <FontAwesome
+            name="balance-scale"
+            color="#1e5228"
+            margin={5}
+            style={styles.iconViewStyle}
+            size={50}/>
+          <Text style={{ color: "#1e5228", textAlign: "center", alignSelf: "center" }}>Balance Enquiry</Text>
+        </TouchableOpacity>
+        </View>
+
+        <View marginHorizontal={30} flexDirection={"row"} justifyContent={"space-around"}>
+        <TouchableOpacity alignSelf={"center"}>
+          <FontAwesome5
+            name="hand-holding-usd"
+            color="#1e5228"
+            margin={5}
+            style={styles.iconViewStyle}
+            size={50}/>
+          <Text style={{ color: "#1e5228", textAlign: "center", alignSelf: "center" }}>Loan Request</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity alignSelf={"center"} 
+        onPress={() =>
+                  this.props.navigation.navigate("About")
+                }>
+        <Entypo
+            name="info-with-circle"
+            color="#1e5228"
+            margin={5}
+            style={styles.iconViewStyle}
+            size={50}/>
+          <Text style={{ color: "#1e5228", textAlign: "center", alignSelf: "center" }}>About MOZFIN</Text>
+        </TouchableOpacity>
+        </View>
+        </View> */}
+
+        {/* <View marginTop={30}> */}
+              {/* <ScrollView horizontal={true}>
             <View flexDirection="row">
             <TouchableOpacity
                 onPress={() =>
@@ -173,25 +348,13 @@ list = [
                 }
               >
               <View style={styles.firstCardStyle}>
-              {/* <LinearGradient
-                colors={["#51A3FF", "#4848FF", "#022C6B"]}
-                locations={[0, 0.3, 0.9]}
-                style={styles.linearGradient}
-              > */}
-                {/* <View borderRadius={20} borderWidth={2} padding="10" borderColor="grey" backgroundColor="#FFF" width={30} height={30}> */}
-                  <FontAwesome5
-                  name="money-check-alt"
+                <MaterialCommunityIcons
+                  name="bank-transfer"
                   color="white"
                   margin={5}
-                  style={styles.iconViewStyle}
-                  size={25}/>
-                {/* </View> */}
-                {/* <Image
-                  source={require("/../assets/download.jpeg")}
-                  style={styles.imageStyle}
-                /> */}
-                <Text style={styles.descriptionText}>Take Loans</Text>
-              {/* </LinearGradient> */}
+                  style={styles.iconViewStyle_}
+                  size={35}/>
+                <Text style={styles.descriptionText}>Transfer</Text>
               </View>
               </TouchableOpacity>
 
@@ -201,15 +364,13 @@ list = [
                 }
               >
               <View style={styles.secondCardStyle}>
-              {/* <View borderRadius={20} borderWidth={2} borderColor="grey" backgroundColor="#FFF" width={30} height={30}> */}
               <FontAwesome5
                   name="money-bill-wave"
                   color="white"
                   margin={5}
                   style={styles.iconViewStyle}
                   size={25}/>
-              {/* </View> */}
-              <Text style={styles.descriptionText}>Payments</Text>
+              <Text style={styles.descriptionText}>Bill Payment</Text>
 
               </View>
               </TouchableOpacity>
@@ -224,9 +385,9 @@ list = [
                   name="frequently-asked-questions"
                   color="white"
                   margin={5}
-                  style={styles.iconViewStyle}
+                  style={styles.iconViewStyle_}
                   size={25}/>
-              <Text style={styles.descriptionText}>FAQs</Text>
+              <Text style={styles.descriptionText}>Balance Enquiry</Text>
               </View>
               </TouchableOpacity>
 
@@ -240,9 +401,9 @@ list = [
                   name="feedback"
                   color="white"
                   margin={5}
-                  style={styles.iconViewStyle}
+                  style={styles.iconViewStyle_}
                   size={25}/>
-              <Text style={styles.descriptionText}>FeedBack</Text>
+              <Text style={styles.descriptionText}>Loan Request</Text>
               </View>
               </TouchableOpacity>
 
@@ -256,16 +417,16 @@ list = [
                   name="info-with-circle"
                   color="white"
                   margin={5}
-                  style={styles.iconViewStyle}
+                  style={styles.iconViewStyle_}
                   size={25}/>
-              <Text style={styles.descriptionText}>About Us</Text>
+              <Text style={styles.descriptionText}>About MOZFIN</Text>
               </View>
               </TouchableOpacity>
 
             </View>
-            </ScrollView>
+            </ScrollView> */}
 
-            <View
+            {/* <View
                     style={{
                     backgroundColor: '#042504',
                     height: 1,
@@ -284,7 +445,8 @@ list = [
                     marginStart: 20,
                     marginEnd: 20,
                     marginBottom: 8,
-                }} />
+                }} /> */}
+        <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "700", lineHeight: 12, marginTop: 16, marginBottom: 16, marginStart: 22 }}>What we offer</Text>
 
         <Carousel
           loop={true} 
@@ -292,56 +454,36 @@ list = [
           sliderWidth={100}
           itemWidth={100}
           autoplayTimeout={3000}
-          activePageIndicatorStyle={{ backgroundColor: 'green', direction: 'rtl' }}//#D4E3ED
+          activePageIndicatorStyle={{ backgroundColor: '#B2BE35', direction: 'rtl' }}//#D4E3ED
           index={0}
           onMoveShouldSetResponder={ (evt, gestureState) => true}
-          slideStyle={{ width: 0, color: '#ffffff',}}
-          pageIndicatorStyle={{ color: "#D4E3ED"  }}
+          slideStyle={{ width: 0, color: '#B2BE35', }}
+          pageIndicatorStyle={{  bottom: 30, borderColor: "#B2BE35", backgroundColor: "transparent", borderWidth: 1, }}
           inactiveSlideOpacity={0.8}
           inactiveSlideScale={1}>
               <View style={{ bottom: height * 0.02 }}>
               <Image
-                source={require("../assets/cloth.jpeg")}
-                // blurRadius={1}
+                source={require("../assets/advance.png")}
                 style={styles.imageBgd}/>
-              
-              {/* <Text style={styles.studentTitle}>MOZFIN INSURANCE</Text>
-              <Text style={styles.studentDetails}>Micro Insurance</Text> */}
-              {/* <Image source={require('../assets/mozfin_rounded_logo_.png')} resizeMode={'cover'} top={height * 0.17} alignSelf={"center"} position={"absolute"} height={20} width={20}/> */}
-        
               </View>
 
               <View style={{ bottom: height * 0.02 }}>
               <Image
-                source={require("../assets/fish.jpeg")}
+                source={require("../assets/lpo.png")}
                 style={styles.imageBgd}/>
-
-              {/* <Text style={styles.teacherTitle}>ASSET FINANCING</Text>
-              <Text style={styles.teacherDetails}>LPO Financing</Text> */}
-              {/* <Image source={require('../assets/mozfin_rounded_logo_.png')} resizeMode={'cover'} top={height * 0.17} alignSelf={"center"} position={"absolute"} height={20} width={20}/> */}
-
               </View>
 
               <View style={{ bottom: height * 0.02 }}>
               <Image
-                source={require("../assets/market.jpeg")}
+                source={require("../assets/micro.png")}
                 style={styles.imageBgd}>
               </Image>
-              {/* <Text style={styles.parentTitle}>MOZFIN COLLECTION</Text>
-              <Text style={styles.parentDetails}>Daily Collection</Text> */}
-              {/* <Image source={require('../assets/mozfin_rounded_logo_.png')} resizeMode={'cover'} top={height * 0.17} alignSelf={"center"} position={"absolute"} height={20} width={20}/> */}
-              
               </View>
 
               <View style={{ bottom: height * 0.02 }}>
               <Image
-                source={require("../assets/taylor_.jpeg")}
+                source={require("../assets/saving.png")}
                 style={styles.imageBgd}/>
-
-              {/* <Text style={styles.parentTitle}>ADVANCE LOANS</Text>
-              <Text style={styles.parentDetails}>Group Loans</Text> */}
-              {/* <Image source={require('../assets/mozfin_rounded_logo_.png')} resizeMode={'cover'} top={height * 0.17} alignSelf={"center"} position={"absolute"} height={20} width={20}/> */}
-              
               </View>  
         </Carousel>
         </View>
@@ -355,9 +497,8 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: width,
     alignItems: "center",
-    alignContent: "center",
-    justifyContent: "center",
-    backgroundColor: "#DDDDDD",
+    backgroundColor: "#002A14",
+    height: height * 0.37,
   },
   imageStyle: {
     width: 250,
@@ -379,6 +520,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     opacity: 1,
   },
+  headerTextContainer: {},
   circlarIconContainer: {
     paddingTop: 10,
     borderTopLeftRadius: 20,
@@ -387,14 +529,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageBgd: {
-    width: width * 0.8,
-    height: height * 0.28,
     flex: 1,
     alignSelf: "center",
-    borderRadius: 15,
-    // backgroundColor: "#FFF", 
-    opacity: 0.71,
-    resizeMode: 'cover',
+    borderRadius: 15, 
     margin: 10,
   },
   cardStyle: {
@@ -499,6 +636,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     padding: 0,
     marginBottom: -7,
+    marginTop: 50,
     fontFamily: "Nunito_700Bold",
     width: width * 0.65,
     letterSpacing: 0.05,
@@ -509,6 +647,9 @@ const styles = StyleSheet.create({
     color: "#FFF",
     alignSelf: "center",
     fontFamily: "Nunito_700Bold",
+  },
+  iconViewStyle: {
+    alignSelf: "center",
   },
   descriptionText_: {
     fontSize: 18,
