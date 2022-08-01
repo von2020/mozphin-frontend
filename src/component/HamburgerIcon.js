@@ -32,8 +32,8 @@ class HamburgerIcon extends Component{
             // alignItems: "flex-end"
         }}
         onPress={()=>{
-            Alert.alert(null,"No side menu yet..")
-            //this.props.navigation.openDrawer();
+            // Alert.alert(null,"No side menu yet..")
+            this.props.navigation.openDrawer();
         }}>
             <Icon name='menu' size={20} color={this.props.colour}/>
         </TouchableOpacity>

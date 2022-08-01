@@ -29,6 +29,8 @@ import DataIcon from '../assets/svgs/data_n_airtime';
 import TransHistIcon from '../assets/svgs/trans_history';
 import SendMoneyIcon from '../assets/svgs/send_money';
 import FundAccountIcon from '../assets/svgs/fund_account';
+import EyeCloseSmallIcon from '../assets/svgs/eyeclosesmall';
+import EyeOpenSmallIcon from '../assets/svgs/eyeopensmall';
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -182,19 +184,15 @@ list = [
                         <TouchableOpacity 
                           onPress={this.updateSecureTextEntry.bind(this)}>
                           {!this.state.secureTextEntry ?  
-                        <Feather
-                          name="eye-off"
-                          color="#002A14"
-                          size={15}
-                          style={{alignSelf: "flex-end", marginStart: 10, top: 20, }}
-                          />
+                        <View
+                          style={{alignSelf: "flex-end", marginStart: 13, top: 20, }}>
+                          <EyeCloseSmallIcon/>
+                        </View>
                         :
-                        <Feather
-                          name="eye"
-                          color="#002A14"
-                          size={15}
-                          style={{alignSelf: "flex-end", marginStart: 10, top: 20, }}
-                        />}
+                        <View
+                          style={{alignSelf: "flex-end", marginStart: 13, top: 20, }}>
+                          <EyeOpenSmallIcon/>
+                        </View>}
                        </TouchableOpacity>
                        </View>
 
@@ -240,7 +238,7 @@ list = [
 
         <View flexDirection={"row"} justifyContent={"space-evenly"} marginTop={16}>
         <View>
-        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+        <TouchableOpacity onPress={()=> this.props.navigation.navigate("Payment")} style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
           <BillPaymentIcon style={{margin: 32}}/>
         </TouchableOpacity>
         <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Bills payment</Text>
@@ -263,7 +261,7 @@ list = [
 
         <View flexDirection={"row"} justifyContent={"space-evenly"} marginTop={8}>
         <View>
-        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+        <TouchableOpacity onPress={()=> this.props.navigation.navigate("AirtimeNData")} style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
           <DataIcon/>
         </TouchableOpacity>
         <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Data/Airtime</Text>

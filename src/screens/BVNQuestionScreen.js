@@ -299,7 +299,7 @@ class BVNQuestionScreen extends Component {
                 <TouchableOpacity onPress={()=> this.props.navigation.navigate("BVNVerification")} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>YES</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=> this.props.navigation.navigate("OTPCode")} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate("OTPCodeOption")} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>NO</Text>
                 </TouchableOpacity>
               </View>

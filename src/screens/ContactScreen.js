@@ -14,19 +14,12 @@ import {
   Dimensions,
   LogBox,
 } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import call from 'react-native-phone-call';
 import moment from 'moment';
 import  Loader  from './../config/Loader';
-// import { Checkbox } from 'react-native-paper';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Entypo from 'react-native-vector-icons/Entypo';
-// import { Dropdown } from "react-native-material-dropdown";
-// import DateTimePicker from '@react-native-community/datetimepicker';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import PhoneIcon from '../assets/svgs/phone';
+import AtIcon from '../assets/svgs/at';
+import AddressIcon from '../assets/svgs/address';
 
 const { width, height } = Dimensions.get("window");
 
@@ -434,85 +427,47 @@ class ContactScreen extends Component {
     }
 
     clearAll = async () => {
-    //   try {
-    //     await AsyncStorage.clear()
-    //   } catch(e) {
-    //     // clear error
-    //   }
-    
       console.log('Done.')
     }
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { modeDateOfBirth, DateOfBirthShow, } = this.state;
     return (
-      <ImageBackground
-        source={require("../assets/mozfin_logo.jpg")}
-        style={styles.imageBgd}
-      >
         <ScrollView
           style={styles.scrollView}
           keyboardShouldPersistTaps="always">
-        <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
         <Loader loading={this.state.isLoading} />
 
-        <View>
-            <View style={styles.cardStyleLong}>
             <View style={styles.emailTextStyleView_}>
-              <View style={{
-                borderColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                backgroundColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'green' : "transparent",
-                borderRadius: 10
-              }}>
-                  <Text style={{ backgroundColor: "#FFF", borderWidth: 1, borderColor: "#DDD", width : width * 0.80, height: 50,
-                        borderRadius: 10,
-                        textAlign: "left",
-                        paddingTop: 12,
-                        paddingBottom: 10,
-                        paddingStart: 50,
-                        paddingEnd: 22,
-                        opacity: 1 }}>Contact</Text>
-              <MaterialIcons      
-                  name="contact-mail"
-                  color="orange"
-                  style={styles.iconViewStyle_}
-                  size={22}/>
+              <View style={{flexDirection: "row"}}>
+                <View style={{ top: 30, marginEnd: 10 }}>
+                <AddressIcon/>
+                </View>
+                <Text style={{color: "#045135", fontWeight: "600", fontSize: 15, width: width * 0.75, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>
+                Business Address : Okmart House, (pep store top floor) 139, New Ipaja Road, Akinogun Bus-Stop, Akinogun Ipaja, Lagos, Nigeria</Text>
               </View>
-              <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>
-                <Entypo      
-                  name="location"
-                  color="orange"
-                  style={styles.iconViewStyle_}
-                  size={22}/> Business Address: Okmart House, (PEP Store Top Floor) 139, New Ipaja Road, Akinogun Bus-Stop, Akinogun Ipaja,Lagos{"\n\n"}
-              <FontAwesome      
-                  name="phone"
-                  color="orange"
-                  style={styles.iconViewStyle_}
-                  size={22}/>{" "}Phone:{" "}
-              <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "justify", marginTop: 25, lineSpacing: 1, textDecorationLine: "underline", textDecorationColor: "#111A30" }} onPress={() => this.triggerCall("+2348174581010") }>+234 817 458 1010</Text>{"\n\n"}
-              <Entypo      
-                  name="email"
-                  color="orange"
-                  style={styles.iconViewStyle_}
-                  size={22}/>{" "}Email: {" "}
-              <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "justify", marginTop: 25, lineSpacing: 1, textDecorationLine: "underline", textDecorationColor: "#111A30" }} onPress={() => Linking.openURL("mailto:info@mozfin.com")}>info@mozfin.com</Text>
-                    
-              </Text> 
+
+              <View style={{flexDirection: "row"}}>
+                <View style={{ top: 25, marginEnd: 10 }}>
+                <PhoneIcon/>
+                </View>
+                <Text style={{color: "#045135", fontWeight: "600", fontSize: 15, width: width * 0.8, textAlign: "justify", marginTop: 25, lineSpacing: 1 }}>Phone Number: {" "}{" "}
+                <Text style={{color: "#045135", fontWeight: "600", fontSize: 15, width: width * 0.8, textAlign: "justify", marginTop: 25, lineSpacing: 1, textDecorationLine: "underline", textDecorationColor: "#111A30" }} onPress={() => this.triggerCall("+2348174581010") }>+234 817 458 1010</Text></Text>
+              </View>      
+
+              <View style={{flexDirection: "row"}}>
+                <View style={{ top: 25, marginEnd: 10}}>
+                <AtIcon/>
+                </View>
+                <Text style={{color: "#045135", fontWeight: "600", fontSize: 15, width: width * 0.8, textAlign: "justify", marginTop: 25, lineSpacing: 1 }}>Email Address: {" "}{" "}
+                <Text style={{color: "#045135", fontWeight: "600", fontSize: 15, width: width * 0.8, textAlign: "justify", marginTop: 25, lineSpacing: 1, textDecorationLine: "underline", textDecorationColor: "#111A30" }} onPress={() => Linking.openURL("mailto:info@mozfin.com")}>info@mozfin.com</Text></Text>
+              </View>      
               </View>
-            
-            </View>
-            </View>
-            <View style={{ bottom: height * 0.04, alignSelf: "center", position: "absolute" }}>
-            <Image source={require('../assets/cbn_.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            <Text style={{margin: 5, color: "green" }} alignSelf={"center"}>Licensed by CBN</Text>
+            <View style={{ bottom: 0, alignSelf: "center", position: "absolute", }}>
+            <Image source={require('../assets/cbnn.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </View>
         </ScrollView>
-     </ImageBackground> 
     );
   }
 }
@@ -677,6 +632,9 @@ const styles = StyleSheet.create({
   emailTextStyleView_: {
     marginTop: 20,
     alignSelf: "center",
+    height: height * 0.77,
+    paddingHorizontal: 24,
+    marginBottom: 30
   },
   emailTextStyleView: {
     marginTop: 15,
@@ -782,7 +740,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#FFFFFF70",
+    backgroundColor: "#FFFFFF",
     // opacity: 0.7
   },
   errorMessageContainerStyle: {

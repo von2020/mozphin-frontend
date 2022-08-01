@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment';
-import  Loader  from './../config/Loader';
+import  Loader  from '../config/Loader';
 // import { Checkbox } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -430,126 +430,29 @@ class HelpScreen extends Component {
     LogBox.ignoreAllLogs(true);
     const { modeDateOfBirth, DateOfBirthShow, } = this.state;
     return (
-      <ImageBackground
-        source={require("../assets/mozfin_logo.jpg")}
-        style={styles.imageBgd}
-      >
-        <ScrollView
+      <ScrollView
           style={styles.scrollView}
           keyboardShouldPersistTaps="always">
-        <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
         <Loader loading={this.state.isLoading} />
 
-        <View>
-            <View style={styles.cardStyleLong}>
-            <Text style={styles.headerTextStyleView}>Help</Text>
-            {/* <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate("SignIn")
-                }> */}
-            <View flexDirection="row" alignSelf="flex-start">
-            <Text style={styles.dontHaveAccountTextStyle}>Making Mozfin easy for you</Text>
-            <FontAwesome5      
-                  name="thumbs-up"
-                  color="green"
-                  style={styles.iconViewStyle}
-                  size={15}/>
-            </View>
-            {/* </TouchableOpacity> */}
-
             <View style={styles.emailTextStyleView_}>
-              <TouchableOpacity style={{
-                borderColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                backgroundColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'green' : "transparent",
-                borderRadius: 10,
-                }}
-                onPress={() =>
-                  this.props.navigation.navigate("Contact")
-                }>
-                  <Text style={{ backgroundColor: "#FFF", borderWidth: 1, borderColor: "#DDD", width : width * 0.80, height: 50,
-                        borderRadius: 10,
-                        textAlign: "left",
-                        paddingTop: 12,
-                        paddingBottom: 10,
-                        paddingStart: 50,
-                        paddingEnd: 22,
-                        opacity: 1 }}>Contact</Text>
-              <MaterialIcons      
-                  name="contact-mail"
-                  color="orange"
-                  style={styles.iconViewStyle_}
-                  size={22}/>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={{
-                borderColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                backgroundColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'green' : "transparent",
-                borderRadius: 10,
-                marginTop: 3,
-              }}
-              onPress={() =>
-                this.props.navigation.navigate("About")
-              }>
-                  <Text style={{ backgroundColor: "#FFF", borderWidth: 1, borderColor: "#DDD", width : width * 0.80, height: 50,
-                        borderRadius: 10,
-                        textAlign: "left",
-                        paddingTop: 12,
-                        paddingBottom: 10,
-                        paddingStart: 50,
-                        paddingEnd: 22,
-                        opacity: 1 }}>About us</Text>
-              <MaterialIcons      
-                  name="info"
-                  color="orange"
-                  style={styles.iconViewStyle_}
-                  size={22}/>
-              </TouchableOpacity>
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Q1.</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1 }}>Does Mozfin offer loan payment on installments? {"\n"} Answer: YES</Text>
 
-              <TouchableOpacity style={{
-                borderColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                backgroundColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'green' : "transparent",
-                borderRadius: 10,
-                marginTop: 3,
-              }}
-              onPress={() =>
-                this.props.navigation.navigate("TermsAndConditions")
-              }>
-                  <Text style={{ backgroundColor: "#FFF", borderWidth: 1, borderColor: "#DDD", width : width * 0.80, height: 50,
-                        borderRadius: 10,
-                        textAlign: "left",
-                        paddingTop: 12,
-                        paddingBottom: 10,
-                        paddingStart: 50,
-                        paddingEnd: 22,
-                        opacity: 1 }}>Terms and Conditions</Text>
-              <MaterialCommunityIcons      
-                  name="license"
-                  color="orange"
-                  style={styles.iconViewStyle_}
-                  size={22}/>
-              </TouchableOpacity>
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Q2.</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1 }}>Does Mozfin offer loan payment on installments? {"\n"} Answer: YES</Text>  
+              
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Q3.</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1 }}>Is my money save with Mozfin?{"\n"} Answer: YES</Text>
+
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Q4.</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1 }}>Is my money save with Mozfin?{"\n"} Answer: YES</Text>
             </View>
-            
+            <View style={{ bottom: 0, alignSelf: "center", position: "absolute", }}>
+            <Image source={require('../assets/cbnn.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </View>
-            </View>
-            <View style={{ bottom: height * 0.04, alignSelf: "center", position: "absolute" }}>
-            <Image source={require('../assets/cbn_.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            <Text style={{margin: 5, color: "green" }} alignSelf={"center"}>Licensed by CBN</Text>
-            </View>
-        </ScrollView>
-     </ImageBackground> 
+        </ScrollView> 
     );
   }
 }
@@ -712,8 +615,11 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   emailTextStyleView_: {
-    marginTop: 30,
+    marginTop: 20,
     alignSelf: "center",
+    height: height * 0.78,
+    paddingHorizontal: 24,
+    marginBottom: 30
   },
   emailTextStyleView: {
     marginTop: 15,
@@ -819,7 +725,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#FFFFFF70",
+    backgroundColor: "#FFFFFF",
     // opacity: 0.7
   },
   errorMessageContainerStyle: {

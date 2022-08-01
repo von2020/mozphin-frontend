@@ -55,11 +55,11 @@ class SplashScreen extends Component {
     }
 
     signUp(){
-      this.props.navigation.navigate("BVNQuestion");
+      this.props.navigation.navigate("Register");
     }
 
     help(){
-      this.props.navigation.navigate("Help");
+      this.props.navigation.navigate("Faqs");
     }
 
     about(){
@@ -169,7 +169,7 @@ class SplashScreen extends Component {
               </View>
 
               <View alignSelf={"center"}>
-              <TouchableOpacity onPress={this.notifications.bind(this)} style={{ alignSelf: "center", borderRadius: 5, elevation: 1, width: 64, height: 52, paddingHorizontal: 20, paddingVertical: 14, shadowColor: "#000000", shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.2 }}>
+              <TouchableOpacity onPress={this.help.bind(this)} style={{ alignSelf: "center", borderRadius: 5, elevation: 1, width: 64, height: 52, paddingHorizontal: 20, paddingVertical: 14, shadowColor: "#000000", shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.2 }}>
               <FaqsIcon/>
               </TouchableOpacity>
               <Text style={styles.getStartedSmall}>FAQs</Text>

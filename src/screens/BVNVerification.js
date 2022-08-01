@@ -261,7 +261,7 @@ class BVN_Verification extends Component {
                         onChangeText={(text) => this.onChangeTextHandler(text)}
                     />
                 <View style={{ alignSelf: "center", marginTop: 47 }}>
-                <TouchableOpacity onPress={()=> this.onPressVerifyBVN()} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: !BVN_ ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                <TouchableOpacity onPress={()=> this.onPressVerifyBVN()} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: BVN_.replace( /-/g, "" ).length != 11 ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>VERIFY</Text>
                 </TouchableOpacity>
               </View>

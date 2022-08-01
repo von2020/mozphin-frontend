@@ -4,13 +4,14 @@ import { createAppContainer,createSwitchNavigator }  from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';  
 import { createDrawerNavigator } from 'react-navigation-drawer';
+// import { createDrawerNavigator } from '@react-navigation/drawer';
 import Dashboard from '../src/screens/Dashboard';
 import SplashScreen from '../src/screens/SplashScreen';
 import StartUpScreen from '../src/screens/StartUpScreen';
 import UpdateUserDetails from '../src/screens/UpdateUserDetailsScreen';
 import SignInScreen from '../src/screens/SignInScreen';
 import SignUpScreen from '../src/screens/SignUpScreen';
-import HelpScreen from '../src/screens/HelpScreen';
+import FaqScreen from './screens/FaqScreen';
 import ContactScreen from '../src/screens/ContactScreen';
 import AboutUs from '../src/screens/AboutUs';
 import TermsAndConditions from '../src/screens/TermsAndConditions';
@@ -20,9 +21,12 @@ import UpgradeContinueScreen from '../src/screens/UpgradeContinueScreen';
 import BVNQuestionScreen from '../src/screens/BVNQuestionScreen';
 import BVNVerification from '../src/screens/BVNVerification';
 import OTPCode from '../src/screens/OTPCodeScreen';
+import OTPCodeOption from '../src/screens/OTPCodeOptionScreen';
 import SideMenuScreen from '../src/screens/SideMenuScreen';
+import BottomTabs from '../src/screens/BottomTabs';
 import TransactionPinScreen from './screens/TransactionPinScreen';
 import PasswordScreen from '../src/screens/PasswordScreen';
+import ProfileInformationScreen from '../src/screens/ProfileInformationScreen';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -38,29 +42,6 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 
-// const LeftDrawer = createDrawerNavigator();
-
-// const LeftDrawerScreen = () => {
-//   return (
-//     <LeftDrawer.Navigator screenOptions={{ drawerPosition: 'left' }}>
-//       <LeftDrawer.Screen name="Home" component={Dasx} />
-//     </LeftDrawer.Navigator>
-//   );
-// };
-
-// const RightDrawer = createDrawerNavigator();
-
-// const RightDrawerScreen = () => {
-//   return (
-//     <RightDrawer.Navigator
-//       screenOptions={{ drawerPosition: 'right', headerShown: false }}
-//     >
-//       <RightDrawer.Screen name="HomeDrawer" component={LeftDrawerScreen} />
-//     </RightDrawer.Navigator>
-//   );
-// };
-
-// Drawer Navigator..
 const MyDrawerNavigator = createDrawerNavigator(
   { SideMenuScreen: SideMenuScreen }
   ,{
@@ -115,7 +96,7 @@ const MyDrawerNavigator = createDrawerNavigator(
 
                 <TouchableOpacity 
                     onPress={() => {
-                        props.navigation.navigate('HelpScreen');
+                        props.navigation.navigate('FaqScreen');
                         props.navigation.closeDrawer();
                         }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 25.5, marginTop: 15 }}>
                     <SimpleLineIcons
@@ -160,26 +141,13 @@ const MyDrawerNavigator = createDrawerNavigator(
       initialRouteName: 'SideMenuScreen',
       contentComponent: props => {
           return (
-              <ScrollView backgroundColor={"#252C57"}>
+              <ScrollView backgroundColor={"#002A14"}>
                   <SafeAreaView
                   forceInset={{ top: 'always', horizontal: 'never' }}
                   style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
               >
                   <View style={{ height: height , width: width, alignItems: 'center', bottom: height * 0.15 }}>
-                  {/* <Image source={require('./assets/bluemenu.png')} resizeMode={'cover'}  position={"absolute"}/>
-                  <Image source={require('./assets/yellowmenu.png')} resizeMode={'cover'} position={"absolute"}/>
-                  <Image source={require('./assets/whitemenu.png')} resizeMode={'cover'} position={"absolute"}/>
-  
-                  <UserContext.Consumer>
-                      {context => */}
-                  {/* <View style={{ marginTop: 60 ,position: "absolute", top: height * 0.13, }}>
-                  {context.dataa.schoolCode && <Text style={{color: "#252C57", textAlign: "center", lineHeight: 56.25, fontSize: 48, fontWeight: "900", fontStyle: "normal", bottom: 0, textTransform: "uppercase" }}>{context.dataa.schoolCode}</Text>}
-                  {context.dataa.schoolName && <Text style={{color: "#000", textAlign: "center", lineHeight: 21.09, fontSize: 18, bottom: 10 }}>{context.dataa.schoolName}{"\n"}({context.dataa.schoolTypeName})</Text>}
-                  {context.dataa.currentTermName && context.dataa.currentSessionName ? <Text style={{color: "#000", textAlign: "center", lineHeight: 16.41, fontSize: 14, fontWeight: "900", fontStyle: "normal", marginTop: 5, textTransform: "uppercase" }}>{context.dataa.currentTermName}, {context.dataa.currentSessionName} SESSION</Text> : <Text style={{color: "#000", textAlign: "center", lineHeight: 16.41, fontSize: 14, fontWeight: "900", fontStyle: "normal", marginTop: 5, textTransform: "uppercase" }}>- TERM, - SESSION</Text>}
-                  </View>
-                      }
-                  </UserContext.Consumer> */}
-  
+                  
                   <View
                   style={{
                       height: 0.5, 
@@ -252,11 +220,11 @@ const Stack = createStackNavigator(
       Drawer: {
           screen: MyDrawerNavigator,
           navigationOptions: {
-              headerShown: false,
+              headerShown: null,
           },
         },
         "Change Password": {
-          screen: SignInScreen, 
+          screen: AboutUs, 
           navigationOptions: {
               headerStyle: { backgroundColor: '#FFF' },
               title: "Change Password",
@@ -267,7 +235,7 @@ const Stack = createStackNavigator(
           },
         },
         ProfileScreen: {
-          screen: SignUpScreen,
+          screen: ContactScreen,
           navigationOptions: {
           headerStyle: { backgroundColor: '#FFB415' },
           title: "My Profile",
@@ -278,7 +246,7 @@ const Stack = createStackNavigator(
           }
       },
       SettingsScreen: {
-          screen: HelpScreen,
+          screen: FaqScreen,
           navigationOptions: {
           headerStyle: { backgroundColor: '#FFF' },
           title: "Settings",
@@ -295,7 +263,7 @@ const Stack = createStackNavigator(
 const StartUpStackMain = createStackNavigator(
     {
         StartUp: {
-            screen: SplashScreen,
+            screen: StartUpScreen,
             navigationOptions: {
             headerShown: false
             },
@@ -325,23 +293,44 @@ const StartUpStackMain = createStackNavigator(
               },
               },
         },
-        Help: {
-          screen: HelpScreen,
+        Faqs: {
+          screen: FaqScreen,
           navigationOptions: {
-              headerShown: false
-              },
+            headerShown: true,
+            headerStyle: { backgroundColor: '#002A14' },
+            title: "FAQS",
+            headerTintColor: "#FFF",
+            headerTitleStyle: {
+                fontWeight: "600",
+                textAlign: "center",
+            },
+          }
         },
         Contact: {
           screen: ContactScreen,
           navigationOptions: {
-              headerShown: false
+              headerShown: true,
+              headerStyle: { backgroundColor: '#002A14' },
+              title: "GET HELP",
+              headerTintColor: "#FFF",
+              headerTitleStyle: {
+                  fontWeight: "600",
+                  textAlign: "center",
               },
+            }
         },
         About: {
           screen: AboutUs,
           navigationOptions: {
-              headerShown: false
-              },
+            headerShown: true,
+            headerStyle: { backgroundColor: '#002A14' },
+            title: "ABOUT MOZFIN",
+            headerTintColor: "#FFF",
+            headerTitleStyle: {
+                fontWeight: "600",
+                textAlign: "center",
+            },
+          }
         },
         TermsAndConditions: {
           screen: TermsAndConditions,
@@ -420,6 +409,32 @@ const StartUpStackMain = createStackNavigator(
                   },
                 },
         },
+        OTPCodeOption: {
+          screen: OTPCodeOption,
+          navigationOptions: {
+            headerShown: true,
+            headerTransparent: true,
+            headerStyle: { backgroundColor: 'transparent', },
+              title: "",
+              headerTintColor: "#002A14",
+              headerTitleStyle: {
+                  fontWeight: "100",
+                },
+              },
+      },
+      ProfileInformation: {
+        screen: ProfileInformationScreen,
+        navigationOptions: {
+          headerShown: true,
+          headerStyle: { backgroundColor: '#002A14', },
+            title: "Profile Information",
+            headerTintColor: "#FFF",
+            headerTitleStyle: {
+                fontWeight: "600",
+                alignSelf: "center"
+              },
+            },
+      },
         UpdateUserDetails: {
             screen: UpdateUserDetails,
             navigationOptions: {
@@ -432,19 +447,6 @@ const StartUpStackMain = createStackNavigator(
                     fontWeight: "100",
                   },
                 },
-        },
-        Dashboard: {
-          screen: Dashboard,
-          navigationOptions: {
-              headerShown: true,
-              headerTransparent: true,
-              headerStyle: { backgroundColor: 'transparent', },
-              title: "",
-              headerTintColor: "#FFF",
-              headerTitleStyle: {
-                  fontWeight: "100",
-              },
-              },
         },
         TransactionPin: {
             screen: TransactionPinScreen,

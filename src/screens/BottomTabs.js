@@ -1,34 +1,55 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { createAppContainer } from "react-navigation";
-import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';  
 import { createStackNavigator } from 'react-navigation-stack';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import DashboardScreen from "../screens/Dashboard";
+import FaqScreen from "../screens/FaqScreen";
+import PaymentScreen from "../screens/PaymentScreen";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Octicons from 'react-native-vector-icons/Octicons';
+import NotificationIcon from '../assets/svgs/notificationicon';
+import LoansIcon from '../assets/svgs/loansicon';
+import HomeIcon from '../assets/svgs/homeicon';
+import PaymentIcon from '../assets/svgs/paymenticon';
+import AirtimeNData from '../screens/AirtimeNData';
+import NotificationScreen from '../screens/NotificationScreen';
+
 
 const DashboardStack = createStackNavigator({
-    Dashboard: { 
-      screen: DashboardScreen,  
-      navigationOptions: {
+  Dashboard: {
+    screen: DashboardScreen,
+    navigationOptions: {
         headerShown: true,
         headerTransparent: true,
         headerStyle: { backgroundColor: 'transparent', },
         title: "",
-        headerTintColor: "#000",
+        headerTintColor: "#FFF",
         headerTitleStyle: {
             fontWeight: "100",
         },
-        }  
+        },
     },
-  //   NewProject: {
-  //     screen: NewProjectScreen,
-  //     navigationOptions: {
-  //       headerShown: false
-  //     },
-  //   },
+    Faq: {
+      screen: FaqScreen,
+      navigationOptions: {
+        headerShown: false
+      },
+    },
+    AirtimeNData: {
+      screen: AirtimeNData,
+      navigationOptions: {
+        headerShown: true,
+        headerStyle: { backgroundColor: '#002A14', },
+      title: "Airtime/Data",
+      headerTintColor: "#FFF",
+      headerTitleStyle: {
+          fontWeight: "600",
+          alignSelf: "center"
+        },
+      },
+    },
   //   NewObservation: {
   //     screen: NewObservationScreen,
   //     navigationOptions: {
@@ -62,13 +83,17 @@ const DashboardStack = createStackNavigator({
   
   });
   
-  const AcademicsStack = createStackNavigator({
-    "Grading & Attendance": {
-      screen: DashboardScreen,  
-      navigationOptions: {
-        headerShown: true,
-      }, 
-       
+  const NotificationStack = createStackNavigator({
+    "Notification": {
+      screen: NotificationScreen,  
+      headerShown: true,
+      headerStyle: { backgroundColor: '#002A14', },
+      title: "Notifications",
+      headerTintColor: "#FFF",
+      headerTitleStyle: {
+          fontWeight: "600",
+          alignSelf: "center"
+        }, 
     },
     "Add Subject": {
       screen: DashboardScreen,
@@ -152,11 +177,18 @@ const DashboardStack = createStackNavigator({
 //   });
 
   const AdministrationStack = createStackNavigator({
-    "Administration ": { 
-      screen: DashboardScreen,  
+    Payment: {
+      screen: PaymentScreen,
       navigationOptions: {
-        headerShown: true
-      },  
+        headerShown: true,
+        headerStyle: { backgroundColor: '#002A14', },
+      title: "Payments",
+      headerTintColor: "#FFF",
+      headerTitleStyle: {
+          fontWeight: "600",
+          alignSelf: "center"
+        },
+      },
     },
     "All Students": {
       screen: DashboardScreen,  
@@ -318,45 +350,56 @@ const DashboardStack = createStackNavigator({
 //   });
   
 const TabNavigator = createMaterialBottomTabNavigator({  
-    Dashboard:{  
+    Home:{  
       screen: DashboardStack,  
       navigationOptions:{  
-        tabBarLabel:'Dashboard',  
+        tabBarLabel:'Home',  
+        // tabBarLabel: ({ focused, tintColor }) => (
+        //       <Text color={focused ? '#FFFFFF' : '#B2BE35'}>Home</Text>),
         tabBarIcon:({focused})=>(  
-            <Entypo name="home" color={focused ? '#000' : '#8A8A8A'} size={20}/>  
+            <HomeIcon color={focused ? '#FFFFFF' : '#B2BE35'}/>  
         )  
       }  
     },   
-    Academics:{  
-      screen:AdministrationStack,  
+    Payment:{  
+      screen: AdministrationStack,  
       navigationOptions:{  
-        tabBarLabel:'Academics',  
+        tabBarLabel:'Payments',  
         tabBarIcon:({focused})=>(  
-            <Entypo name="graduation-cap" color={focused ? '#000' : '#8A8A8A'} size={20}/>  
+            <PaymentIcon color={focused ? '#FFFFFF' : '#B2BE35'}/>  
         )  
       }  
     },  
-    Administration:{  
-      screen:AcademicsStack,  
+    Notification:{  
+      screen: NotificationStack,  
       navigationOptions:{  
-        tabBarLabel:'Administration',  
+        tabBarLabel:'Notification',  
         tabBarIcon:({focused})=>(  
-            <FontAwesome5 name="user-cog" color={focused ? '#000' : '#8A8A8A'} size={18}/>  
+            <NotificationIcon color={focused ? '#FFFFFF' : '#B2BE35'}/>  
+        )  
+      }  
+    },
+    GetLoans:{  
+      screen:NotificationStack,  
+      navigationOptions:{  
+        tabBarLabel:'Get Loans',  
+        tabBarIcon:({focused})=>(  
+            <LoansIcon color={focused ? '#FFFFFF' : '#B2BE35'}/>  
         )  
       }  
     },       
   },{  
-    initialRouteName: "Dashboard",
+    initialRouteName: "Home",
     tabBarOptions: {
       labelPosition: 'below-icon',
-      activeTintColor: '#000',
-      inactiveTintColor: '#8A8A8A',
+      activeTintColor: '#FFFFFF',
+      inactiveTintColor: '#B2BE35',
       fontSize: 50,
     },
     barStyle: {
       height: 50,
-      backgroundColor: '#FFF',
-      paddingBottom: 5
+      backgroundColor: '#002A14',
+      paddingBottom: 5,
      }
   });
   

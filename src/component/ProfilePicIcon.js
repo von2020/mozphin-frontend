@@ -30,8 +30,7 @@ class ProfilePicIcon extends Component{
             marginTop: 20,
         }}
         onPress={()=>{
-            Alert.alert(null,"No side Profile screen yet..")
-            this.props.navigation.navigate("ProfileUpdateDetails");
+            this.props.navigation.navigate("ProfileInformation");
         }}>
               <Image
                   source={require("../assets/profilesmall.png")}

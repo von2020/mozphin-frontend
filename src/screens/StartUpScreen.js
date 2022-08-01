@@ -59,7 +59,7 @@ class StartUpScreen extends Component {
     }
 
     help(){
-      this.props.navigation.navigate("Help");
+      this.props.navigation.navigate("Faqs");
     }
 
     about(){
@@ -75,35 +75,17 @@ class StartUpScreen extends Component {
     }
 
     componentDidMount(){ 
-    // if(this.context.dataa == null){ 
         var that = this;  
         setTimeout(function(){  
             that.Hide_Splash_Screen();  
         }, 3000);  
-    //  }else{
-    //     var that = this;  
-    //     setTimeout(function(){  
-    //         that.Hide_Splash_Screen();  
-    //         that.props.navigation.navigate("StartUp");
-    //     }, 3000);
-        
-    // }
     }  
     
   render() {
     LogBox.ignoreAllLogs(true);
-    let Splash_Screen = (
-        <View style={styles.container}>
-          <StatusBar backgroundColor="#FFFFFF60" barStyle="dark-content"/>
-         
-        <Image source={require('../assets/mozfin_splash.png')} resizeMode={'cover'} margin={10} top={height * 0.37} position={"absolute"} alignSelf={"center"} backgroundColor="#FFFFFF70"/>
-        <Text style={styles.titleBottom}>Developed by Softworks Limited</Text>
-      </View>
-    );
     return (
         <View style = { styles.MainContainer }> 
-
-        {this.state.isVisible === true ? Splash_Screen : <View>
+        <View>
         <Carousel
           loop={true} 
           autoplay={true}
@@ -169,7 +151,7 @@ class StartUpScreen extends Component {
               </View>
 
               <View alignSelf={"center"}>
-              <TouchableOpacity onPress={this.notifications.bind(this)} style={{ alignSelf: "center", borderRadius: 5, elevation: 1, width: 64, height: 52, paddingHorizontal: 20, paddingVertical: 14, shadowColor: "#000000", shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.2 }}>
+              <TouchableOpacity onPress={this.help.bind(this)} style={{ alignSelf: "center", borderRadius: 5, elevation: 1, width: 64, height: 52, paddingHorizontal: 20, paddingVertical: 14, shadowColor: "#000000", shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.2 }}>
               <FaqsIcon/>
               </TouchableOpacity>
               <Text style={styles.getStartedSmall}>FAQs</Text>
@@ -185,7 +167,7 @@ class StartUpScreen extends Component {
               </View>
 
               {/* </LinearGradient> */}
-        </View>}
+        </View>
     </View>
     );
   }

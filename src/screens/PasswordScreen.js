@@ -484,11 +484,7 @@ class PasswordScreen extends Component {
                 
               </TouchableOpacity> : null} 
             </View>
-            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 20, paddingTop: 5 }}>* Password must be 8 characters long Password</Text>
-            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 5, paddingTop: 5 }}>* Password must contain an uppercase letter</Text>
-            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 5, paddingTop: 5 }}>* Password must contain a lowercase letter </Text>
-            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 5, paddingTop: 5 }}>* Password must contain a number </Text>
-            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 5, paddingTop: 5, marginBottom: 32 }}>* Password must contain a special character </Text>
+            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 20, paddingTop: 5 }}>* * Password must be 8 characters long and must contain an upper case letter with special charaters i.e Toopwer1!  </Text>
             
             <TouchableOpacity
                 onPress={this.onPressSignUp.bind(this)}

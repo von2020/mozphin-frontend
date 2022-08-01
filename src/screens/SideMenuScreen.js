@@ -1,9 +1,10 @@
 import React, { useContext, createContext } from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createDrawerNavigator } from 'react-navigation-drawer';
+// import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from 'react-navigation-stack';
 import { Text, ScrollView, SafeAreaView, View, TouchableOpacity, Dimensions, Image, StatusBar, Alert } from 'react-native';
-import HelpScreen from './HelpScreen';
+import HelpScreen from './FaqScreen';
 import SecretQueScreen from './SecretQueScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomTabs from './BottomTabs';
@@ -33,7 +34,7 @@ const HamburgerNavigation = createDrawerNavigator(
         initialRouteName: 'Tabs',
         contentComponent: props => {
             return (
-                <ScrollView backgroundColor={"#252C57"}>
+                <ScrollView backgroundColor={"#002A14"}>
                     <SafeAreaView
                     forceInset={{ top: 'always', horizontal: 'never' }}
                     style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}

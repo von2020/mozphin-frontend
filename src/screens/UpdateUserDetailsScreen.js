@@ -17,9 +17,13 @@ import moment from 'moment';
 import  Loader  from './../config/Loader';
 import { CheckBox } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
+import DocumentPicker from 'react-native-document-picker';
+import ImgToBase64 from 'react-native-image-base64';
+// import * as RNFS from 'react-native-fs';
 import { Dropdown } from "react-native-material-dropdown";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RadioForm, {
@@ -36,11 +40,19 @@ import PhoneIcon from '../assets/svgs/phone';
 import UserIcon from '../assets/svgs/user';
 import EmailIcon from '../assets/svgs/email';
 import DobIcon from '../assets/svgs/dob';
-import LinkIcon from '../assets/svgs/link';
+import AddressIcon from '../assets/svgs/address';
+import LgaIcon from '../assets/svgs/lga';
+import LockSmallIcon from '../assets/svgs/locksmall';
+import CompanyIcon from '../assets/svgs/company';
+import LocationIcon from '../assets/svgs/location';
+import OccupationIcon from '../assets/svgs/occupation';
+import RoleIcon from '../assets/svgs/role';
+import MoneyIcon from '../assets/svgs/money';
+
 import mozfinService, {
   setClientToken,
 } from "../service/MozfinService";
-
+import NumberFormat from 'react-number-format';
 
 const { width, height } = Dimensions.get("window");
 
@@ -61,12 +73,34 @@ const initialState = {
   id: "10",
   referralCode: "",
   rc: "",
-  tellUs: "",
+  state: "Select State",
+  id: "Select Identification type",
+  bill: "Select bill type",
+  idd: "",
+  bi: "",
+  lga: "Select LGA",
+  lg: "",
   tu: "",
   ch: "",
+  status: "",
+  stu: "",
+  ge: "",
+  fileNameId: "",
+  idFile: "",
+  fileNameUtility: "",
+  utilityFile: "",
+  fileNamePassport: "",
+  passportFile: "",
+  fileNameSign: "",
+  signFile: "",
+  display: "",
+  isPersonal: false,
   personal: true,
+  isNextOfKin: false,
   nextOfKin: false,
+  isEmployeeInfo: false,
   employeeInfo: false,
+  isFileUpload: false,
   fileUpload: false,
   item: {},
   modalVisible_: false,
@@ -81,62 +115,126 @@ const initialState = {
   modeDateOfBirth: "date",
   token: "",
   DateOfBirthShow: false,
-  OtherNames: "-",
-  City: "City",
-  Address: "Address",
-  PlaceOfBirth: "-",
-  NationalIdentityNo: "-",
-  NextOfKinName: "-",
-  NextOfKinPhoneNumber: "-",
+  OtherNames: "",
+  Company: "",
+  co: "",
+  CompanyAddress: "",
+  Occupation: "",
+  oc: "",
+  Money: "",
+  mo: "",  
+  Role: "",
+  ro: "",
+  Address: "",
+  add: "",
+  si: "",
+  pass: "",
+  PlaceOfBirth: "",
+  NationalIdentityNo: "",
+  NextOfKinFirstName: "",
+  nfn: "",
+  NextOfKinLastName: "",
+  nln: "",
+  NextOfKinPhoneNumber: "",
+  npn: "",
+  NextOfKinEmail: "",
+  nem: "",
+  NextOfKinGender: "",
+  nge: "",
+  NextOfKinAddress: "",
+  nadd: "",
+  Relationship: "",
+  re: "",
   ReferralName: "",
-  ReferralPhoneNO: "-",
+  ReferralPhoneNO: "",
+  AccountNumber: "",
   CustomerType: 1,
-  Gender: 1,
+  Gender: "",
   AccountOfficerCode: "123",
   categoryList: [],
-  flagList: [
+  lgaList: [
     {
-      value: "Select Country",
-      label: "Select Country",
+      value: "Select LGA",
+      label: "Select your LGA",
     },
     {
-        value: "United States",
-        label: "United States",
+        value: "1",
+        label: "Lga 1",
     },
     {
-        value: "Canada",
-        label: "Canada",
+        value: "2",
+        label: "Lga 2",
     },
     {
-        value: "Israel",
-        label: "Israel",
+        value: "3",
+        label: "Lga 3",
     },
     {
-      value: "Nigeria",
-      label: "Nigeria",
+      value: "4",
+      label: "Lga 4",
   }
 ],
-tellUsList: [
+stateList: [
   {
-    value: "Tell us",
-    label: "Tell us",
+    value: "Select State",
+    label: "Select your State",
   },
   {
-      value: "Search engine",
-      label: "Search engine",
+      value: "1",
+      label: "Abia",
   },
   {
-      value: "Social media",
-      label: "Social media",
+      value: "2",
+      label: "Adamawa",
   },
   {
-      value: "Website referral",
-      label: "Website referral",
+      value: "3",
+      label: "Akwa Ibom",
   },
   {
-    value: "From a friend",
-    label: "From a friend",
+    value: "4",
+    label: "Anambra",
 }
+],
+idList: [
+  {
+    value: "Select Identification type",
+    label: "Select Identification type",
+  },
+  {
+      value: "1",
+      label: "Driver’s Licence",
+  },
+  {
+      value: "2",
+      label: "International Passport",
+  },
+  {
+      value: "3",
+      label: "National ID Card",
+  },
+  {
+    value: "4",
+    label: "Voter’s Card",
+}
+],
+billList: [
+  {
+    value: "Select bill type",
+    label: "Select bill type",
+  },
+  {
+      value: "1",
+      label: "Electricity Bill",
+  },
+  {
+      value: "2",
+      label: "Waste Bill",
+  },
+  {
+      value: "3",
+      label: "Water Bill",
+  }
 ],
 };
 
@@ -152,23 +250,39 @@ status_props = [
     { label: "Married", value: "married" },
 ];
 
+handleFirstname = (FirstName) => {
+  if(FirstName != ""){
+    this.setState({ FirstName: FirstName, fn: "" });
+  }else {
+    this.setState({ FirstName: this.props.navigation.state.params.firstname, fn: "empty" });
+  }
+};
+
   handleEmail = (Email) => {
     if(Email != ""){
-      if(Email == "chibu@yahoo.com"){
-        this.setState({ Email: Email, em: "good" });
-      }else{
       this.setState({ Email: Email, em: "" });
-      }
     }else {
-      this.setState({ Email: Email, em: "empty" });
+      this.setState({ Email: Email, em: "empty", isPersonal: false });
     }
+    const {
+      lga, 
+      state, 
+      status, 
+      Address,
+      AccountNumber,
+      Gender
+     } = this.state;
+    
+      if(Email && AccountNumber && state != "Select State" && lga != "Select LGA" && Address && Gender && status){
+      this.setState({isPersonal: true})
+      }
   };
 
   handleFirstname = (FirstName) => {
     if(FirstName != ""){
       this.setState({ FirstName: FirstName, fn: "" });
     }else {
-      this.setState({ FirstName: FirstName, fn: "empty" });
+      this.setState({ FirstName: this.props.navigation.state.params.firstname, fn: "empty" });
     }
   };
 
@@ -176,7 +290,7 @@ status_props = [
     if(LastName != ""){
       this.setState({ LastName: LastName, ln: "" });
     }else {
-      this.setState({ LastName: LastName, ln: "empty" });
+      this.setState({ LastName: this.props.navigation.state.params.lastname, ln: "empty" });
     }
   };
 
@@ -184,23 +298,15 @@ status_props = [
     if(OtherNames != ""){
       this.setState({ OtherNames: OtherNames, ln: "" });
     }else {
-      this.setState({ OtherNames: OtherNames, ln: "empty" });
+      this.setState({ OtherNames: this.props.navigation.state.params.othernames, ln: "empty" });
     }
-  };
-
-  handlePassword = (password) => {  
-    if(password != ""){
-      this.setState({ password: password, pa: "" });
-    }else {
-      this.setState({ password: password, pa: "empty" });
-    } 
   };
 
   handlePhoneNo = (PhoneNo) => {  
     if(PhoneNo != ""){
       this.setState({ PhoneNo: PhoneNo, pn: "" });
     }else {
-      this.setState({ PhoneNo: PhoneNo, pn: "empty" });
+      this.setState({ PhoneNo: this.props.navigation.state.params.phoneno, pn: "empty" });
     } 
   };
 
@@ -208,26 +314,682 @@ status_props = [
     if(DateOfBirth_ != new Date()){
       this.setState({ DateOfBirth_: DateOfBirth_, by: "" });
     }else {
-      this.setState({ DateOfBirth_: DateOfBirth_, by: "empty" });
+      this.setState({ DateOfBirth_: this.props.navigation.state.params.dob, by: "empty" });
     }
   };
 
-  handleReferral = (ReferralName) => {  
-    if(ReferralName != ""){
-      this.setState({ ReferralName: ReferralName, rc: "" });
+  handleMaritalStatus = (status) => {  
+    if(status != ""){
+      this.setState({ status: status, stu: "" });
     }else {
-      this.setState({ ReferralName: ReferralName, rc: "empty" });
+      this.setState({ status: status, stu: "empty", isPersonal: false });
     }
+    const {
+      Email,
+      lga, 
+      state, 
+      AccountNumber,
+      Address,
+      Gender } = this.state;
+    
+      if(AccountNumber && Email && state != "Select State" && lga != "Select LGA" && Address && Gender && status){
+      this.setState({isPersonal: true})
+      }
   };
 
-  handleTellUs = (tellUs) => {  
-    if(tellUs != "Tell us"){
-      this.setState({ tellUs: tellUs, tu: "" });
+  handleState = (state) => {  
+    if(state != "Select State"){
+      this.setState({ state: state, tu: "" });
     }else {
-      this.setState({ tellUs: tellUs, tu: "empty" });
+      this.setState({ state: state, tu: "empty", isPersonal: false });
+    }
+    const {
+      Email, 
+      lga, 
+      status, 
+      Address,
+      AccountNumber,
+      Gender } = this.state;
+    
+      if(AccountNumber && Email && state != "Select State" && lga != "Select LGA" && Address && Gender && status){
+      this.setState({isPersonal: true})
+      }
+  };
+
+  handleLga = (lga) => {  
+    if(lga != "Select LGA"){
+      this.setState({ lga: lga, lg: "" });
+    }else {
+      this.setState({ lga: lga, lg: "empty", isPersonal: false });
+    }
+
+    const {
+      Email, 
+      state, status, 
+      Address,
+      AccountNumber,
+      Gender } = this.state;
+    
+      if(AccountNumber && Email && state != "Select State" && lga != "Select LGA" && Address && Gender && status){
+      this.setState({isPersonal: true})
+      }
+  };
+
+  handleAddress = (Address) => {  
+    if(Address != ""){
+      this.setState({ Address: Address, add: "" });
+    }else {
+      this.setState({ Address: Address, add: "empty", isPersonal: false });
+    }
+
+    const {
+      Email,
+      lga, 
+      state, status, 
+      AccountNumber,
+      Gender } = this.state;
+    
+      if(Email && AccountNumber && state != "Select State" && lga != "Select LGA" && Address && Gender && status){
+      this.setState({isPersonal: true})
+      }
+  };
+
+  handleAccountNumber = (AccountNumber) => {  
+    if(AccountNumber != ""){
+      this.setState({ AccountNumber: AccountNumber, an: "" });
+    }else {
+      this.setState({ AccountNumber: AccountNumber, an: "empty", isPersonal: false });
+    }
+    const {
+      Email,
+      Address, 
+      lga, 
+      state, status,
+      Gender } = this.state;
+    
+      if(Email && AccountNumber && state != "Select State" && lga != "Select LGA" && Address && Gender && status){
+      this.setState({ isPersonal: true })
+      }
+  };
+
+  handleGender = (Gender) => {  
+    if(Gender != ""){
+      this.setState({ Gender: Gender, ge: "" });
+    }else {
+      this.setState({ Gender: Gender, ge: "empty", isPersonal: false });
+    }
+    const {
+      Email, 
+      lga, 
+      state, status, 
+      Address,
+      AccountNumber,
+      } = this.state;
+    
+      if(Email && AccountNumber && state != "Select State" && lga != "Select LGA" && Address && Gender && status){
+      this.setState({isPersonal: true})
+      }
+  };
+
+  handleNextOfKinFirstname = (NextOfKinFirstName) => {
+    if(NextOfKinFirstName != ""){
+      this.setState({ NextOfKinFirstName: NextOfKinFirstName, nfn: "" });
+    }else {
+      this.setState({ NextOfKinFirstName: NextOfKinFirstName, nfn: "empty", isNextOfKin: false });
+    }
+    const {
+      NextOfKinEmail, 
+      NextOfKinLastName, 
+      NextOfKinGender, 
+      NextOfKinPhoneNumber, 
+      NextOfKinAddress,
+      Relationship
+     } = this.state;
+    
+      if(NextOfKinFirstName && NextOfKinEmail && NextOfKinLastName && NextOfKinGender && NextOfKinPhoneNumber && NextOfKinAddress && Relationship){
+      this.setState({isNextOfKin: true})
+      }
+  };
+  
+  handleNextOfKinLastname = (NextOfKinLastName) => {
+    if(NextOfKinLastName != ""){
+      this.setState({ NextOfKinLastName: NextOfKinLastName, nln: "" });
+    }else {
+      this.setState({ NextOfKinLastName: NextOfKinLastName, nln: "empty", isNextOfKin: false });
+    }
+    const {
+      NextOfKinEmail, 
+      NextOfKinFirstName, 
+      NextOfKinGender, 
+      NextOfKinPhoneNumber, 
+      NextOfKinAddress,
+      Relationship
+     } = this.state;
+    
+      if(NextOfKinFirstName && NextOfKinEmail && NextOfKinLastName && NextOfKinGender && NextOfKinPhoneNumber && NextOfKinAddress && Relationship){
+      this.setState({isNextOfKin: true})
+      }
+  };
+  
+  handleNextOfKinEmail = (NextOfKinEmail) => {
+    if(NextOfKinEmail != ""){
+      this.setState({ NextOfKinEmail: NextOfKinEmail, nem: "" });
+    }else {
+      this.setState({ NextOfKinEmail: NextOfKinEmail, nem: "empty", isNextOfKin: false });
+    }
+    const {
+      NextOfKinFirstName, 
+      NextOfKinLastName, 
+      NextOfKinGender, 
+      NextOfKinPhoneNumber, 
+      NextOfKinAddress,
+      Relationship
+     } = this.state;
+    
+      if(NextOfKinFirstName && NextOfKinEmail && NextOfKinLastName && NextOfKinGender && NextOfKinPhoneNumber && NextOfKinAddress && Relationship){
+      this.setState({isNextOfKin: true})
+      }
+  };
+
+  handleRelationship = (Relationship) => {
+    if(Relationship != ""){
+      this.setState({ Relationship: Relationship, re: "" });
+    }else {
+      this.setState({ Relationship: Relationship, re: "empty", isNextOfKin: false });
+    }
+    const {
+      NextOfKinEmail, 
+      NextOfKinLastName, 
+      NextOfKinGender, 
+      NextOfKinPhoneNumber, 
+      NextOfKinAddress,
+      NextOfKinFirstName
+     } = this.state;
+    
+      if(NextOfKinFirstName && NextOfKinEmail && NextOfKinLastName && NextOfKinGender && NextOfKinPhoneNumber && NextOfKinAddress && Relationship){
+      this.setState({isNextOfKin: true})
+      }
+  };
+
+  handleNextOfKinPhoneNo = (NextOfKinPhoneNumber) => {  
+    if(NextOfKinPhoneNumber != ""){
+      this.setState({ NextOfKinPhoneNumber: NextOfKinPhoneNumber, npn: "" });
+    }else {
+      this.setState({ NextOfKinPhoneNumber: NextOfKinPhoneNumber, npn: "empty", isNextOfKin: false });
+    }
+    const {
+      NextOfKinEmail, 
+      NextOfKinLastName, 
+      NextOfKinGender, 
+      NextOfKinFirstName, 
+      NextOfKinAddress,
+      Relationship
+     } = this.state;
+    
+      if(NextOfKinFirstName && NextOfKinEmail && NextOfKinLastName && NextOfKinGender && NextOfKinPhoneNumber && NextOfKinAddress && Relationship){
+      this.setState({isNextOfKin: true})
+      }
+  };
+
+  handleNextOfKinGender = (NextOfKinGender) => {  
+    if(NextOfKinGender != ""){
+      this.setState({ NextOfKinGender: NextOfKinGender, nge: "" });
+    }else {
+      this.setState({ NextOfKinGender: NextOfKinGender, nge: "empty", isNextOfKin: false });
+    }
+    const {
+      NextOfKinEmail, 
+      NextOfKinLastName, 
+      NextOfKinFirstName, 
+      NextOfKinPhoneNumber, 
+      NextOfKinAddress,
+      Relationship
+     } = this.state;
+    
+      if(NextOfKinFirstName && NextOfKinEmail && NextOfKinLastName && NextOfKinGender && NextOfKinPhoneNumber && NextOfKinAddress && Relationship){
+      this.setState({isNextOfKin: true})
+      }
+  };
+
+  handleNextOfKinAddress = (NextOfKinAddress) => {  
+    if(NextOfKinAddress != ""){
+      this.setState({ NextOfKinAddress: NextOfKinAddress, nadd: "" });
+    }else {
+      this.setState({ NextOfKinAddress: NextOfKinAddress, nadd: "empty", isNextOfKin: false });
+    }
+    const {
+      NextOfKinEmail, 
+      NextOfKinLastName, 
+      NextOfKinGender, 
+      NextOfKinPhoneNumber, 
+      NextOfKinFirstName,
+      Relationship
+     } = this.state;
+    
+      if(NextOfKinFirstName && NextOfKinEmail && NextOfKinLastName && NextOfKinGender && NextOfKinPhoneNumber && NextOfKinAddress && Relationship){
+      this.setState({isNextOfKin: true})
+      }
+  };
+
+  handleCompany = (Company) => {
+    if(Company != ""){
+      this.setState({ Company: Company, co: "" });
+    }else {
+      this.setState({ Company: Company, co: "empty", isEmployeeInfo: false });
+    }
+    const {
+      CompanyAddress, 
+      Role, 
+      Money, 
+      Occupation
+     } = this.state;
+    
+      if(Company && CompanyAddress && Role && Money && Occupation){
+      this.setState({isEmployeeInfo: true})
+      }
+  };
+  
+  handleCompanyAddress = (CompanyAddress) => {
+    if(CompanyAddress != ""){
+      this.setState({ CompanyAddress: CompanyAddress, ca: "" });
+    }else {
+      this.setState({ CompanyAddress: CompanyAddress, ca: "empty", isEmployeeInfo: false });
+    }
+    const {
+      Company, 
+      Role, 
+      Money, 
+      Occupation
+     } = this.state;
+    
+      if(Company && CompanyAddress && Role && Money && Occupation){
+      this.setState({isEmployeeInfo: true})
+      }
+  };
+  
+  handleRole = (Role) => {
+    if(Role != ""){
+      this.setState({ Role: Role, ro: "" });
+    }else {
+      this.setState({ Role: Role, ro: "empty", isEmployeeInfo: false });
+    }
+    const {
+      CompanyAddress, 
+      Company, 
+      Money, 
+      Occupation
+     } = this.state;
+    
+      if(Company && CompanyAddress && Role && Money && Occupation){
+      this.setState({isEmployeeInfo: true})
+      }
+  };
+  
+  handleMoney = (Money) => {
+    if(Money != ""){
+      this.setState({ Money: Money, mo: "" });
+    }else {
+      this.setState({ Money: Money, mo: "empty", isEmployeeInfo: false });
+    }
+    const {
+      CompanyAddress, 
+      Role, 
+      Company, 
+      Occupation
+     } = this.state;
+    
+      if(Company && CompanyAddress && Role && Money && Occupation){
+      this.setState({isEmployeeInfo: true})
+      }
+  };
+  
+  handleOccupation = (Occupation) => {
+    if(Occupation != ""){
+      this.setState({ Occupation: Occupation, oc: "" });
+    }else {
+      this.setState({ Occupation: Occupation, oc: "empty", isEmployeeInfo: false });
+    }
+    const {
+      CompanyAddress, 
+      Role, 
+      Money, 
+      Company
+     } = this.state;
+    
+      if(Company && CompanyAddress && Role && Money && Occupation){
+      this.setState({isEmployeeInfo: true})
+      }
+  };
+  
+  handleBill = (bill) => {  
+    if(bill != "Select bill type"){
+      this.setState({ bill: bill, bi: "" });
+    }else {
+      this.setState({ bill: bill, bi: "empty" });
     }
   };
 
+  handleId = (id) => {  
+    if(id != "Select Identification type"){
+      this.setState({ id: id, idd: "" });
+    }else {
+      this.setState({ id: id, idd: "empty" });
+    }
+  };
+
+  async selectFileId(){
+    // Pick a single file
+    if(this.state.id == "Select Identification type"){
+      this.setState({ idd: "empty", idFile: "", fileNameId: "", isFileUpload: false });
+    }else{
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
+      });
+      console.log(res[0])
+      console.log(res[0].uri)
+      this.setState({ display: res[0].uri})
+      if(res[0].type != "application/pdf"){
+      ImgToBase64.getBase64String(res[0].uri)
+      .then(data => {
+        const {
+          fileNameId, 
+          fileNameUtility, 
+          fileNamePassport, 
+          fileNameSign
+         } = this.state;
+        
+          if(fileNameId && fileNameUtility && fileNamePassport && fileNameSign){
+          this.setState({isFileUpload: true})
+          }
+        console.log(
+          'data:image/jpeg;base64,' + data
+        );
+        this.setState({ idFile: 'data:image/jpeg;base64,' + data })
+        this.setState({ idFile: data })
+        }
+        )
+        
+      .catch(err => console.log(err));
+      
+      this.setState({ fileNameId: res[0].name})
+      }else if(res[0].type == "application/pdf"){
+        this.setState({ fileNameId: res[0].name})
+        const {
+          fileNameId, 
+          fileNameUtility, 
+          fileNamePassport, 
+          fileNameSign
+         } = this.state;
+        
+          if(fileNameId && fileNameUtility && fileNamePassport && fileNameSign){
+          this.setState({isFileUpload: true})
+          }
+        RNFS.readFile(res[0].uri, 'base64').then(data => {
+          this.setState({ idFile: 'data:application/pdf;base64,' + data })
+          this.setState({ idFile: data })
+      })
+      .catch(err => {
+          console.log(err.message, err.code);
+      });
+      }
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
+  }
+  }
+
+  async selectFileUtility(){
+    if(this.state.bill == "Select bill type"){
+      this.setState({ bi: "empty", utilityFile: "", fileNameUtility: "", isFileUpload: false });
+    }else{
+    // Pick a single file
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
+      });
+      console.log(res[0])
+      console.log(res[0].uri)
+      this.setState({ display: res[0].uri})
+
+      ImgToBase64.getBase64String(res[0].uri)
+      .then(data => {
+        const {
+          fileNameId, 
+          fileNameUtility, 
+          fileNamePassport, 
+          fileNameSign
+         } = this.state;
+        
+          if(fileNameId && fileNameUtility && fileNamePassport && fileNameSign){
+          this.setState({isFileUpload: true})
+          }
+        console.log(
+          'data:image/jpeg;base64,' + data
+        );
+        this.setState({ utilityFile: 'data:image/jpeg;base64,' + data })
+        this.setState({ utilityFile: data })
+        }
+        )
+        
+      .catch(err => console.log(err));
+      
+      this.setState({ fileNameUtility: res[0].name})
+
+      console.log(
+        res[0].uri,
+        res[0].type, // mime type
+        res[0].name,
+        res[0].size,
+      );
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
+  }
+  }
+
+  async selectFilePassport(){
+    // Pick a single file
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
+      });
+      console.log(res[0])
+      console.log(res[0].uri)
+      this.setState({ display: res[0].uri})
+
+      ImgToBase64.getBase64String(res[0].uri)
+      .then(data => {
+        const {
+          fileNameId, 
+          fileNameUtility, 
+          fileNamePassport, 
+          fileNameSign
+         } = this.state;
+        
+          if(fileNameId && fileNameUtility && fileNamePassport && fileNameSign){
+          this.setState({isFileUpload: true})
+          }
+        console.log(
+          'data:image/jpeg;base64,' + data
+        );
+        this.setState({ passportFile: 'data:image/jpeg;base64,' + data })
+        this.setState({ passportFile: data })
+        }
+        )
+        
+      .catch(err => console.log(err));
+      
+      this.setState({ fileNamePassport: res[0].name})
+
+      console.log(
+        res[0].uri,
+        res[0].type, // mime type
+        res[0].name,
+        res[0].size,
+      );
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
+    const {
+      fileNameId, 
+      fileNameUtility, 
+      fileNamePassport, 
+      fileNameSign
+     } = this.state;
+    
+      if(fileNameId && fileNameUtility && fileNamePassport && fileNameSign){
+      this.setState({isFileUpload: true})
+      }
+  }
+
+  async selectFileSign(){
+    // Pick a single file
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
+      });
+      console.log(res[0])
+      console.log(res[0].uri)
+      this.setState({ display: res[0].uri})
+
+      ImgToBase64.getBase64String(res[0].uri)
+      .then(data => {
+        console.log(
+          'data:image/jpeg;base64,' + data
+        );
+        this.setState({ signFile: 'data:image/jpeg;base64,' + data })
+        this.setState({ signFile: data })
+        const {
+          fileNameId, 
+          fileNameUtility, 
+          fileNamePassport, 
+          fileNameSign
+         } = this.state;
+        
+          if(fileNameId && fileNameUtility && fileNamePassport && fileNameSign){
+          this.setState({ isFileUpload: true})
+          }
+        }
+        )
+
+      .catch(err => console.log(err));
+      
+      this.setState({ fileNameSign: res[0].name})
+
+      console.log(
+        res[0].uri,
+        res[0].type, // mime type
+        res[0].name,
+        res[0].size,
+      );
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
+    
+  }
+
+  personalUpdate(){
+    const { Email, FirstName, LastName, PhoneNo, DateOfBirth_, state,
+      Address,
+      AccountNumber,
+      Gender,
+      lga,
+      status, } = this.state;
+      
+      if(AccountNumber == ""){
+          this.setState({ isLoading: false, an: "empty" });
+      }else if(Email == ""){
+        this.setState({ isLoading: false, em: "empty" });
+      }else if(state == "Select State"){
+        this.setState({ isLoading: false, tu: "empty" });
+      }else if(lga == "Select LGA"){
+        this.setState({ isLoading: false, lg: "empty" });
+      }else if(Address == ""){
+        this.setState({ isLoading: false, add: "empty" });
+      }else if(status == ""){
+        this.setState({ isLoading: false, stu: "empty" });
+      }else if(Gender == ""){
+        this.setState({ isLoading: false, ge: "empty" });
+      }else{
+        this.setState({  personal: false, nextOfKin: true, employeeInfo: false, fileUpload: false })
+        this.scrollView.scrollTo({});
+        console.log(Email, FirstName, LastName, PhoneNo, DateOfBirth_, state, lga, Address,Gender, status)
+      }  
+  }
+
+  nextOfKinUpdate(){
+    const { 
+      NextOfKinAddress,
+      NextOfKinEmail,
+      NextOfKinFirstName,
+      NextOfKinLastName,
+      NextOfKinPhoneNumber,
+      Relationship,
+      NextOfKinGender,
+     } = this.state;
+       
+      if(NextOfKinFirstName == ""){
+        this.setState({ isLoading: false, nfn: "empty" });
+      }else if(NextOfKinLastName == ""){
+        this.setState({ isLoading: false, nln: "empty" });
+      }else if(NextOfKinEmail == ""){
+        this.setState({ isLoading: false, nem: "empty" });
+      }else if(NextOfKinPhoneNumber == ""){
+        this.setState({ isLoading: false, npn: "empty" });
+      }else if(NextOfKinAddress == ""){
+        this.setState({ isLoading: false, nadd: "empty" });
+      }else if(NextOfKinGender == ""){
+        this.setState({ isLoading: false, nge: "empty" });
+      }else if(Relationship == ""){
+        this.setState({ isLoading: false, re: "empty" });
+      }else{
+        this.setState({ personal: false, nextOfKin: false, employeeInfo: true, fileUpload: false })
+        this.scrollView.scrollTo({});
+      }  
+  }
+
+  employeUpdate(){
+    const { 
+      CompanyAddress, 
+      Role, 
+      Money, 
+      Occupation,
+      Company
+     } = this.state;
+       
+      if(Company == ""){
+        this.setState({ isLoading: false, co: "empty" });
+      }else if(CompanyAddress == ""){
+        this.setState({ isLoading: false, ca: "empty" });
+      }else if(Occupation == ""){
+        this.setState({ isLoading: false, oc: "empty" });
+      }else if(Role == ""){
+        this.setState({ isLoading: false, ro: "empty" });
+      }else if(Money == ""){
+        this.setState({ isLoading: false, mo: "empty" });
+      }else{
+        this.setState({ personal: false, nextOfKin: false, employeeInfo: false, fileUpload: true })
+        this.scrollView.scrollTo({});
+      }  
+
+  }
   updateSecureTextEntry(){
     this.setState({ secureTextEntry: !this.state.secureTextEntry})
   };
@@ -236,99 +998,229 @@ status_props = [
     this.setState({ isLoading: true });
     setClientToken("94aa5c7b-feec-4f30-bd68-df1b405d40e1");
 
-    const { Email, FirstName, LastName, PhoneNo, DateOfBirth_, referralCode, tellUs, isChecked, 
-    OtherNames,City,
-    Address,
-    PlaceOfBirth,
-    NationalIdentityNo,
-    NextOfKinName,
-    NextOfKinPhoneNumber,
-    ReferralName,
-    ReferralPhoneNO,
-    CustomerType,
-    AccountOfficerCode,
-    Gender } = this.state;
-    
-    if(FirstName == ""){
-      this.setState({ isLoading: false, fn: "empty" });
-    }else if(LastName == ""){
-      this.setState({ isLoading: false, ln: "empty" });
-    }else if(Email == ""){
+    // {
+    //   "TransactionTrackingRef": "012220",
+    //   "CustomerID": "006474",
+    //   "AccountReferenceNumber": "",
+    //   "AccountOpeningTrackingRef": "00000",
+    //   "ProductCode": "101",
+    //   "LastName": "Lunde",
+    //   "FirstName": "Falana",
+    //   "OtherNames": "Suleimon",
+    //   "AccountName": "Falana Lunde",
+    //   "BVN": "23199077754",
+    //   "FullName": "string",
+    //   "PhoneNo": "09022670086",
+    //   "Gender": 0,
+    //   "PlaceOfBirth": "Lagos",
+    //   "DateOfBirth": "1990-2-13",
+    //   "Address": "60, ejigbo road, Lagos",
+    //   "NationalIdentityNo": "4155679803",
+    //   "NextOfKinPhoneNo": "09038896675",
+    //   "NextOfKinName": "Mr Sammy",
+    //   "ReferralPhoneNo": "09038896675",
+    //   "ReferralName": "Kenny",
+    //   "HasSufficientInfoOnAccountInfo": true,
+    //   "AccountInformationSource": 0,
+    //   "OtherAccountInformationSource": "string",
+    //   "AccountOfficerCode": "123",
+    //   "AccountNumber": "109986345",
+    //   "Email": "orumwensey@gmail.com",
+    //   "CustomerImage": "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",
+    //   "IdentificationImage": "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",
+    //   "IdentificationImageType": 0,
+    //   "CustomerSignature": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAH8AuAMBIgACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABQYCBAcDAQj/xAA4EAACAQMCAwUGBQMEAwAAAAABAgMABBEFIRITMQZBUWGBBxQiMnGRobHB4fAjYtEVFlKCJEJy/8QAGAEBAQEBAQAAAAAAAAAAAAAAAAEDAgT/xAAfEQEBAAIDAQADAQAAAAAAAAAAAQIREiExAzJBUSL/2gAMAwEAAhEDEQA/AO40pSgUpSgUpSgUpSgUpXjd3EdpbSXE7BYokLux7gKD2pVZ0TtnYardm1KvBIxxGXIw/l5HyqzVJZVs0UpSqhSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBVN9pl8YdLt7KM73Mvxj+wfvirielc09o1zHNrttFHIGaKIBlG+CSTjH0xXOV1HWE3UPZ2wEXGilZVwVOP1FdI7K6qdRsSsx/8AIhPC/ifA1R7FpIot8BcbDl8Oft/itjQtTXTtXWXJ5T/BKB0we/0rP8bt3f8AUdMpWMbrIgdCGUjYjoayrZkUpSgV8zWtqF/BYQmW4fA7gNy30FVW+7SX9wD7ovu8Xc2AW/Hb8K5uUizG1dKVXexeoy6hZ3BuJmlkjl4SzdemasVdS7S9FKUoFKUoFKUoFKUoFKUoFKUoPhriva9o4dWv7m4kUcy7dYcrkHBwc+oP2rtEjrHGzuQFUEknuFfnPtPqUuu62bGHhHMlZznoBxEk/jWf0nTT5WS9pO31MiD4ZrdlbfEcZT9jWtcX1zNMRbOq8JBY95/npWcFpZ2IVIpeeVABZgAuduh/x41ryX0jBRiOOKNDkjpj/wCvoK41t3bG1N2o7Q26v/p13c2yCHjMZZSpIG5GemQfLcVjP277VWRinOqylJFVkDohBGM7jh/feorVTKNLmjieV5blxB1xjPfn1qLkgZXiiWQSYQrnH/DbHXyr0YZamqwym/HU9C9rvxCDXrBlfhB5tvvt4le70NWT/f8AaXNvztPtpWidTyZZTwcZzjZeuNu+uKwO8t9LYzNHiW1DiXO2OI4BHeCNvLFWLTLVDHGkUjkxLmLLAhR4eNcZ568dYY79XMTS6hNzr2TmOTnHh9K89TdIolIOE8x+taFreLE4Moc4G4UZI/as7+5S7VY42JVmwQeuP8Vh+m/Htb/Z5btHojytuZpi2fIbVaq09It47XTbeGH5FjGPPIzW5Xoxmo89u6UpSqhSlKBSlKBSlKBSlKBSlfKCne1LUZbHs5y7eZopp5Qg4e9e8GuM6dBxX0rvJxFYzxsCBkZ+X8KtXtP1WTUNcmjidOTarwIynoe8/fb0rnsGp3itJDpUKyMoJldhks38xUyixZOXI8fMkLSAdEwVCjHTw7v5tWjDdPc6n7ils0UUqkKcY4FwNyf51r1sv9ww28VxNBbcye4WNWdmIGe8geXnUlzpre5ke5toJ2hXmO8AIZR3nBJz6Gs+o6v8Vu3na9e/nbJfTOKRcfKz9Og/KpHUIud2hhhXKhlyy+OwB6fU7+VbUVjBY2cht15sWoymUPjffdd/LNfVtJTqsl8ini4MLg/KB0/P6bAVeS8WvfS241i0lhgEdpGssIYHcsDw4GO74fzqWiD8QkVh8GSeDYIR4+XT8fTSvtDubqbs5bojGGASGbAIAA7yfqSPOtm7s9W/1uVoDH7ntwhi3FjGD6VzeydJi7juLu0aW2AW8UB8A7Pt+dSfY+xudatIo7zCK0ys4j68AHxA/Xp61ExSG3DofmAZlPhjuzVo9kdzE8N7b5YyxsD8XXB/grjGbsaXLWLoSjAAAwB3VlSlel5ylKUClKUClKUClK+UH2lKUCtXUrlbOxnuJG4VjQsT4YrZLADeuYe0fthDdwXOhaS6yErw3UwOyD/iPOrIjmmpWV1rMtxJ78f60hd0RSWJJz1rb0zQnsdKliiTjuRkkFsFvXPWtThu7VOdZSFCSMrjIJHj1rKKfWLmRpX1D3R1OVHJUg/esbl21mPT0j7RosL2N5FJJb7B1ziWB17xt1FbUsuqT6bO+ke6Xiyqc3Ak4CB/ch6H1rJdNvtRdhfXEM6uoORFwcPmNzXnJaQ6fC6WKqszKV2OfvU3NLx3e33svMbvslb2cxxPZzFfTqPzqy6FZLNKgcLhiOJs938/nhRuz9xHZLJaRnPC2Syn5j41YJdSI02eGGUxyyRNErg952FcZZ9tJh0mrrU4NUjv49MkIgsnaJFQlRIwXck9cZ2HlWlqdq8epaZFoF5KZpuNriFn4kEYXqc9MtgCoOO3todDt5V0eSa5Cf15Yp2jx4g8JyQPOsbHV7u0zHZ2ttZpPuxRizyefGfm+lWa9Z2XfrbtNbltNYmtNZs/dZZQRHInxK+Rjriugeyq3Xn3lwNzy1TJ+v7VTdfglHZtbp7d/eVkRgDgsBnJOKvfsmVJNOuruEHlyuAGz1IG+3d1rTBM/F9pSlaMylKUClKUCvhYAZJAHnUTrGu2umxnjcFsdxBwfOuSdqfaDftO8al1TBI5WRmrodpmvrWDaW4jX6sKipu2GhW7hZ9RijJOBxHFfna41vUbr+pLcYA3ySTis0DyQNKvMnPT4vP9aD9QJPDIgdJY2Q9GVgQawubu3tYmmuJ44o1GSzsABX5itI7+d0FvqF1DEPnWKRgF/wCuQDXrdLfyPwSXU08akYDSHbzwe+uuMTa8e0Dt5c6ksllosojsw3C8gOGl/wACqrbaeYrKBwAXlHExG46VGo5UiNslw/FhscKjPjU1c3Jj022n5aslu3xrsQwzjpmplZrRI8rZYWiMcsmQSR8JzvXpEZrMBQ08kXQEEYHkfD717alZtcRLd2/BGiKGJYELj+4Y6+A/CvPS9Sju0ZYkxAnzTNj4fHA6D6fw+ezbaXSwQxobBpeWQSMbE/mBVYis2a8LxRTRrJs/GwlGPJhuPWrJpFzbw3Dwo0k0T/NLK2eA+HgPp963vdOQ7SQQJJxf8cLVuG/Fxz16o0nZ46TqAE5Yw3JZo5w2wIHykVv22iTT3MF1biVoYZWLsy8K7Z+Xx3/Kp7W7Z9Wit7Oa2DwiZZHDHfAPdt6fTNWeKCKWw93SMIEQAIg4cDwwK4y+eTSfWeK1ossTXbWpQrFIMiRkYKRgHfIxnJrYm064tXlbTbq3jDtlVkiDAHxzmpfSNGbT5nuXmkRTtwPIWB9D0rw1WWAueXDEzdBIEzv4HG4rPvRdbaunX8d3YldQMYu4yVdQBufEDwNdH7PWiWWlQRRx8sEcRXGME1Rey+g++X63EsQ4EYNgqBjHpXSwAAAOlej5y63WGfr7SlK0cFKUoFKUoODdp9RkW2ZnMhwcs7HAzXOZrg3Nzxi4mLv1KHYfhU12rvZSQBJhWbBByc1DQvHMgt7VeFVIZi2cjyxT27XyJSz09xbkQytuckMRjA9M1IJFchF45+BGBG6+H7+PlWjFdxRFAUlYbAKIiceZPUVld3hmkhS1lYqrfEAcgDu7qqNuwuBbYgcDnZyHBPCPT9DXlPA0bcxGJZm3Oeo+hrG6DS8sRZ5wXKNwZ4h3jrWdoLp4wJkZgx6hsEHzFNjKKEGRmQKcNjBxlfSrHpkcd/p9xaMxYjqdsN/MVGrAUlblmNUc5IwGJOO/NeizJYzW9y8RGAUIxn/tXOVWM9PneWY2F4hWSI/DlvnGPHb71qaxZXNsxfS1McZOCufl/u7847vU9RUtrFk9zZPe2wKzRjI4cb/eo201UXdqiSF0uo/6ZDLkEgdx8t/4aztaSNfT74QrFHZScceMuTsGPifXz8Ksmma0YgyzAlNhjPQ99VKXTfd5DJBKzMy54XHw48F6YO9SGmySbxzvjiYhTw9dvDurK5WdxpMZfXR7TUdMbluZAMKSAR41IHU4uXmBVO+AWFUqzTnTRyGMheFlz3EbYqYghHCEMh3J2z9jVn1qX5Rvzu14gEzFg23CDjf6VhpWjo98Ehz8Qxv4edfLeIDGG6+dW7s1FGbUzLg5Ox8PGusZyu65yvGaiRsbSOzgEUYG3U461s0pW7EpSlApSlApSlB+T+0JZrnj4hwxYOCeu++1Z6O6KWVhlpH+Iqc8Pfk/T7V56pcwaiWEB4OIHKEEA/atG0aW1E42JI2/nfV42LbKs73EcMaK0hwR8Llhk56n6VHTFD/TgjyGwxcnFV3nRtNwsOJyfididz9PCptIprmOOONysajcg4Y/tXNIkLaUQy8eATjcmpWK8tZG5bLhHHd+dRNtpyxAFnJPDg+dSJ02L3ZAqjmKeEZAP41xa64pCCxfkOnGxwcoQc/pWS8u4jMTgcxf/UHPD13H41G6fdtbzLbzjAzxJjqR31t3fw3iyx5GDxAD4cg9RnrUtWRI6dJEqpCzDmRgkl+8Hw8qr3aaFtOv4dTtA0as2JiHHCDjY4rdEpS5TLAYPHgrnA8MePrW9PHa6hAEvI2lZxkknYbd3oayt7aaRlvw3MhmjYcLgNIxGcHbA9c1IRi3SXHPz4cIyx8Ovhsart12fuoGlXT5R7vkPwFsE42/LH4VMdn4ZHIa+ijZSAOJPIbH7bVMpFlqcjgk5WLL+rAw6senmKkrVpFLQJnmhc8OP1qO043EN4Yk5aW7jKEL8WR1zU5zIoJlBJMpHEGx81czF1ci0trl5eORgiZ+JauvZVQunHh+TjPDVPN7zWEQHCSdyBV90mD3axjTGD1Nen5xhnW5SlK0ZlKUoFKUoFKUoP/Z",
+    //   "NotificationPreference": 0,
+    //   "TransactionPermission": 0,
+    //   "AccountTier": 3
+    // }
+
+    const { 
+      Email,
+      AccountNumber,
+      Address,
+      state,
+      lga,
+      CustomerType,
+      AccountOfficerCode,
+      Gender, 
+      status,
+      PlaceOfBirth,
+      NationalIdentityNo,
+      NextOfKinAddress,
+      NextOfKinEmail,
+      NextOfKinFirstName,
+      NextOfKinLastName,
+      NextOfKinPhoneNumber,
+      Relationship,
+      NextOfKinGender,
+      CompanyAddress, 
+      idFile,
+      utilityFile,
+      passportFile,
+      signFile,
+      Role, 
+      Money, 
+      Occupation,
+      Company,
+       } = this.state;
+
+      if(AccountNumber == ""){
+        this.setState({ isLoading: false, an: "empty" });
+      }else if(Email == ""){
         this.setState({ isLoading: false, em: "empty" });
-    }else if(PhoneNo == ""){
-      this.setState({ isLoading: false, pn: "empty" });
-    }else if(DateOfBirth_ == "dd/mm/yyyy"){
-      this.setState({ isLoading: false, by: "empty" });
-    }else if(ReferralName == ""){
-      this.setState({ isLoading: false, rc: "empty" });
-    }else if(isChecked == false){
-      this.setState({ isLoading: false, ch: "empty" });
-    }else{
-      // const why_here = tellUs
-      const DateOfBirth = moment(DateOfBirth_).format("YYYY-MM-DD")
-    //   Alert.alert("Info: ", this.props.navigation.state.params.phonenum+' Your sign up was successful..', [
-    //     {
-    //         text: "Ok",
-    //         onPress: () => this.props.navigation.push("SignIn", {
-    //           token: "token"
-    //         }),
-    //     },
-    // ]);
-    
-      const payload = { 
-        Email, 
-        FirstName, 
-        LastName,
-        DateOfBirth, 
-        PhoneNo,
-        OtherNames,City,
-        Address,
-        PlaceOfBirth,
-        NationalIdentityNo,
-        NextOfKinName,
-        NextOfKinPhoneNumber,
-        ReferralName,
-        ReferralPhoneNO,
-        CustomerType,
-        AccountOfficerCode,
-        Gender
-        };
-    
-    console.log(payload);
-
-    const onSuccess = ({ data }) => {  
-      this.setState({ isLoading: false, isAuthorized: true });
-      console.log(data);
-      if (data != null) {
-        this.setState({
-          item: data,
-          modalVisible_: true
-        });
-      }
-    };
-
-    const onFailure = (error) => {
-      console.log(error && error.response);
-      this.setState({ isLoading: false });
-      if(error.response == null){
+      }else if(state == "Select State"){
+        this.setState({ isLoading: false, tu: "empty" });
+      }else if(lga == "Select LGA"){
+        this.setState({ isLoading: false, lg: "empty" });
+      }else if(Address == ""){
+        this.setState({ isLoading: false, add: "empty" });
+      }else if(status == ""){
+        this.setState({ isLoading: false, stu: "empty" });
+      }else if(Gender == ""){
+        this.setState({ isLoading: false, ge: "empty" });
+      }else if(NextOfKinFirstName == ""){
+        this.setState({ isLoading: false, nfn: "empty" });
+      }else if(NextOfKinLastName == ""){
+        this.setState({ isLoading: false, nln: "empty" });
+      }else if(NextOfKinEmail == ""){
+        this.setState({ isLoading: false, nem: "empty" });
+      }else if(NextOfKinPhoneNumber == ""){
+        this.setState({ isLoading: false, npn: "empty" });
+      }else if(NextOfKinAddress == ""){
+        this.setState({ isLoading: false, nadd: "empty" });
+      }else if(NextOfKinGender == ""){
+        this.setState({ isLoading: false, nge: "empty" });
+      }else if(Relationship == ""){
+        this.setState({ isLoading: false, re: "empty" });
+      }else if(Company == ""){
+        this.setState({ isLoading: false, co: "empty" });
+      }else if(CompanyAddress == ""){
+        this.setState({ isLoading: false, ca: "empty" });
+      }else if(Occupation == ""){
+        this.setState({ isLoading: false, oc: "empty" });
+      }else if(Role == ""){
+        this.setState({ isLoading: false, ro: "empty" });
+      }else if(Money == ""){
+        this.setState({ isLoading: false, re: "empty" });
+      }else if(idFile == ""){
+        this.setState({ isLoading: false, idd: "empty" });
+      }else if(utilityFile == ""){
+        this.setState({ isLoading: false, bi: "empty" });
+      }else if(passportFile == ""){
+        this.setState({ isLoading: false, pass: "empty" });
+      }else if(signFile == ""){
+        this.setState({ isLoading: false, si: "empty" });
+      }else{
+        const FirstName = this.props.navigation.state.params.firstname
+        const BVN = this.props.navigation.state.params.bvn
+        const LastName = this.props.navigation.state.params.lastname
+        const AccountName = ""
+        const PhoneNo = this.props.navigation.state.params.phoneno
+        const DateOfBirth_ = this.props.navigation.state.params.dob
+        const OtherNames = this.props.navigation.state.params.othernames
+        const IdentificationImage = idFile
+        const CustomerSignature = signFile
+        const AccountTier = 3
+        const DateOfBirth = moment(DateOfBirth_).format("YYYY-MM-DD")
+        const TransactionTrackingRef = "012220"
+        const CustomerID = "006474"
+        const AccountReferenceNumber = ""
+        const AccountOpeningTrackingRef = "00000"
+        const ProductCode = "101"
+        const IdentificationImageType = 0   
+      //   Alert.alert("Info: ", this.props.navigation.state.params.phonenum+' Your sign up was successful..', [
+      //     {
+      //         text: "Ok",
+      //         onPress: () => this.props.navigation.push("SignIn", {
+      //           token: "token"
+      //         }),
+      //     },
+      // ]);
+      
+        const payload = { 
+          TransactionTrackingRef,
+          CustomerID,
+          AccountReferenceNumber,
+          AccountOpeningTrackingRef,
+          ProductCode,
+          FirstName,
+          LastName,
+          AccountName,
+          Email,
+          PhoneNo,
+          AccountNumber,
+          Address,
+          state,
+          lga,
+          BVN,
+          OtherNames,
+          IdentificationImage,
+          CustomerSignature,
+          DateOfBirth,
+          CustomerType,
+          AccountOfficerCode,
+          Gender, 
+          status,
+          PlaceOfBirth,
+          NationalIdentityNo,
+          NextOfKinAddress,
+          NextOfKinEmail,
+          NextOfKinFirstName,
+          NextOfKinLastName,
+          NextOfKinPhoneNumber,
+          Relationship,
+          NextOfKinGender,
+          CompanyAddress, 
+          idFile,
+          utilityFile,
+          passportFile,
+          signFile,
+          Role,  
+          Occupation,
+          Company,
+          CustomerType,
+          AccountOfficerCode,
+          Gender,
+          AccountTier, 
+          IdentificationImageType
+          };
+      
+      console.log(payload);
+  
+      const onSuccess = ({ data }) => {  
+        this.setState({ isLoading: false, isAuthorized: true });
+        console.log(data);
+        if (data != null) {
+          this.setState({
+            item: data,
+            modalVisible_: true
+          });
+        }
+      };
+  
+      const onFailure = (error) => {
+        console.log(error && error.response);
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Network Error')
-      }
-      if(error.response.status == 400){
-        this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure you enter the details required😩')
-      } else if(error.response.status == 500){
-        this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure your Network is Stable😩')
-      } else if(error.response.status == 404){
-        this.setState({ isLoading: false });
-        Alert.alert('Info: ','Not Found')
-      }
-      this.setState({ errors: error.response.data, isLoading: false });
-    };
+        if(error.response == null){
+          this.setState({ isLoading: false });
+          Alert.alert('Info: ','Network Error')
+        }
+        if(error.response.status == 400){
+          this.setState({ isLoading: false });
+          Alert.alert('Info: ','Ensure you enter the details required')
+        } else if(error.response.status == 500){
+          this.setState({ isLoading: false });
+          Alert.alert('Info: ','Ensure your Network is Stable')
+        } else if(error.response.status == 404){
+          this.setState({ isLoading: false });
+          Alert.alert('Info: ','Not Found')
+        }
+        this.setState({ errors: error.response.data, isLoading: false });
+      };
 
     mozfinService
-      .post(`/BankOneWebAPI/api/Customer/CreateCustomer/2?authtoken=${"94aa5c7b-feec-4f30-bd68-df1b405d40e1"}`, payload)
+      .post(`/BankOneWebAPI/api/Account/CreateAccountQuick/2?authtoken=94aa5c7b-feec-4f30-bd68-df1b405d40e1`, payload)
       .then(onSuccess)
       .catch(onFailure);
   }
@@ -382,7 +1274,7 @@ status_props = [
   };
 
   showDateOfBirthPicker = () => {
-    this.showStartMode('date');
+    // this.showStartMode('date');
     };
 
   componentWillMount = ()=> {
@@ -390,31 +1282,22 @@ status_props = [
   }
 
   componentDidMount(){
-    if(this.state.checked == false){
-      this.clearAll()
-    }
-    }
-
-    clearAll = async () => {
-    //   try {
-    //     await AsyncStorage.clear()
-    //   } catch(e) {
-    //     // clear error
-    //   }
-    
-      console.log('Done.')
-    }
+   }
 
     visibleView(){
       this.setState({ view: true, modalVisible_: false });
-      this.props.navigation.push("UpgradeContinue", {
+      this.props.navigation.push("PasswordScreen", {
                   token: "token"
                 });
     } 
     
   render() {
     LogBox.ignoreAllLogs(true);
-    const { modeDateOfBirth, DateOfBirthShow, isChecked, personal, nextOfKin, employeeInfo, fileUpload } = this.state;
+    const { modeDateOfBirth, DateOfBirthShow, isPersonal, personal, nextOfKin, employeeInfo, fileUpload, Email, isNextOfKin, isFileUpload, isEmployeeInfo,
+      lga, 
+      state, status, 
+      Address,Gender } = this.state;
+      
     return (
         <ScrollView
           style={styles.scrollView}
@@ -433,43 +1316,22 @@ status_props = [
                 <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                 <View>
-                    <AntDesign
-                      name="checkcircle"
-                      color="#002A14"
-                      alignSelf="center"
-                      style={{ alignSelf: "center", marginBottom: 10 }}
-                      size={60}/>
-
-                <View flexDirection={"row"} alignItems={"center"}>
+                <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+                <Image source={require('../assets/circlemark.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20}/>
+                <View alignItems={"center"}>
+                <Text style={styles.statusModalText}>SUCCESSFUL!</Text>
                 <Text style={styles.modalText}>
-                <Text style={styles.statusModalText}>Your Customer ID is {this.state.item.CustomerID},{"\n"} and CustomerType is {this.state.item.CustomerType}
-                </Text>
-                {" "}Your sign up was successful..{" "}Click to "Continue"{" \n** Few steps remaining **"}
+                {" "}Your set up was successful..{" "}Click to "Proceed"{" \n** Few steps remaining **"}
                 </Text>
                 </View>
                 </View>
-
-                {/* <View flexDirection="row" justifyContent={"space-between"}> */}
-                {/* <TouchableOpacity
-                  activeOpacity={0.5}
-                  style={{ marginStart: 10, position: "absolute", marginTop: 13, bottom: 12, alignSelf: "center" }}
-                  onPress={() => this.visibleView()}>
-                  <LinearGradient
-                      colors={['#FFF','green', '#808080']} style={{ width: 90, height: 40, alignSelf: "center", borderRadius: 12 }}>
-                    <Text style={styles.textStylee}>Continue</Text>
-                    </LinearGradient>
-                </TouchableOpacity> */}
 
                 <TouchableOpacity
                   activeOpacity={0.5}
-                  style={{ marginStart: 10, position: "absolute", marginTop: 50, bottom: 12, alignSelf: "center" }}
+                  style={{ lignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
                   onPress={() => this.visibleView()}>
-                  <LinearGradient
-                      colors={['#FFF','#002A14', '#002A14']} style={{ width: 90, height: 40, alignSelf: "center", borderRadius: 12 }}>
-                    <Text style={styles.textStylee}>Update</Text>
-                    </LinearGradient>
+                    <Text style={styles.textStylee}>PROCEED</Text>
                 </TouchableOpacity>   
-                {/* </View> */}
                         
                 </View>
               </View>
@@ -502,7 +1364,7 @@ status_props = [
                 borderRadius: 10
               }}>
               <TextInput
-                backgroundColor= "#FFF"
+                backgroundColor= "#C4C4C450"
                 borderWidth = {1}
                 fontSize={16}
                 borderColor={this.state.fn == "empty" ? 'red' : "#B2BE35"}
@@ -514,19 +1376,25 @@ status_props = [
                 paddingStart ={54}
                 paddingEnd= {22}
                 opacity= {1}
+                color={"#000"}
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 returnKeyType="next"
                 keyboardType="text"
+                editable={false}
                 onSubmitEditing={() => { this.lastNameTextInput.focus(); }}
                 blurOnSubmit={false}        
                 value={this.state.FirstName == "" ? this.props.navigation.state.params.firstname : this.state.FirstName}        
-                onChangeText={this.handleFirstname}
+                onChangeText={(value) => this.handleFirstname(value)}
               />
                 <View      
                   style={styles.iconViewStyle}>
                 <UserIcon/>
-              </View>
+                </View>
+                  <View 
+                    style={{ alignSelf: "flex-end", right: 15, top: 20, opacity: 0.7, position: "absolute" }}>
+                    <LockSmallIcon/>
+                  </View>
               </View>
               
               {this.state.fn == "empty" && this.state.FirstName == "" && <Text style={styles.invalidPasswordTextStyle}>First name is empty</Text>}
@@ -537,7 +1405,7 @@ status_props = [
               <Text style={{
                 fontSize: 12,
                 color: this.state.ln == "empty" ? 'red' : "#002A14",
-                // fontFamily: "JosefinSans-Bold",
+                fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
                 paddingLeft: 5,
@@ -553,7 +1421,7 @@ status_props = [
                 borderRadius: 10
               }}>
               <TextInput
-                backgroundColor= "#FFF"
+                backgroundColor= "#C4C4C450"
                 borderWidth = {1}
                 fontSize={16}
                 borderColor={this.state.ln == "empty" ? 'red' : "#B2BE35"}
@@ -565,19 +1433,25 @@ status_props = [
                 paddingStart ={54}
                 paddingEnd= {22}
                 opacity= {1}
+                editable={false}
+                color={"#000"}
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.otherNameTextInput.focus(); }}
                 blurOnSubmit={false}                
                 ref={(input) => { this.lastNameTextInput = input; }}
-                value={this.props.navigation.state.params.lastname}
+                value={this.state.LastName == "" ? this.props.navigation.state.params.lastname : this.state.LastName}        
                 onChangeText={this.handleLastname}
               />
                 <View      
                   style={styles.iconViewStyle}>
                 <UserIcon/>
-              </View>
+                </View>
+                <View 
+                  style={{ alignSelf: "flex-end", right: 15, top: 20, opacity: 0.7, position: "absolute" }}>
+                  <LockSmallIcon/>
+                </View>
               </View>
               
               {this.state.ln == "empty" && this.state.LastName == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your last name</Text>}
@@ -604,7 +1478,7 @@ status_props = [
                 borderRadius: 10
               }}>
               <TextInput
-                backgroundColor= "#FFF"
+                backgroundColor= "#C4C4C450"
                 borderWidth = {1}
                 fontSize={16}
                 borderColor={this.state.on == "empty" ? 'red' : "#B2BE35"}
@@ -619,22 +1493,208 @@ status_props = [
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 returnKeyType="next"
+                color={"#000"}
+                editable={false}
                 onSubmitEditing={() => { this.emailTextInput.focus(); }}
                 blurOnSubmit={false}                
                 ref={(input) => { this.otherNameTextInput = input; }}
-                value={this.props.navigation.state.params.othernames}
+                value={this.state.OtherNames == "" ? this.props.navigation.state.params.othernames : this.state.OtherNames}
                 onChangeText={this.handleOthername}
               />
                 <View      
                   style={styles.iconViewStyle}>
                 <UserIcon/>
-              </View>
+                </View>
+                <View 
+                    style={{ alignSelf: "flex-end", right: 15, top: 20, opacity: 0.7, position: "absolute" }}>
+                    <LockSmallIcon/>
+                </View>
               </View>
               
               {this.state.on == "empty" && this.state.OtherNames == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your other names</Text>}
 
             </View>
             
+            
+            <View style={styles.emailTextStyleView}>
+              <Text style={{
+                fontSize: 12,
+                color: this.state.pn == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Phone Number</Text>
+              <View style={{
+                width: width * 0.81,
+                height: 54,
+                padding: 1,
+                borderRadius: 10
+              }}>
+              <View style={{flexDirection: "row", }}>
+              <TextInput
+                backgroundColor= "#C4C4C450"
+                borderWidth = {1}
+                borderColor={this.state.pn == "empty" ? 'red' : "#B2BE35"}
+                width = {width * 0.81}
+                height= {56}
+                borderRadius = {10}
+                textAlign = "left"
+                paddingTop = {8}
+                paddingBottom ={8}
+                paddingStart ={54}
+                paddingEnd= {22}
+                opacity= {1}
+                fontSize={16}
+                color={"#000"}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                keyboardType="number-pad"
+                returnKeyType="next"
+                editable={false}
+                maxLength={11}
+                onSubmitEditing={() => { this.dobTextInput.focus(); }}
+                blurOnSubmit={false}
+                ref={(input) => { this.PhoneNoTextInput = input; }}
+                value={this.state.PhoneNo == "" ? this.props.navigation.state.params.phoneno : this.state.PhoneNo}
+                onChangeText={this.handlePhoneNo}
+              />
+              </View>              
+              <View      
+                  style={styles.iconViewStyle}>
+                <PhoneIcon/>
+              </View>
+              <View 
+                style={{ alignSelf: "flex-end", right: 15, top: 20, opacity: 0.7, position: "absolute" }}>
+                <LockSmallIcon/>
+              </View>
+              </View>
+              {this.state.pn == "empty" && this.state.PhoneNo == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
+            </View>
+
+              <View style={styles.emailTextStyleView}>
+              <Text style={{
+                fontSize: 12,
+                color: this.state.by == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,
+                marginTop: 10,
+              }}>Date of Birth</Text>
+              <View style={{
+                width: width * 0.81,
+                height: 54,
+                padding: 1,
+                borderRadius: 10
+              }}>
+                <View onPress={this.showDateOfBirthPicker.bind(this)}>
+                <TextInput
+                  backgroundColor= "#C4C4C450"
+                  borderWidth = {1}
+                  borderColor={this.state.by == "empty" ? 'red' : "#B2BE35"}
+                  width= {width * 0.81}
+                  height= {56}
+                  borderRadius= {10}
+                  paddingTop = {8}
+                  paddingBottom = {8}
+                  paddingStart ={54}
+                  paddingEnd= {22}
+                  opacity= {1}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  onSubmitEditing={() => { this.AddressTextInput.focus(); }}
+                  blurOnSubmit={false}                
+                  // placeholder={this.props.navigation.state.params.dob != "dd/mm/yyyy" ? this.props.navigation.state.params.dob : "Choose year"}
+                  placeholderTextColor={"#000"}
+                  color={"#000"}
+                  editable={false}
+                  ref={(input) => { this.dobTextInput = input; }}
+                  value={this.state.DateOfBirth_ == "dd/mm/yyyy" ? this.props.navigation.state.params.dob : this.state.DateOfBirth_}
+                  onChangeText={this.handleDateOfBirth}
+                />
+              <View      
+                  style={styles.iconViewStyle}>
+                <DobIcon/>
+              </View>
+              <View 
+                style={{ alignSelf: "flex-end", right: 15, top: 20, opacity: 0.7, position: "absolute" }}>
+                <LockSmallIcon/>
+              </View>
+                </View>
+                {DateOfBirthShow && (
+                      <DateTimePicker
+                        testID="dateTimePicker"
+                        value={this.state.DateOfBirth_ ? new Date() : this.state.DateOfBirth_}
+                        mode={modeDateOfBirth}
+                        is24Hour={true}
+                        maximumDate={new Date()}
+                        display="spinner"
+                        onChange={this.onChangeDateOfBirth.bind(this)}
+                        />
+                    )}
+
+                </View>
+                {this.state.by == "empty" && this.state.DateOfBirth_ == "dd/mm/yyyy" && <Text style={styles.invalidPasswordTextStyle}>Date of Birth is empty. Click to select..</Text>}
+            </View>
+
+            <View style={styles.emailTextStyleView}>
+              <Text style={{
+                fontSize: 12,
+                color: this.state.an == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Account Number</Text>
+              <View style={{
+                width: width * 0.81,
+                height: 54,
+                padding: 1,
+                borderRadius: 10
+              }}>
+              <TextInput
+                backgroundColor= "#FFF"
+                borderWidth = {1}
+                fontSize={16}
+                borderColor={this.state.an == "empty" ? 'red' : "#B2BE35"}
+                width= {width * 0.81}
+                height= {56}
+                borderRadius= {10}
+                paddingTop = {8}
+                paddingBottom = {8}
+                paddingStart ={54}
+                paddingEnd= {22}
+                opacity= {1}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                returnKeyType="next"
+                onSubmitEditing={() => { this.PhoneNoTextInput.focus(); }}
+                blurOnSubmit={false}                
+                keyboardType="numeric"
+                maxLength={10}
+                ref={(input) => { this.emailTextInput = input; }}
+                value={this.state.AccountNumber}
+                onChangeText={this.handleAccountNumber}
+              />
+              <MaterialCommunityIcons
+                  name={"numeric"}  
+                  color={"#B2BE35"}    
+                  style={styles.numIconViewStyle}/>
+              </View>
+              {this.state.an == "empty" && this.state.AccountNumber == "" && <Text style={styles.invalidPasswordTextStyle}>Account Number is empty</Text>}
+            </View>
+
             <View style={styles.emailTextStyleView}>
               <Text style={{
                 fontSize: 12,
@@ -669,10 +1729,10 @@ status_props = [
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 returnKeyType="next"
-                onSubmitEditing={() => { this.PhoneNoTextInput.focus(); }}
+                onSubmitEditing={() => { this.AddressTextInput.focus(); }}
                 blurOnSubmit={false}                
                 keyboardType="email-address"
-                ref={(input) => { this.emailTextInput = input; }}
+                ref={(input) => { this.PhoneNoTextInput = input; }}
                 value={this.state.Email}
                 onChangeText={this.handleEmail}
               />
@@ -683,11 +1743,10 @@ status_props = [
               </View>
               {this.state.em == "empty" && this.state.Email == "" && <Text style={styles.invalidPasswordTextStyle}>Email is empty</Text>}
             </View>
-            
+
             <View style={styles.emailTextStyleView}>
-              <Text style={{
-                fontSize: 12,
-                color: this.state.pn == "empty" ? 'red' : "#002A14",
+            <Text style={{fontSize: 12,
+                color: this.state.tu == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -695,51 +1754,57 @@ status_props = [
                 opacity: 1,
                 fontWeight: "600",
                 lineHeight: 14.4,
-                marginTop: 10,}}>Phone Number</Text>
+                marginTop: 10,}}>Select State</Text>
               <View style={{
                 width: width * 0.81,
                 height: 54,
                 padding: 1,
                 borderRadius: 10
               }}>
-              <View style={{flexDirection: "row", }}>
-              <TextInput
-                backgroundColor = "#FFF"
-                borderWidth = {1}
-                borderColor={this.state.pn == "empty" ? 'red' : "#B2BE35"}
-                width = {width * 0.81}
-                height= {56}
-                borderRadius = {10}
-                textAlign = "left"
-                paddingTop = {8}
-                paddingBottom ={8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                fontSize={16}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                keyboardType="number-pad"
-                returnKeyType="next"
-                onSubmitEditing={() => { this.dobTextInput.focus(); }}
-                blurOnSubmit={false}
-                ref={(input) => { this.PhoneNoTextInput = input; }}
-                value={this.props.navigation.state.params.phoneno}
-                onChangeText={this.handlePhoneNo}
-              />
-              </View>              
-              <View      
-                  style={styles.iconViewStyle}>
-                <PhoneIcon/>
+              <Dropdown
+                  value={this.state.state}
+                  data={this.state.stateList}
+                  baseColor={"transparent"}
+                  textColor={"#000"}
+                  fontSize={15}
+                  selectedItemColor={"grey"}
+                  itemPadding={8}
+                  itemTextStyle={{ marginLeft: 20, }}
+                  dropdownMargins={{ min:8, max:6 }}
+                  overlayStyle={{bottom: 10, alignSelf: "center"}}
+                  dropdownOffset={{top: 12, left: 0}}
+                  containerStyle={{
+                  borderColor: this.state.tu == "empty" ? 'red' : "#B2BE35",
+                  backgroundColor: "#FFF",
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  marginHorizontal: 10,
+                  paddingLeft: 53,
+                  height: 56,
+                  alignSelf: "center",
+                  width: width * 0.81,}}
+                  onChangeText={(value) => this.handleState(value)}
+                />
+                <View
+                  style={styles.dropDownIconViewStyle}>
+                    <AddressIcon/>
+                  </View>
+                  <AntDesign
+                    name="down"
+                    color="grey"
+                    style={{ alignSelf: "flex-end", right: 20, top: 24, opacity: 0.7, position: "absolute" }}
+                    size={16}/>
+                  {/* <View 
+                    style={{ alignSelf: "flex-end", right: 0, top: 24, opacity: 0.7, position: "absolute" }}>
+                  <ADIcon/>
+                  </View> */}
+                </View>
+                {this.state.tu == "empty" && this.state.state == "Select State" && <Text style={styles.invalidPasswordTextStyle}>Please select a State..</Text>}
               </View>
-              </View>
-              {this.state.pn == "empty" && this.state.PhoneNo == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
-            </View>
 
               <View style={styles.emailTextStyleView}>
-              <Text style={{
-                fontSize: 12,
-                color: this.state.by == "empty" ? 'red' : "#002A14",
+            <Text style={{fontSize: 12,
+                color: this.state.lg == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -747,64 +1812,53 @@ status_props = [
                 opacity: 1,
                 fontWeight: "600",
                 lineHeight: 14.4,
-                marginTop: 10,
-              }}>Date of Birth</Text>
+                marginTop: 10,}}>Select Local Government</Text>
               <View style={{
                 width: width * 0.81,
                 height: 54,
                 padding: 1,
                 borderRadius: 10
               }}>
-                <TouchableOpacity onPress={this.showDateOfBirthPicker.bind(this)}>
-                <TextInput
-                  backgroundColor = "#FFF"
-                  borderWidth = {1}
-                  borderColor={this.state.by == "empty" ? 'red' : "#B2BE35"}
-                  width= {width * 0.81}
-                  height= {56}
-                  borderRadius= {10}
-                  paddingTop = {8}
-                  paddingBottom = {8}
-                  paddingStart ={54}
-                  paddingEnd= {22}
-                  opacity= {1}
-                  underlineColorAndroid="transparent"
-                  autoCapitalize="none"
-                  returnKeyType="next"
-                  onSubmitEditing={() => { this.ReferralNameTextInput.focus(); }}
-                  blurOnSubmit={false}                
-                  placeholder={this.props.navigation.state.params.dob != "dd/mm/yyyy" ? this.props.navigation.state.params.dob : "Choose year"}
-                  placeholderTextColor={"#000"}
-                  color={"#000"}
-                  editable={false}
-                  ref={(input) => { this.dobTextInput = input; }}
-                  value={this.props.navigation.state.params.dob}
-                  onChangeText={this.handleDateOfBirth}
+              <Dropdown
+                  value={this.state.lga}
+                  data={this.state.lgaList}
+                  baseColor={"transparent"}
+                  textColor={"#000"}
+                  fontSize={15}
+                  selectedItemColor={"grey"}
+                  itemPadding={8}
+                  itemTextStyle={{ marginLeft: 20, }}
+                  dropdownMargins={{ min:8, max:6 }}
+                  overlayStyle={{bottom: 10, alignSelf: "center"}}
+                  dropdownOffset={{top: 12, left: 0}}
+                  containerStyle={{
+                    borderColor: this.state.lg == "empty" ? 'red' : "#B2BE35",
+                    backgroundColor: "#FFF",
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    marginHorizontal: 10,
+                    paddingLeft: 53,
+                    height: 56,
+                    alignSelf: "center",
+                    width: width * 0.81,}}
+                  onChangeText={(value) => this.handleLga(value)}
                 />
-              <View      
-                  style={styles.iconViewStyle}>
-                <DobIcon/>
-              </View>
-                </TouchableOpacity>
-                {DateOfBirthShow && (
-                      <DateTimePicker
-                        testID="dateTimePicker"
-                        value={this.state.DateOfBirth_ ? new Date() : this.state.DateOfBirth_}
-                        mode={modeDateOfBirth}
-                        is24Hour={true}
-                        maximumDate={new Date()}
-                        display="spinner"
-                        onChange={this.onChangeDateOfBirth.bind(this)}
-                        />
-                    )}
-
+                <View
+                  style={styles.dropDownIconViewStyle}>
+                    <LgaIcon/>
+                  </View>
+                  <AntDesign
+                  name="down"
+                  color="grey"
+                  style={{ alignSelf: "flex-end", right: 20, top: 24, opacity: 0.7, position: "absolute" }}
+                  size={16}/>
                 </View>
-                {this.state.by == "empty" && this.state.DateOfBirth_ == "dd/mm/yyyy" && <Text style={styles.invalidPasswordTextStyle}>Date of Birth is empty. Click to select..</Text>}
-            </View>
-            
+                {this.state.lg == "empty" && this.state.lga == "Select LGA" && <Text style={styles.invalidPasswordTextStyle}>Please select an LGA..</Text>}
+              </View>
+
               <View style={styles.emailTextStyleView}>
               <Text style={{fontSize: 12,
-                color: this.state.rc == "empty" ? 'red' : "#002A14",
+                color: this.state.add == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -822,7 +1876,7 @@ status_props = [
               <TextInput
                 backgroundColor = "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.rc == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.add == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -833,9 +1887,9 @@ status_props = [
                 opacity= {1}
                 underlineColorAndroid="transparent"
                 autoCapitalize="sentences"
-                ref={(input) => { this.ReferralNameTextInput = input; }}
-                value={this.state.ReferralName}
-                onChangeText={this.handleReferral}
+                ref={(input) => { this.AddressTextInput = input; }}
+                value={this.state.Address}
+                onChangeText={this.handleAddress}
               />
               <View      
                   style={styles.iconViewStyle}>
@@ -851,11 +1905,20 @@ status_props = [
             }}>
             </View>
               </View>
-              {this.state.rc == "empty" && this.state.ReferralName == "" && <Text style={styles.invalidPasswordTextStyle}>Referral Code field is empty</Text>}
+              {this.state.add == "empty" && this.state.Address == "" && <Text style={styles.invalidPasswordTextStyle}>Address field is empty</Text>}
             </View>
 
             <View style={styles.genderTextStyleView}>
-              <Text style={styles.emailTextStyle}>Marital status</Text>
+              <Text style={{fontSize: 12,
+                color: this.state.stu == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Marital status</Text>
               <View style={{ alignSelf: "flex-start", marginStart: 10, }}>
                 <RadioForm
                   formHorizontal={true}
@@ -868,24 +1931,32 @@ status_props = [
                   labelHorizontal={true}
                   labelStyle={{fontSize: 12, color: '#000', fontFamily: "Nunito_400Regular", left: -3, marginEnd: 5 }}
                   initial={null}
+                  value={this.state.status}
                   buttonStyle={{ borderWidth: 1, borderColor: "#002A14", backgroundColor: "#002A14" }}
                   onPress={(value) => {
-                    //   alert(value)
-                      this.setState({ tellUs: value })
-                    // this.submitQuestions(item,index,value)
+                      this.handleMaritalStatus(value)
                   }}>
                     <RadioButtonInput
                       borderWidth={0.5}
-                      buttonStyle={{ borderWidth: 0.5, borderColor: "grey", backgroundColor: "#1e5228" }}/>
+                      buttonStyle={{ borderWidth: 0.5, borderColor: "grey", backgroundColor: "#002A14" }}/>
          
                   </RadioForm>
 
                 </View>
-              {this.state.tu == "empty" && this.state.tellUs == "" && <Text style={styles.invalidPasswordTextStyle}>Please select an option</Text>}
+              {this.state.stu == "empty" && this.state.status == "" && <Text style={styles.invalidPasswordTextStyle}>Please select an option</Text>}
             </View>
 
               <View style={styles.genderTextStyleView}>
-              <Text style={styles.emailTextStyle}>Gender</Text>
+              <Text style={{fontSize: 12,
+                color: this.state.ge == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Gender</Text>
               <View style={{ alignSelf: "flex-start", marginStart: 10, }}>
                 <RadioForm
                   formHorizontal={true}
@@ -898,12 +1969,11 @@ status_props = [
                   labelColor={'#002A14'}
                   labelHorizontal={true}
                   labelStyle={{fontSize: 12, color: '#000', fontFamily: "Nunito_400Regular", left: -3, marginEnd: 5 }}
-                  initial={null}
+                  initial={this.state.Gender}
+                  // value={this.state.status}
                   buttonStyle={{ borderWidth: 1, borderColor: "#002A14", backgroundColor: "#002A14" }}
                   onPress={(value) => {
-                    //   alert(value)
-                      this.setState({ tellUs: value })
-                    // this.submitQuestions(item,index,value)
+                      this.handleGender(value)
                   }}>
                     <RadioButtonInput
                       borderWidth={0.5}
@@ -912,7 +1982,7 @@ status_props = [
                   </RadioForm>
 
                 </View>
-              {this.state.tu == "empty" && this.state.tellUs == "" && <Text style={styles.invalidPasswordTextStyle}>Please select an option</Text>}
+              {this.state.ge == "empty" && this.state.Gender == "" && <Text style={styles.invalidPasswordTextStyle}>Please select an option</Text>}
             </View>
 
             {/* <View flexDirection={"row"} marginTop={8} left={-15}>
@@ -931,9 +2001,8 @@ status_props = [
             <View style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: "transparent", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
             </View> 
             <TouchableOpacity
-                onPress={()=> { this.setState({ personal: false, nextOfKin: true, employeeInfo: false })
-                this.scrollView.scrollTo({});}}
-                style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: !isChecked ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
+                onPress={()=> { this.personalUpdate()}}
+                style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: !isPersonal ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
                 <Text style={styles.loginButtonText}>NEXT</Text>
             </TouchableOpacity>
             </View>
@@ -948,7 +2017,7 @@ status_props = [
             <View style={styles.emailTextStyleView_}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.fn == "empty" ? 'red' : "#002A14",
+                color: this.state.nfn == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -968,7 +2037,7 @@ status_props = [
                 backgroundColor= "#FFF"
                 borderWidth = {1}
                 fontSize={16}
-                borderColor={this.state.fn == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.nfn == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -983,8 +2052,8 @@ status_props = [
                 keyboardType="text"
                 onSubmitEditing={() => { this.lastNameTextInput.focus(); }}
                 blurOnSubmit={false}                
-                value={this.props.navigation.state.params.firstname}
-                onChangeText={this.handleFirstname}
+                value={this.state.NextOfKinFirstName}
+                onChangeText={this.handleNextOfKinFirstname}
               />
                 <View      
                   style={styles.iconViewStyle}>
@@ -992,14 +2061,14 @@ status_props = [
               </View>
               </View>
               
-              {this.state.fn == "empty" && this.state.FirstName == "" && <Text style={styles.invalidPasswordTextStyle}>First name is empty</Text>}
+              {this.state.nfn == "empty" && this.state.NextOfKinFirstName == "" && <Text style={styles.invalidPasswordTextStyle}>Next of Kin First name is empty</Text>}
 
             </View>
 
             <View style={styles.emailTextStyleView}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.ln == "empty" ? 'red' : "#002A14",
+                color: this.state.nln == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1019,58 +2088,7 @@ status_props = [
                 backgroundColor= "#FFF"
                 borderWidth = {1}
                 fontSize={16}
-                borderColor={this.state.ln == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                returnKeyType="next"
-                onSubmitEditing={() => { this.otherNameTextInput.focus(); }}
-                blurOnSubmit={false}                
-                ref={(input) => { this.lastNameTextInput = input; }}
-                value={this.props.navigation.state.params.lastname}
-                onChangeText={this.handleLastname}
-              />
-                <View      
-                  style={styles.iconViewStyle}>
-                <UserIcon/>
-              </View>
-              </View>
-              
-              {this.state.ln == "empty" && this.state.LastName == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your last name</Text>}
-
-            </View>
-
-            {/* <View style={styles.emailTextStyleView}>
-              <Text style={{
-                fontSize: 12,
-                color: this.state.on == "empty" ? 'red' : "#002A14",
-                // fontFamily: "JosefinSans-Bold",
-                textAlign: "left",
-                paddingBottom: 5,
-                paddingLeft: 5,
-                opacity: 1,
-                fontWeight: "600",
-                lineHeight: 14.4,
-                marginTop: 10,}}>Other Names</Text>
-
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>
-              <TextInput
-                backgroundColor= "#FFF"
-                borderWidth = {1}
-                fontSize={16}
-                borderColor={this.state.on == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.nln == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -1084,9 +2102,9 @@ status_props = [
                 returnKeyType="next"
                 onSubmitEditing={() => { this.emailTextInput.focus(); }}
                 blurOnSubmit={false}                
-                ref={(input) => { this.otherNameTextInput = input; }}
-                value={this.props.navigation.state.params.othernames}
-                onChangeText={this.handleOthername}
+                ref={(input) => { this.lastNameTextInput = input; }}
+                value={this.state.NextOfKinLastName}
+                onChangeText={this.handleNextOfKinLastname}
               />
                 <View      
                   style={styles.iconViewStyle}>
@@ -1094,14 +2112,24 @@ status_props = [
               </View>
               </View>
               
-              {this.state.on == "empty" && this.state.OtherNames == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your other names</Text>}
+              {this.state.nln == "empty" && this.state.NextOfKinLastName == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter Next of Kin's last name</Text>}
 
-            </View> */}
-            
-            <View style={styles.emailTextStyleView}>
+            </View>
+
+            <View style={{
+                fontSize: 12,
+                color: this.state.nem == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,
+                marginTop: 10,}}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.em == "empty" ? 'red' : "#002A14",
+                color: this.state.nem == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1120,7 +2148,7 @@ status_props = [
                 backgroundColor= "#FFF"
                 borderWidth = {1}
                 fontSize={16}
-                borderColor={this.state.em == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.nem == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -1136,21 +2164,31 @@ status_props = [
                 blurOnSubmit={false}                
                 keyboardType="email-address"
                 ref={(input) => { this.emailTextInput = input; }}
-                value={this.state.Email}
-                onChangeText={this.handleEmail}
+                value={this.state.NextOfKinEmail}
+                onChangeText={this.handleNextOfKinEmail}
               />
               <View      
                   style={styles.iconViewStyle}>
                 <EmailIcon/>
               </View>
               </View>
-              {this.state.em == "empty" && this.state.Email == "" && <Text style={styles.invalidPasswordTextStyle}>Email is empty</Text>}
+              {this.state.nem == "empty" && this.state.NextOfKinEmail == "" && <Text style={styles.invalidPasswordTextStyle}>Next of Kin Email is empty</Text>}
             </View>
             
-            <View style={styles.emailTextStyleView}>
+            <View style={{
+                fontSize: 12,
+                color: this.state.npn == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,
+                marginTop: 10,}}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.pn == "empty" ? 'red' : "#002A14",
+                color: this.state.npn == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1169,7 +2207,7 @@ status_props = [
               <TextInput
                 backgroundColor = "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.pn == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.npn == "empty" ? 'red' : "#B2BE35"}
                 width = {width * 0.81}
                 height= {56}
                 borderRadius = {10}
@@ -1184,11 +2222,12 @@ status_props = [
                 autoCapitalize="none"
                 keyboardType="number-pad"
                 returnKeyType="next"
-                onSubmitEditing={() => { this.dobTextInput.focus(); }}
+                onSubmitEditing={() => { this.AddressTextInput.focus(); }}
                 blurOnSubmit={false}
+                maxLength={11}
                 ref={(input) => { this.PhoneNoTextInput = input; }}
-                value={this.props.navigation.state.params.phoneno}
-                onChangeText={this.handlePhoneNo}
+                value={this.state.NextOfKinPhoneNumber}
+                onChangeText={this.handleNextOfKinPhoneNo}
               />
               </View>              
               <View      
@@ -1196,13 +2235,13 @@ status_props = [
                 <PhoneIcon/>
               </View>
               </View>
-              {this.state.pn == "empty" && this.state.PhoneNo == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
+              {this.state.npn == "empty" && this.state.NextOfKinPhoneNumber == "" && <Text style={styles.invalidPasswordTextStyle}>Next of Kin's phone number does not exist</Text>}
             </View>
 
     
               <View style={styles.emailTextStyleView}>
               <Text style={{fontSize: 12,
-                color: this.state.rc == "empty" ? 'red' : "#002A14",
+                color: this.state.nadd == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1220,7 +2259,7 @@ status_props = [
               <TextInput
                 backgroundColor = "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.rc == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.nadd == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -1231,9 +2270,9 @@ status_props = [
                 opacity= {1}
                 underlineColorAndroid="transparent"
                 autoCapitalize="sentences"
-                ref={(input) => { this.ReferralNameTextInput = input; }}
-                value={this.state.ReferralName}
-                onChangeText={this.handleReferral}
+                ref={(input) => { this.AddressTextInput = input; }}
+                value={this.state.NextOfKinAddress}
+                onChangeText={this.handleNextOfKinAddress}
               />
               <View      
                   style={styles.iconViewStyle}>
@@ -1249,11 +2288,20 @@ status_props = [
             }}>
             </View>
               </View>
-              {this.state.rc == "empty" && this.state.ReferralName == "" && <Text style={styles.invalidPasswordTextStyle}>Referral Code field is empty</Text>}
+              {this.state.nadd == "empty" && this.state.NextOfKinAddress == "" && <Text style={styles.invalidPasswordTextStyle}>Next of kin Address field is empty</Text>}
             </View>
 
               <View style={styles.genderTextStyleView}>
-              <Text style={styles.emailTextStyle}>Next Of Kin Gender</Text>
+              <Text style={{fontSize: 12,
+                color: this.state.nge == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 5,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,
+                marginTop: 10,}}>Next Of Kin Gender</Text>
               <View style={{ alignSelf: "flex-start", marginStart: 10, top: 5}}>
                 <RadioForm
                   formHorizontal={true}
@@ -1269,9 +2317,7 @@ status_props = [
                   initial={null}
                   buttonStyle={{ borderWidth: 1, borderColor: "#002A14", backgroundColor: "#002A14" }}
                   onPress={(value) => {
-                    //   alert(value)
-                      this.setState({ tellUs: value })
-                    // this.submitQuestions(item,index,value)
+                      this.handleNextOfKinGender(value);
                   }}>
                     <RadioButtonInput
                       borderWidth={0.5}
@@ -1280,12 +2326,12 @@ status_props = [
                   </RadioForm>
 
                 </View>
-              {this.state.tu == "empty" && this.state.tellUs == "" && <Text style={styles.invalidPasswordTextStyle}>Please select an option</Text>}
+              {this.state.nge == "empty" && this.state.NextOfKinGender == "" && <Text style={styles.invalidPasswordTextStyle}>Please select an option</Text>}
             </View>
 
             <View style={styles.emailTextStyleView}>
               <Text style={{fontSize: 12,
-                color: this.state.rc == "empty" ? 'red' : "#002A14",
+                color: this.state.re == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1303,7 +2349,7 @@ status_props = [
               <TextInput
                 backgroundColor = "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.rc == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.re == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -1315,8 +2361,8 @@ status_props = [
                 underlineColorAndroid="transparent"
                 autoCapitalize="sentences"
                 ref={(input) => { this.ReferralNameTextInput = input; }}
-                value={this.state.ReferralName}
-                onChangeText={this.handleReferral}
+                value={this.state.Relationship}
+                onChangeText={this.handleRelationship}
               />
               <View      
                   style={styles.iconViewStyle}>
@@ -1332,29 +2378,17 @@ status_props = [
             }}>
             </View>
               </View>
-              {this.state.rc == "empty" && this.state.ReferralName == "" && <Text style={styles.invalidPasswordTextStyle}>Referral Code field is empty</Text>}
+              {this.state.re == "empty" && this.state.Relationship == "" && <Text style={styles.invalidPasswordTextStyle}>Relationship field is empty</Text>}
             </View>
-            {/* <View flexDirection={"row"} marginTop={8} left={-15}>
-              <CheckBox
-                checkedIcon={<CheckOpenIcon />}
-                uncheckedIcon={<CheckCloseIcon
-                                  red={this.state.ch == "empty" ? "red": ""} />}
-                checked={isChecked}
-                onPress={() =>this.setState({ isChecked: !isChecked })}
-                />
-                <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.65, textAlign: "left", top: 20, left: -10 }}>I agree to the{" "}
-                <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms and Conditions</Text>
-                </Text> 
-              </View> */}
+           
             <View flexDirection={"row"} marginTop={8}>
-            <TouchableOpacity onPress={()=> { this.setState({ personal: true, nextOfKin: false, employeeInfo: false })
+            <TouchableOpacity onPress={()=> { this.setState({ personal: true, nextOfKin: false, employeeInfo: false, fileUpload: false })
                 this.scrollView.scrollTo({});}} style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: "transparent", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
             <Text style={styles.backLoginButtonText}>BACK</Text>
             </TouchableOpacity> 
             <TouchableOpacity
-                onPress={()=> { this.setState({ personal: false, nextOfKin: false, employeeInfo: true })
-                this.scrollView.scrollTo({});}}
-                style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: !isChecked ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
+                onPress={()=> this.nextOfKinUpdate()}
+                style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: !isNextOfKin ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
                 <Text style={styles.loginButtonText}>NEXT</Text>
             </TouchableOpacity>
             </View>
@@ -1369,7 +2403,7 @@ status_props = [
             <View style={styles.emailTextStyleView_}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.fn == "empty" ? 'red' : "#002A14",
+                color: this.state.co == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1389,7 +2423,7 @@ status_props = [
                 backgroundColor= "#FFF"
                 borderWidth = {1}
                 fontSize={16}
-                borderColor={this.state.fn == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.co == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -1404,23 +2438,23 @@ status_props = [
                 keyboardType="text"
                 onSubmitEditing={() => { this.lastNameTextInput.focus(); }}
                 blurOnSubmit={false}                
-                value={this.props.navigation.state.params.firstname}
-                onChangeText={this.handleFirstname}
+                value={this.state.Company}
+                onChangeText={this.handleCompany}
               />
                 <View      
                   style={styles.iconViewStyle}>
-                <UserIcon/>
+                <CompanyIcon />
               </View>
               </View>
               
-              {this.state.fn == "empty" && this.state.FirstName == "" && <Text style={styles.invalidPasswordTextStyle}>First name is empty</Text>}
+              {this.state.co == "empty" && this.state.Company == "" && <Text style={styles.invalidPasswordTextStyle}>Company is empty</Text>}
 
             </View>
 
             <View style={styles.emailTextStyleView}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.ln == "empty" ? 'red' : "#002A14",
+                color: this.state.ca == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1440,58 +2474,7 @@ status_props = [
                 backgroundColor= "#FFF"
                 borderWidth = {1}
                 fontSize={16}
-                borderColor={this.state.ln == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                returnKeyType="next"
-                onSubmitEditing={() => { this.otherNameTextInput.focus(); }}
-                blurOnSubmit={false}                
-                ref={(input) => { this.lastNameTextInput = input; }}
-                value={this.props.navigation.state.params.lastname}
-                onChangeText={this.handleLastname}
-              />
-                <View      
-                  style={styles.iconViewStyle}>
-                <UserIcon/>
-              </View>
-              </View>
-              
-              {this.state.ln == "empty" && this.state.LastName == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your last name</Text>}
-
-            </View>
-
-            {/* <View style={styles.emailTextStyleView}>
-              <Text style={{
-                fontSize: 12,
-                color: this.state.on == "empty" ? 'red' : "#002A14",
-                // fontFamily: "JosefinSans-Bold",
-                textAlign: "left",
-                paddingBottom: 5,
-                paddingLeft: 5,
-                opacity: 1,
-                fontWeight: "600",
-                lineHeight: 14.4,
-                marginTop: 10,}}>Other Names</Text>
-
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>
-              <TextInput
-                backgroundColor= "#FFF"
-                borderWidth = {1}
-                fontSize={16}
-                borderColor={this.state.on == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.ca == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -1505,24 +2488,23 @@ status_props = [
                 returnKeyType="next"
                 onSubmitEditing={() => { this.emailTextInput.focus(); }}
                 blurOnSubmit={false}                
-                ref={(input) => { this.otherNameTextInput = input; }}
-                value={this.props.navigation.state.params.othernames}
-                onChangeText={this.handleOthername}
+                ref={(input) => { this.lastNameTextInput = input; }}
+                value={this.state.CompanyAddress}
+                onChangeText={this.handleCompanyAddress}
               />
                 <View      
                   style={styles.iconViewStyle}>
-                <UserIcon/>
+                <LocationIcon />
               </View>
               </View>
               
-              {this.state.on == "empty" && this.state.OtherNames == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your other names</Text>}
+              {this.state.ca == "empty" && this.state.CompanyAddress == "" && <Text style={styles.invalidPasswordTextStyle}>Company Address is empty</Text>}
+            </View>
 
-            </View> */}
-            
             <View style={styles.emailTextStyleView}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.em == "empty" ? 'red' : "#002A14",
+                color: this.state.oc == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1541,7 +2523,7 @@ status_props = [
                 backgroundColor= "#FFF"
                 borderWidth = {1}
                 fontSize={16}
-                borderColor={this.state.em == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.oc == "empty" ? 'red' : "#B2BE35"}
                 width= {width * 0.81}
                 height= {56}
                 borderRadius= {10}
@@ -1555,23 +2537,22 @@ status_props = [
                 returnKeyType="next"
                 onSubmitEditing={() => { this.PhoneNoTextInput.focus(); }}
                 blurOnSubmit={false}                
-                keyboardType="email-address"
                 ref={(input) => { this.emailTextInput = input; }}
-                value={this.state.Email}
-                onChangeText={this.handleEmail}
+                value={this.state.Occupation}
+                onChangeText={this.handleOccupation}
               />
               <View      
                   style={styles.iconViewStyle}>
-                <EmailIcon/>
+                <OccupationIcon />
               </View>
               </View>
-              {this.state.em == "empty" && this.state.Email == "" && <Text style={styles.invalidPasswordTextStyle}>Email is empty</Text>}
+              {this.state.oc == "empty" && this.state.Occupation == "" && <Text style={styles.invalidPasswordTextStyle}>Occupation is empty</Text>}
             </View>
             
             <View style={styles.emailTextStyleView}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.pn == "empty" ? 'red' : "#002A14",
+                color: this.state.ro == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1590,7 +2571,7 @@ status_props = [
               <TextInput
                 backgroundColor = "#FFF"
                 borderWidth = {1}
-                borderColor={this.state.pn == "empty" ? 'red' : "#B2BE35"}
+                borderColor={this.state.ro == "empty" ? 'red' : "#B2BE35"}
                 width = {width * 0.81}
                 height= {56}
                 borderRadius = {10}
@@ -1602,28 +2583,27 @@ status_props = [
                 opacity= {1}
                 fontSize={16}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                keyboardType="number-pad"
                 returnKeyType="next"
-                onSubmitEditing={() => { this.dobTextInput.focus(); }}
+                autoCapitalize="sentences"
+                onSubmitEditing={() => { this.moneyTextInput.focus() }}
                 blurOnSubmit={false}
                 ref={(input) => { this.PhoneNoTextInput = input; }}
-                value={this.props.navigation.state.params.phoneno}
-                onChangeText={this.handlePhoneNo}
+                value={this.state.Role}
+                onChangeText={this.handleRole}
               />
               </View>              
               <View      
                   style={styles.iconViewStyle}>
-                <PhoneIcon/>
+                <RoleIcon />
               </View>
               </View>
-              {this.state.pn == "empty" && this.state.PhoneNo == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
+              {this.state.ro == "empty" && this.state.Role == "" && <Text style={styles.invalidPasswordTextStyle}>Role is empty</Text>}
             </View>
 
     
               <View style={styles.emailTextStyleView}>
               <Text style={{fontSize: 12,
-                color: this.state.rc == "empty" ? 'red' : "#002A14",
+                color: this.state.mo == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
@@ -1638,28 +2618,36 @@ status_props = [
                 padding: 1,
                 borderRadius: 10
               }}>
-              <TextInput
-                backgroundColor = "#FFF"
-                borderWidth = {1}
-                borderColor={this.state.rc == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="sentences"
-                ref={(input) => { this.ReferralNameTextInput = input; }}
-                value={this.state.ReferralName}
-                onChangeText={this.handleReferral}
-              />
+                <NumberFormat
+                value={this.state.Money}
+                displayType={'text'}
+                thousandSeparator={true}
+                // prefix={'₦'}
+                renderText={formattedValue => <TextInput
+                  backgroundColor = "#FFF"
+                  borderWidth = {1}
+                  borderColor={this.state.mo == "empty" ? 'red' : "#B2BE35"}
+                  width= {width * 0.81}
+                  height= {56}
+                  borderRadius= {10}
+                  paddingTop = {8}
+                  paddingBottom = {8}
+                  paddingStart ={54}
+                  paddingEnd= {22}
+                  opacity= {1}
+                  underlineColorAndroid="transparent"
+                  keyboardType="number-pad"
+                  ref={(input) => { this.moneyTextInput = input; }}
+                  value={formattedValue}
+                  onChangeText={this.handleMoney}
+                />} // <--- e.g. N1,000...
+                            />
+              
               <View      
                   style={styles.iconViewStyle}>
-                <HouseIcon/>
+                <MoneyIcon />
               </View>
+
             <View style={{
               height: 45,
               width: 45,
@@ -1670,29 +2658,17 @@ status_props = [
             }}>
             </View>
               </View>
-              {this.state.rc == "empty" && this.state.ReferralName == "" && <Text style={styles.invalidPasswordTextStyle}>Referral Code field is empty</Text>}
+              {this.state.mo == "empty" && this.state.Money == "" && <Text style={styles.invalidPasswordTextStyle}>Money Net Income is empty</Text>}
             </View>
 
-            {/* <View flexDirection={"row"} marginTop={8} left={-15}>
-              <CheckBox
-                checkedIcon={<CheckOpenIcon />}
-                uncheckedIcon={<CheckCloseIcon
-                                  red={this.state.ch == "empty" ? "red": ""} />}
-                checked={isChecked}
-                onPress={() =>this.setState({ isChecked: !isChecked })}
-                />
-                <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.65, textAlign: "left", top: 20, left: -10 }}>I agree to the{" "}
-                <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms and Conditions</Text>
-                </Text> 
-              </View> */}
             <View flexDirection={"row"} marginTop={8}>
-            <TouchableOpacity onPress={()=> { this.setState({ personal: false, nextOfKin: true, employeeInfo: false })
+            <TouchableOpacity onPress={()=> { this.setState({ personal: false, nextOfKin: true, employeeInfo: false, fileUpload: false })
                 this.scrollView.scrollTo({});}} style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: "transparent", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
             <Text style={styles.backLoginButtonText}>BACK</Text>
             </TouchableOpacity> 
             <TouchableOpacity
-                onPress={()=> alert("Next Screen is Uploading Documents..\n* Then SET PASSWORD AND SET PIN")}
-                style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: !isChecked ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
+                onPress={this.employeUpdate.bind(this)}
+                style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: !isEmployeeInfo ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
                 <Text style={styles.loginButtonText}>NEXT</Text>
             </TouchableOpacity>
             </View>
@@ -1700,343 +2676,295 @@ status_props = [
 
 
             {fileUpload && <View style={styles.cardStyleLong}>
-            <Text style={styles.welcomeTextStyle}>Employment Information</Text>
-            <Text style={styles.infooTextStyle}>Please update your employment details  to proceed</Text>
-
-            <View style={styles.emailTextStyleView_}>
-              <Text style={{
-                fontSize: 12,
-                color: this.state.fn == "empty" ? 'red' : "#002A14",
-                // fontFamily: "JosefinSans-Bold",
-                textAlign: "left",
-                paddingBottom: 5,
-                paddingLeft: 5,
-                opacity: 1,
-                fontWeight: "600",
-                lineHeight: 14.4,
-                marginTop: 10,}}>Name of Company</Text>
-
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>
-              <TextInput
-                backgroundColor= "#FFF"
-                borderWidth = {1}
-                fontSize={16}
-                borderColor={this.state.fn == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                returnKeyType="next"
-                keyboardType="text"
-                onSubmitEditing={() => { this.lastNameTextInput.focus(); }}
-                blurOnSubmit={false}                
-                value={this.props.navigation.state.params.firstname}
-                onChangeText={this.handleFirstname}
-              />
-                <View      
-                  style={styles.iconViewStyle}>
-                <UserIcon/>
-              </View>
-              </View>
+            <Text style={styles.welcomeTextStyle}>One More To Go!</Text>
+            <Text style={styles.infooTextStyle_}>Please provide the following details to finalize registration</Text>
               
-              {this.state.fn == "empty" && this.state.FirstName == "" && <Text style={styles.invalidPasswordTextStyle}>First name is empty</Text>}
-
-            </View>
-
-            <View style={styles.emailTextStyleView}>
+            <View style={styles.uploadTextStyleView_}>
+              <View style={{
+                  borderColor: this.state.idd == "empty" ? 'red' : "transparent",
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  width: width * 0.88,
+                  paddingBottom: 10}}>
               <Text style={{
                 fontSize: 12,
-                color: this.state.ln == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
-                paddingBottom: 5,
-                paddingLeft: 5,
+                paddingLeft: 15,
+                color: "#002A14",
                 opacity: 1,
                 fontWeight: "600",
                 lineHeight: 14.4,
-                marginTop: 10,}}>Company Address</Text>
+                marginTop: 10,}}>Upload A Governement Issued Identity</Text>
+                <View
+                    style={{
+                    backgroundColor: '#B2BE35',
+                    height: 1,
+                    width: width * 0.8,
+                    marginHorizontal: 20,
+                    marginBottom: 10,
+                    alignSelf: "center",
+                }} />
 
               <View style={{
-                width: width * 0.81,
-                height: 54,
                 padding: 1,
-                borderRadius: 10
+                alignSelf: "center",
               }}>
-              <TextInput
-                backgroundColor= "#FFF"
-                borderWidth = {1}
-                fontSize={16}
-                borderColor={this.state.ln == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                returnKeyType="next"
-                onSubmitEditing={() => { this.otherNameTextInput.focus(); }}
-                blurOnSubmit={false}                
-                ref={(input) => { this.lastNameTextInput = input; }}
-                value={this.props.navigation.state.params.lastname}
-                onChangeText={this.handleLastname}
-              />
-                <View      
-                  style={styles.iconViewStyle}>
-                <UserIcon/>
-              </View>
-              </View>
-              
-              {this.state.ln == "empty" && this.state.LastName == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your last name</Text>}
-
-            </View>
-
-            {/* <View style={styles.emailTextStyleView}>
-              <Text style={{
+                <Text style={{
                 fontSize: 12,
-                color: this.state.on == "empty" ? 'red' : "#002A14",
+                color: this.state.idd == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
                 textAlign: "left",
                 paddingBottom: 5,
-                paddingLeft: 5,
+                paddingLeft: 10,
                 opacity: 1,
                 fontWeight: "600",
-                lineHeight: 14.4,
-                marginTop: 10,}}>Other Names</Text>
+                lineHeight: 14.4,}}>Select Identification type</Text>
 
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>
-              <TextInput
-                backgroundColor= "#FFF"
-                borderWidth = {1}
-                fontSize={16}
-                borderColor={this.state.on == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                returnKeyType="next"
-                onSubmitEditing={() => { this.emailTextInput.focus(); }}
-                blurOnSubmit={false}                
-                ref={(input) => { this.otherNameTextInput = input; }}
-                value={this.props.navigation.state.params.othernames}
-                onChangeText={this.handleOthername}
-              />
-                <View      
-                  style={styles.iconViewStyle}>
-                <UserIcon/>
-              </View>
-              </View>
-              
-              {this.state.on == "empty" && this.state.OtherNames == "" && <Text style={styles.invalidPasswordTextStyle}>Please enter your other names</Text>}
-
-            </View> */}
-            
-            <View style={styles.emailTextStyleView}>
-              <Text style={{
-                fontSize: 12,
-                color: this.state.em == "empty" ? 'red' : "#002A14",
-                // fontFamily: "JosefinSans-Bold",
-                textAlign: "left",
-                paddingBottom: 5,
-                paddingLeft: 5,
-                opacity: 1,
-                fontWeight: "600",
-                lineHeight: 14.4,
-                marginTop: 10,}}>Occupation</Text>
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>
-              <TextInput
-                backgroundColor= "#FFF"
-                borderWidth = {1}
-                fontSize={16}
-                borderColor={this.state.em == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                returnKeyType="next"
-                onSubmitEditing={() => { this.PhoneNoTextInput.focus(); }}
-                blurOnSubmit={false}                
-                keyboardType="email-address"
-                ref={(input) => { this.emailTextInput = input; }}
-                value={this.state.Email}
-                onChangeText={this.handleEmail}
-              />
-              <View      
-                  style={styles.iconViewStyle}>
-                <EmailIcon/>
-              </View>
-              </View>
-              {this.state.em == "empty" && this.state.Email == "" && <Text style={styles.invalidPasswordTextStyle}>Email is empty</Text>}
-            </View>
-            
-            <View style={styles.emailTextStyleView}>
-              <Text style={{
-                fontSize: 12,
-                color: this.state.pn == "empty" ? 'red' : "#002A14",
-                // fontFamily: "JosefinSans-Bold",
-                textAlign: "left",
-                paddingBottom: 5,
-                paddingLeft: 5,
-                opacity: 1,
-                fontWeight: "600",
-                lineHeight: 14.4,
-                marginTop: 10,}}>Role</Text>
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>
-              <View style={{flexDirection: "row", }}>
-              <TextInput
-                backgroundColor = "#FFF"
-                borderWidth = {1}
-                borderColor={this.state.pn == "empty" ? 'red' : "#B2BE35"}
-                width = {width * 0.81}
-                height= {56}
-                borderRadius = {10}
-                textAlign = "left"
-                paddingTop = {8}
-                paddingBottom ={8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                fontSize={16}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                keyboardType="number-pad"
-                returnKeyType="next"
-                onSubmitEditing={() => { this.dobTextInput.focus(); }}
-                blurOnSubmit={false}
-                ref={(input) => { this.PhoneNoTextInput = input; }}
-                value={this.props.navigation.state.params.phoneno}
-                onChangeText={this.handlePhoneNo}
-              />
-              </View>              
-              <View      
-                  style={styles.iconViewStyle}>
-                <PhoneIcon/>
-              </View>
-              </View>
-              {this.state.pn == "empty" && this.state.PhoneNo == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
-            </View>
-
-    
-              <View style={styles.emailTextStyleView}>
-              <Text style={{fontSize: 12,
-                color: this.state.rc == "empty" ? 'red' : "#002A14",
-                // fontFamily: "JosefinSans-Bold",
-                textAlign: "left",
-                paddingBottom: 5,
-                paddingLeft: 5,
-                opacity: 1,
-                fontWeight: "600",
-                lineHeight: 14.4,
-                marginTop: 10,}}>Monthly Net Income</Text>
-              <View style={{
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                borderRadius: 10
-              }}>
-              <TextInput
-                backgroundColor = "#FFF"
-                borderWidth = {1}
-                borderColor={this.state.rc == "empty" ? 'red' : "#B2BE35"}
-                width= {width * 0.81}
-                height= {56}
-                borderRadius= {10}
-                paddingTop = {8}
-                paddingBottom = {8}
-                paddingStart ={54}
-                paddingEnd= {22}
-                opacity= {1}
-                underlineColorAndroid="transparent"
-                autoCapitalize="sentences"
-                ref={(input) => { this.ReferralNameTextInput = input; }}
-                value={this.state.ReferralName}
-                onChangeText={this.handleReferral}
-              />
-              <View      
-                  style={styles.iconViewStyle}>
-                <HouseIcon/>
-              </View>
-            <View style={{
-              height: 45,
-              width: 45,
-              borderRadius: 50,
-              position: "absolute",
-              marginLeft: 10,
-              top: 2,
-            }}>
-            </View>
-              </View>
-              {this.state.rc == "empty" && this.state.ReferralName == "" && <Text style={styles.invalidPasswordTextStyle}>Referral Code field is empty</Text>}
-            </View>
-
-            {/* <View flexDirection={"row"} marginTop={8} left={-15}>
-              <CheckBox
-                checkedIcon={<CheckOpenIcon />}
-                uncheckedIcon={<CheckCloseIcon
-                                  red={this.state.ch == "empty" ? "red": ""} />}
-                checked={isChecked}
-                onPress={() =>this.setState({ isChecked: !isChecked })}
+                <Dropdown
+                  value={this.state.id}
+                  data={this.state.idList}
+                  baseColor={"transparent"}
+                  textColor={"#C4C4C4"}
+                  fontSize={15}
+                  selectedItemColor={"grey"}
+                  itemPadding={8}
+                  itemTextStyle={{ marginLeft: 20, fontSize: 10, }}
+                  dropdownMargins={{ min:8, max:6 }}
+                  overlayStyle={{bottom: 10, alignSelf: "center"}}
+                  dropdownOffset={{top: 10, left: 0}}
+                  containerStyle={{
+                  borderColor: this.state.idd == "empty" ? 'red' : "#B2BE35",
+                  backgroundColor: "#FFF",
+                  borderWidth: 1,
+                  borderRadius: 6,
+                  marginHorizontal: 10,
+                  paddingLeft: 10,
+                  height: 30,
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  width: width * 0.80,}}
+                  onChangeText={(value) => this.handleId(value)}
                 />
-                <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.65, textAlign: "left", top: 20, left: -10 }}>I agree to the{" "}
-                <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms and Conditions</Text>
-                </Text> 
-              </View> */}
+                  <AntDesign
+                    name="down"
+                    color="grey"
+                    style={{ alignSelf: "flex-end", right: 20, top: 28, opacity: 0.7, position: "absolute" }}
+                    size={16}/>
+                    <View style={{ flexDirection: "row", marginTop: 10, }}>
+                    <TouchableOpacity onPress={this.selectFileId.bind(this)} style={{ borderWidth: 1, borderRadius: 8, borderColor: "#002A14", width: 117, height: 24, marginLeft: 15 }}>
+                    <Text style={{ color:"#002A14", fontSize: 12, textAlign: "center", fontWeight: "400", lineHeight: 14.4, padding: 5, }}>Choose file</Text>
+                    </TouchableOpacity>
+
+                    {this.state.fileNameId == "" ? <Text style={{ color:"#002A14", fontSize: 12, textAlign: "center", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, margin: 5 }}>No file selected yet</Text> : <Text style={{ color:"#002A14", fontSize: 10, textAlign: "center", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, margin: 5, width: 130, marginEnd: 20 }}>{this.state.fileNameId}</Text>}
+                    </View>
+                    <View style={{ alignSelf: "flex-start" }}>
+                    <Text style={{ color:"#8C8C8C", fontSize: 12, textAlign: "left", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, marginTop: 10 }}>*File format supported: pdf, jpg, png</Text>
+                    <Text style={{ color:"#8C8C8C", fontSize: 12, textAlign: "left", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, marginTop: 6 }}>*Maximum file size: 2Mb</Text>
+                    </View>
+              </View>
+
+              
+              {this.state.idd == "empty" && this.state.id == "Select Identification type" && <Text style={styles.uploadInvalidPasswordTextStyle}>Select an Identification type</Text>}
+              </View>
+            </View>
+
+            <View style={styles.uploadTextStyleView}>
+            <View style={{
+                  borderColor: this.state.bi == "empty" ? 'red' : "transparent",
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  width: width * 0.88,
+                  paddingVertical: 10}}>
+            <Text style={{
+                fontSize: 12,
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingLeft: 15,
+                opacity: 1,
+                color: "#002A14",
+                fontWeight: "600",
+                lineHeight: 14.4,}}>Upload Most Recent Utility Bill</Text>
+                <View
+                    style={{
+                    backgroundColor: '#B2BE35',
+                    height: 1,
+                    width: width * 0.8,
+                    marginHorizontal: 20,
+                    marginBottom: 10,
+                    alignSelf: "center",
+                }} />
+
+              <View style={{
+                padding: 1,
+                alignSelf: "center",
+              }}>
+                <Text style={{
+                fontSize: 12,
+                color: this.state.bi == "empty" ? 'red' : "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingBottom: 5,
+                paddingLeft: 10,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,}}>Select Utility bill type</Text>
+
+                <Dropdown
+                  value={this.state.bill}
+                  data={this.state.billList}
+                  baseColor={"transparent"}
+                  textColor={"#C4C4C4"}
+                  fontSize={15}
+                  selectedItemColor={"grey"}
+                  itemPadding={8}
+                  itemTextStyle={{ marginLeft: 20, fontSize: 10, }}
+                  dropdownMargins={{ min:8, max:6 }}
+                  overlayStyle={{bottom: 10, alignSelf: "center"}}
+                  dropdownOffset={{top: 10, left: 0}}
+                  containerStyle={{
+                  borderColor: this.state.bi == "empty" ? 'red' : "#B2BE35",
+                  backgroundColor: "#FFF",
+                  borderWidth: 1,
+                  borderRadius: 6,
+                  marginHorizontal: 10,
+                  paddingLeft: 10,
+                  height: 30,
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  width: width * 0.80,}}
+                  onChangeText={(value) => this.handleBill(value)}
+                />
+                  <AntDesign
+                    name="down"
+                    color="grey"
+                    style={{ alignSelf: "flex-end", right: 20, top: 28, opacity: 0.7, position: "absolute" }}
+                    size={16}/>
+                    <View style={{ flexDirection: "row", marginTop: 10, }}>
+                    <TouchableOpacity onPress={this.selectFileUtility.bind(this)} style={{ borderWidth: 1, borderRadius: 8, borderColor: "#002A14", width: 117, height: 24, marginLeft: 15 }}>
+                    <Text style={{ color:"#002A14", fontSize: 12, textAlign: "center", fontWeight: "400", lineHeight: 14.4, padding: 5, }}>Choose file</Text>
+                    </TouchableOpacity>
+
+                    {this.state.fileNameUtility == "" ? <Text style={{ color:"#002A14", fontSize: 12, textAlign: "center", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, margin: 5 }}>No file selected yet</Text> : <Text style={{ color:"#002A14", fontSize: 10, textAlign: "center", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, margin: 5, width: 130, marginEnd: 20 }}>{this.state.fileNameUtility}</Text>}
+                    </View>
+                    <View style={{ alignSelf: "flex-start" }}>
+                    <Text style={{ color:"#8C8C8C", fontSize: 12, textAlign: "left", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, marginTop: 10 }}>*File format supported: pdf, jpg, png</Text>
+                    <Text style={{ color:"#8C8C8C", fontSize: 12, textAlign: "left", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, marginTop: 6 }}>*Maximum file size: 2Mb</Text>
+                    </View>
+              </View>
+
+              
+              {/* {this.state.bi == "empty" && this.state.bill == "Select bill type" && <Text style={styles.invalidPasswordTextStyle}>Please select a bill type</Text>} */}
+              </View>
+            </View>
+
+            <View style={styles.uploadTextStyleView}>
+            <View style={{
+                  borderColor: this.state.pass == "empty" ? 'red' : "transparent",
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  width: width * 0.88,
+                  paddingVertical: 10}}>
+              <Text style={{
+                fontSize: 12,
+                color: "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingLeft: 15,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,}}>Upload Your Passport</Text>
+                <View
+                    style={{
+                    backgroundColor: '#B2BE35',
+                    height: 1,
+                    width: width * 0.8,
+                    marginHorizontal: 20,
+                    marginBottom: 10,
+                    alignSelf: "center",
+                }} />
+
+              <View style={{
+                padding: 1,
+                alignSelf: "flex-start",
+              }}>
+                    <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity onPress={this.selectFilePassport.bind(this)} style={{ borderWidth: 1, borderRadius: 8, borderColor: "#002A14", width: 117, height: 24, marginLeft: 20 }}>
+                    <Text style={{ color:"#002A14", fontSize: 12, textAlign: "center", fontWeight: "400", lineHeight: 14.4, padding: 5, }}>Choose file</Text>
+                    </TouchableOpacity>
+
+                    {this.state.fileNamePassport == "" ? <Text style={{ color:"#002A14", fontSize: 12, textAlign: "center", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, margin: 5 }}>No file selected yet</Text> : <Text style={{ color:"#002A14", fontSize: 10, textAlign: "center", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, margin: 5, width: 130, marginEnd: 20 }}>{this.state.fileNamePassport}</Text>}
+                    </View>
+                    <View style={{ alignSelf: "flex-start", marginLeft: 10  }}>
+                    <Text style={{ color:"#8C8C8C", fontSize: 12, textAlign: "left", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, marginTop: 10 }}>*File format supported: pdf, jpg, png</Text>
+                    <Text style={{ color:"#8C8C8C", fontSize: 12, textAlign: "left", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, marginTop: 6 }}>*Maximum file size: 2Mb</Text>
+                    </View>
+              </View>
+
+              
+              {/* {this.state.fn == "empty" && this.state.FirstName == "" && <Text style={styles.invalidPasswordTextStyle}>First name is empty</Text>} */}
+              </View>
+            </View>
+            
+            <View style={styles.uploadTextStyleVieww_}>
+            <View style={{
+                  borderColor: this.state.si == "empty" ? 'red' : "transparent",
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  width: width * 0.88,
+                  paddingVertical: 10}}>
+            <Text style={{
+                fontSize: 12,
+                color: "#002A14",
+                // fontFamily: "JosefinSans-Bold",
+                textAlign: "left",
+                paddingLeft: 15,
+                opacity: 1,
+                fontWeight: "600",
+                lineHeight: 14.4,}}>Upload Your Signature</Text>
+                <View
+                    style={{
+                    backgroundColor: '#B2BE35',
+                    height: 1,
+                    width: width * 0.8,
+                    marginHorizontal: 20,
+                    marginBottom: 10,
+                    alignSelf: "center",
+                }} />
+
+              <View style={{
+                padding: 1,
+                alignSelf: "flex-start",
+              }}>
+                    <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity onPress={this.selectFileSign.bind(this)} style={{ borderWidth: 1, borderRadius: 8, borderColor: "#002A14", width: 117, height: 24, marginLeft: 20 }}>
+                    <Text style={{ color:"#002A14", fontSize: 12, textAlign: "center", fontWeight: "400", lineHeight: 14.4, padding: 5, }}>Choose file</Text>
+                    </TouchableOpacity>
+
+                    {this.state.fileNameSign == "" ? <Text style={{ color:"#002A14", fontSize: 12, textAlign: "center", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, margin: 5 }}>No file selected yet</Text> : <Text style={{ color:"#002A14", fontSize: 10, textAlign: "center", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, margin: 5, width: 130, marginEnd: 20 }}>{this.state.fileNameSign}</Text>}
+                    </View>
+                    <View style={{ alignSelf: "flex-start", marginLeft: 10 }}>
+                    <Text style={{ color:"#8C8C8C", fontSize: 12, textAlign: "left", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, marginTop: 10 }}>*File format supported: pdf, jpg, png</Text>
+                    <Text style={{ color:"#8C8C8C", fontSize: 12, textAlign: "left", fontWeight: "400", lineHeight: 14.4, marginLeft: 10, marginTop: 6 }}>*Maximum file size: 2Mb</Text>
+                    </View>
+              </View>
+              </View>
+            </View>
+            
             <View flexDirection={"row"} marginTop={8}>
-            <TouchableOpacity onPress={()=> { this.setState({ personal: false, nextOfKin: true, employeeInfo: false })
+            <TouchableOpacity onPress={()=> { this.setState({ personal: false, nextOfKin: false, employeeInfo: true, fileUpload: false })
                 this.scrollView.scrollTo({});}} style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: "transparent", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
             <Text style={styles.backLoginButtonText}>BACK</Text>
             </TouchableOpacity> 
             <TouchableOpacity
-                onPress={alert("Next Screen is Uploading Documents..\n* Then SET PASSWORD AND SET PIN")}
-                style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: !isChecked ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
-                <Text style={styles.loginButtonText}>NEXT</Text>
+                onPress={this.onPressSignUp.bind(this)}
+                style={{alignSelf: "flex-end", width: width * 0.41, height: 40, backgroundColor: !isFileUpload ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 30 }}>
+                <Text style={styles.loginButtonText}>SUBMIT</Text>
             </TouchableOpacity>
             </View>
             </View>}
             </View>
         </ScrollView>
-    // {/* </ImageBackground> */}
     );
   }
 }
@@ -2063,6 +2991,17 @@ const styles = StyleSheet.create({
     marginTop: 8,
     opacity: 1,
     marginHorizontal: 30,
+    fontWeight: "600",
+    fontFamily: "JosefinSans-Bold",
+    textAlign: "center",
+  },
+  infooTextStyle_: {
+    fontSize: 12,
+    lineHeight: 15.6,
+    color: "#838E08",
+    marginTop: 8,
+    opacity: 1,
+    marginHorizontal: 20,
     fontWeight: "600",
     fontFamily: "JosefinSans-Bold",
     textAlign: "center",
@@ -2108,10 +3047,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 40,
-    width: width * 0.8,
-    height: height * 0.35,
+    width: 346,
+    height: 320,
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 30,
     paddingTop: 30,
     alignItems: "center",
@@ -2128,8 +3067,8 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
-    padding: 10,
-    fontSize: 14,
+    padding: 5,
+    fontSize: 20,
   },
   modalText: {
     marginBottom: 15,
@@ -2137,24 +3076,56 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     fontFamily: "Nunito_400Regular",
     alignSelf: "center",
-    textAlign: "justify"
+    textAlign: "center",
+    color: "#002A14DE"
   },
   statusModalText: {
-    color: "green",
+    color: "#002A14",
     fontFamily: "Nunito_400Regular",
-    fontWeight: "700"
+    fontWeight: "700",
+    fontSize: 20,
+    textAlign: "center",
+    alignSelf: "center"
   },
   modalBackground:{
     flex:1,
     alignItems:'center',
     flexDirection:'column',
     justifyContent:'space-around',
-    backgroundColor:'#00000040'
+    backgroundColor:'#000000'
   },
   iconViewStyle: {
     fontSize: 20,
     bottom: 56,
     marginLeft: 0,
+    alignSelf: "flex-start",
+    backgroundColor: "#507C543D",
+    borderColor: "#507C543D",
+    height: 56,
+    width: 52,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 16,
+  },
+  numIconViewStyle: {
+    fontSize: 24,
+    bottom: 56,
+    marginLeft: 0,
+    alignSelf: "flex-start",
+    backgroundColor: "#507C543D",
+    borderColor: "#507C543D",
+    height: 56,
+    width: 52,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 16,
+  },
+  dropDownIconViewStyle: {
+    fontSize: 20,
+    bottom: 56,
+    right: 0.5,
     alignSelf: "flex-start",
     backgroundColor: "#507C543D",
     borderColor: "#507C543D",
@@ -2180,29 +3151,30 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   cardStyleLong: {
-    marginTop: 60,
+    marginTop: 24,
     marginBottom: 10,
+    marginHorizontal: 27,
     alignSelf: "center",
-    width: width * 0.89,
+    width: width * 0.9,
     padding: 15,
     color: "#ffffff",
-    borderRadius: 6,
+    borderRadius: 10,
     backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 0 },
     shadowopacity: 0.2,
-    elevation: 5
+    elevation: 3
   },
   dropDownInput: {
-    borderColor: "1px solid rgba(0, 0, 0, 0.13)",
+    borderColor: "#B2BE35",
     backgroundColor: "#FFF",
     borderWidth: 1,
     borderRadius: 10,
     marginHorizontal: 10,
-    paddingLeft: 10,
-    height: 50,
+    paddingLeft: 53,
+    height: 56,
     alignSelf: "center",
-    width: width * 0.80,
+    width: width * 0.81,
   },
   invalidPasswordTextStyle: {
     fontSize: 12,
@@ -2210,6 +3182,16 @@ const styles = StyleSheet.create({
     fontFamily: "JosefinSans-Bold",
     alignSelf: "flex-start",
     paddingLeft: 5,
+    textAlign: "left",
+    opacity: 1,
+    top: 5,
+  },
+  uploadInvalidPasswordTextStyle: {
+    fontSize: 12,
+    color: "#FF0000",
+    fontFamily: "JosefinSans-Bold",
+    alignSelf: "flex-start",
+    paddingLeft: 20,
     textAlign: "left",
     opacity: 1,
     top: 5,
@@ -2284,6 +3266,21 @@ const styles = StyleSheet.create({
   emailTextStyleView: {
     marginTop: 15,
     alignSelf: "center",
+  },
+  uploadTextStyleView: {
+    marginTop: 15,
+    alignSelf: "center",
+    marginBottom: 18
+  },
+  uploadTextStyleView_: {
+    marginTop: 15,
+    alignSelf: "center",
+    marginBottom: 18
+  },
+  uploadTextStyleVieww_: {
+    marginTop: 15,
+    alignSelf: "center",
+    marginBottom: 10
   },
   genderTextStyleView: {
     marginTop: 15,
@@ -2414,4 +3411,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 12,
   },
+  radioStyle: {
+    borderRadius: 1
+  }
 });

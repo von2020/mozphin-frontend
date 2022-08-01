@@ -100,7 +100,7 @@ tellUsList: [
 ],
 };
 
-class AboutUs extends Component {
+class FaqScreen extends Component {
   state = initialState;
 
   handleEmail = (email) => {
@@ -428,61 +428,74 @@ class AboutUs extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { modeDateOfBirth, DateOfBirthShow, } = this.state;
     return (
-      <ImageBackground
-        source={require("../assets/mozfin_logo.jpg")}
-        style={styles.imageBgd}
-      >
-        <ScrollView
+    <ScrollView
           style={styles.scrollView}
           keyboardShouldPersistTaps="always">
-        <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
         <Loader loading={this.state.isLoading} />
 
         <View>
-            <View style={styles.cardStyleLong}>
             <View style={styles.emailTextStyleView_}>
-              <View style={{
-                borderColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'lime' : "transparent",
-                borderWidth: 1,
-                width: width * 0.81,
-                height: 54,
-                padding: 1,
-                backgroundColor: this.state.em == "empty" ? 'orange' : this.state.em == "good" ? 'green' : "transparent",
-                borderRadius: 10
-              }}>
-                  <Text style={{ backgroundColor: "#FFF", borderWidth: 1, borderColor: "#DDD", width : width * 0.80, height: 50,
-                        borderRadius: 10,
-                        textAlign: "left",
-                        paddingTop: 12,
-                        paddingBottom: 10,
-                        paddingStart: 50,
-                        paddingEnd: 22,
-                        opacity: 1 }}>About MOZFIN</Text>
-                <MaterialIcons      
-                  name="info"
-                  color="orange"
-                  style={styles.iconViewStyle_}
-                  size={22}/>
-              </View>
-              <Text style={{color: "#045135", fontWeight: "100", fontSize: 15, width: width * 0.8, textAlign: "justify", marginTop: 25, lineSpacing: 1 }}>MozFin Microfinance Bank is an arm of Mozfin Microfinance Bank Limited, "MFS" which is wholly a Nigerian company established in 2012 to provide total financial and administrative solutions to low-end financial market players in Nigeria. Her mandate includes but not limited to Financial arbitraging; Portfolio Management; Micro-lending; Leasing; Resourcing; Coaching and Business Development. The company’s management and board of Directors comprises of seasoned financial experts with minimum of 15 years banking & financial experiences in Human Resources; Risk Management; Banking Operations and Investment/Portfolio Management.{"\n"}</Text>  
-              </View>
-            
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "justify", marginTop: 25, lineSpacing: 1}}>Mozfin Microfinance Bank is an arm of Mozfin Microfinance Bank Limited, “MFS” which is wholly a  Nigerian company established in 2012 to provide total financial and administrative solutions to low-end financial market players in Nigeria. Her mandate includes but not limited to Financial arbitraging; Portfolio Management; Micro-lending; Leasing; Resourcing; Coaching and Business Development. 
+              {"\n\n"}The company’s management and board of directors comprises of seasoned financial experts with minimum of 15 years of banking and financial experiences in human resources, risk management, banking operations and investments/portfolio management</Text>  
+
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Our Vision</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1 }}>To become a global leader in the provision of retail financial services across Africa.</Text>
+
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Our Mission</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1 }}>To engage the best-in-pratice Human and scientific methods, through a conducive working environment at all levels.</Text>
+
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Objectives</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1 }}>To attain the highest standard in retail banking in Nigeria{"\n\n"}
+              To provide simplest solution{"\n\n"}
+              To raise professionals{"\n\n"}
+              To prove to everyone around us that greatness is not by birth</Text>  
+              
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Core Values</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1 }}>Synergy{"\n\n"}
+              Integrity{"\n\n"}
+              Motivation{"\n\n"}
+              Purpose{"\n\n"}
+              Leadership{"\n\n"}
+              Empathy</Text>
+
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 20, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 25, lineSpacing: 1 }}>Featured Partners</Text>
+              </View>  
+
+            <View marginTop={18} alignSelf={"center"}>
+            <View style={{ marginBottom: 10, alignSelf: "center", flexDirection: "row" }}>
+            <Image source={require('../assets/zenith.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            <Image source={require('../assets/sterling.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            </View>
+
+            <View style={{ marginBottom: 10, alignSelf: "center", flexDirection: "row" }}>
+            <Image source={require('../assets/fidelity.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            <Image source={require('../assets/stanbic.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            </View>
+
+            <View style={{ marginBottom: 5, alignSelf: "center", flexDirection: "row" }}>
+            <Image source={require('../assets/paycom.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            <Image source={require('../assets/ndic.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            </View>
+
+            <View style={{ marginBottom: 10, alignSelf: "center", flexDirection: "row" }}>
+            <Image source={require('../assets/appzone.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            {/* <Image source={require('../assets/kaara.png')} resizeMode={'cover'} alignSelf={"center"}/> */}
+            </View>
+
             </View>
             </View>
-            <View style={{ bottom: height * 0.04, alignSelf: "center", position: "absolute" }}>
-            <Image source={require('../assets/cbn_.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            <Text style={{margin: 5, color: "green" }} alignSelf={"center"}>Licensed by CBN</Text>
+            <View style={{ marginTop: 70, bottom: 0, alignSelf: "center", marginBottom: 20, }}>
+            <Image source={require('../assets/cbnn.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </View>
         </ScrollView>
-     </ImageBackground> 
     );
   }
 }
 
 
-export default AboutUs;
+export default FaqScreen;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
@@ -641,6 +654,8 @@ const styles = StyleSheet.create({
   emailTextStyleView_: {
     marginTop: 20,
     alignSelf: "center",
+    paddingHorizontal: 24,
+    // marginBottom: 30
   },
   emailTextStyleView: {
     marginTop: 15,
@@ -746,8 +761,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#FFFFFF70",
-    // opacity: 0.7
+    backgroundColor: "#FFFFFF",
   },
   errorMessageContainerStyle: {
     backgroundColor: "#fee8e6",

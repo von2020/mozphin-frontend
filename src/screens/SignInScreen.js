@@ -13,22 +13,12 @@ import {
   Dimensions,
   LogBox,
 } from "react-native";
-
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-
-// import Toast from 'react-native-toast-message';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import blackTrustService, {
-//   setClientToken,
-// } from "../service/BlackTrustService";
 import  Loader  from './../config/Loader';
-// import { Checkbox } from 'react-native-paper';
 import LockIcon from '../assets/svgs/lock';
 import PhoneIcon from '../assets/svgs/phone';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get("window");
 

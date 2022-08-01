@@ -416,43 +416,22 @@ class RegisterScreen extends Component {
                 <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                 <View>
-                    <AntDesign
-                      name="checkcircle"
-                      color="#002A14"
-                      alignSelf="center"
-                      style={{ alignSelf: "center", marginBottom: 10 }}
-                      size={60}/>
-
-                <View flexDirection={"row"} alignItems={"center"}>
+                <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+                <Image source={require('../assets/circlemark.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20}/>
+                <View alignItems={"center"}>
+                <Text style={styles.statusModalText}>SUCCESSFUL!</Text>
                 <Text style={styles.modalText}>
-                <Text style={styles.statusModalText}>Your Customer ID is {this.state.item.CustomerID},{"\n"} and CustomerType is {this.state.item.CustomerType}
-                </Text>
-                {" "}Your sign up was successful..{" "}Click to "Continue"{" \n** Few steps remaining **"}
+                {" "}Your sign up was successful..{" "}Click to "Proceed"{" \n** Few steps remaining **"}
                 </Text>
                 </View>
                 </View>
-
-                {/* <View flexDirection="row" justifyContent={"space-between"}> */}
-                {/* <TouchableOpacity
-                  activeOpacity={0.5}
-                  style={{ marginStart: 10, position: "absolute", marginTop: 13, bottom: 12, alignSelf: "center" }}
-                  onPress={() => this.visibleView()}>
-                  <LinearGradient
-                      colors={['#FFF','green', '#808080']} style={{ width: 90, height: 40, alignSelf: "center", borderRadius: 12 }}>
-                    <Text style={styles.textStylee}>Continue</Text>
-                    </LinearGradient>
-                </TouchableOpacity> */}
 
                 <TouchableOpacity
                   activeOpacity={0.5}
-                  style={{ marginStart: 10, position: "absolute", marginTop: 50, bottom: 12, alignSelf: "center" }}
+                  style={{ lignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
                   onPress={() => this.visibleView()}>
-                  <LinearGradient
-                      colors={['#FFF','#002A14', '#002A14']} style={{ width: 90, height: 40, alignSelf: "center", borderRadius: 12 }}>
-                    <Text style={styles.textStylee}>Update</Text>
-                    </LinearGradient>
+                    <Text style={styles.textStylee}>PROCEED</Text>
                 </TouchableOpacity>   
-                {/* </View> */}
                         
                 </View>
               </View>
@@ -906,10 +885,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 40,
-    width: width * 0.8,
-    height: height * 0.35,
+    width: 346,
+    height: 320,
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 30,
     paddingTop: 30,
     alignItems: "center",
@@ -935,19 +914,23 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     fontFamily: "Nunito_400Regular",
     alignSelf: "center",
-    textAlign: "justify"
+    textAlign: "center",
+    color: "#002A14DE"
   },
   statusModalText: {
-    color: "green",
+    color: "#002A14",
     fontFamily: "Nunito_400Regular",
-    fontWeight: "700"
+    fontWeight: "700",
+    fontSize: 20,
+    textAlign: "center",
+    alignSelf: "center"
   },
   modalBackground:{
     flex:1,
     alignItems:'center',
     flexDirection:'column',
     justifyContent:'space-around',
-    backgroundColor:'#00000040'
+    backgroundColor:'#000000'
   },
   iconViewStyle: {
     fontSize: 20,
