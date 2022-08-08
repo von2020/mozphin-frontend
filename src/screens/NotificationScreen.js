@@ -18,7 +18,8 @@ import {
 import  Loader  from './../config/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from "react-native-material-dropdown";
-import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
+import AlarmIcon from '../assets/svgs/alarm';
+import BinIcon from '../assets/svgs/bin';
 import NoNotificationIcon from '../assets/svgs/nonotification';
 
 import Contacts from 'react-native-contacts';
@@ -36,8 +37,9 @@ const initialState = {
   last_name: "",
   token: "",
   data: "",
+  view: "",
+  airtime: "",
   mtn: "",
-  airtime: "tapped",
   nineMobile: "",
   glo: "",
   value: "",
@@ -251,6 +253,13 @@ class NotificationScreen extends Component {
   }
   } 
 
+  componentDidMount(){ 
+        var that = this;  
+        setTimeout(function(){  
+            that.setState({ view: "yaaay"});  
+        }, 3000);  
+    }
+
   async selectContact(){
       try{
         
@@ -323,15 +332,109 @@ class NotificationScreen extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { data, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
+    const { view, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
     return (
         <ScrollView
-          style={styles.scrollView}
+          style={styles.scroll}
           keyboardShouldPersistTaps="always">
           
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
-          <NoNotificationIcon/>
+          {view == "" ? 
+          <View style={styles.scrollView}>
+          <View alignSelf={"center"}>
+          <NoNotificationIcon/> 
+          </View>
+          <Text style={{ fontSize: 20, color: "#CFCFCF", width: 270, fontWeight: "600", alignSelf: "center", textAlign: "center", marginTop: 10 }}>You don’t have notification yet</Text>
+          </View>:
+          <View style={styles.scrollView_}>
+          <View style={{ marginVertical: 30 }}>
+          {mtn == "" && <View style={styles.optionContainer}>
+              <View style={{ margin: 3, }}>
+              <AlarmIcon/>
+              </View>
+              <View style={{ flexDirection: "row", marginStart: 6 }}>
+              <View>
+              <Text style={{ fontSize: 12, color: "#002A14", width: 211, fontWeight: "400" }}>Your transaction with ref number 1dhreftyabh was successful</Text>
+              </View>
+
+              <TouchableOpacity onPress={()=> this.setState({ mtn: "tapped" })} style={{ left: 20, marginStart: 5, marginVertical: 8,  }}>
+              <BinIcon/>
+              </TouchableOpacity>
+              </View>
+          </View>}
+
+          <View style={styles.optionContainer}>
+              <View style={{ margin: 3, }}>
+              <AlarmIcon/>
+              </View>
+              <View style={{ flexDirection: "row", marginStart: 6 }}>
+              <View>
+              <Text style={{ fontSize: 12, color: "#002A14", width: 211, fontWeight: "400" }}>Your transaction with ref number 1dhreftyabh was successful</Text>
+              </View>
+              <TouchableOpacity style={{ left: 20, marginStart: 5, marginVertical: 8, }}>
+              <BinIcon/>
+              </TouchableOpacity>
+              </View>
+          </View>
+
+          <View style={styles.optionContainer}>
+              <View style={{ margin: 3, }}>
+              <AlarmIcon/>
+              </View>
+              <View style={{ flexDirection: "row", marginStart: 6 }}>
+              <View>
+              <Text style={{ fontSize: 12, color: "#002A14", width: 211, fontWeight: "400" }}>Your transaction with ref number 1dhreftyabh was successful</Text>
+              </View>
+              <TouchableOpacity style={{ left: 20, marginStart: 5, marginVertical: 8, }}>
+              <BinIcon/>
+              </TouchableOpacity>
+              </View>
+          </View>
+
+          {airtime == "" && <View style={styles.optionContainer}>
+              <View style={{ margin: 3, }}>
+              <AlarmIcon/>
+              </View>
+              <View style={{ flexDirection: "row", marginStart: 6 }}>
+              <View>
+              <Text style={{ fontSize: 12, color: "#002A14", width: 211, fontWeight: "400" }}>Your transaction with ref number 1dhreftyabh was successful</Text>
+              </View>
+              <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped" })} style={{ left: 20, marginStart: 5, marginVertical: 8, }}>
+              <BinIcon/>
+              </TouchableOpacity>
+              </View>
+          </View>}
+
+          <View style={styles.optionContainer}>
+              <View style={{ margin: 3, }}>
+              <AlarmIcon/>
+              </View>
+              <View style={{ flexDirection: "row", marginStart: 6 }}>
+              <View>
+              <Text style={{ fontSize: 12, color: "#002A14", width: 211, fontWeight: "400" }}>Your transaction with ref number 1dhreftyabh was successful</Text>
+              </View>
+              <TouchableOpacity style={{ left: 20, marginStart: 5, marginVertical: 8, }}>
+              <BinIcon/>
+              </TouchableOpacity>
+              </View>
+          </View>
+
+          <View style={styles.optionContainer}>
+              <View style={{ margin: 3, }}>
+              <AlarmIcon/>
+              </View>
+              <View style={{ flexDirection: "row", marginStart: 6 }}>
+              <View>
+              <Text style={{ fontSize: 12, color: "#002A14", width: 211, fontWeight: "400" }}>Your transaction with ref number 1dhreftyabh was successful</Text>
+              </View>
+              <TouchableOpacity style={{ left: 20, marginStart: 5, marginVertical: 8, }}>
+              <BinIcon/>
+              </TouchableOpacity>
+              </View>
+          </View>
+          </View>
+          </View>}
         </ScrollView>
     );
   }
@@ -351,6 +454,21 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     width: width,
+  },
+  optionContainer: {
+    borderRadius: 13,
+    backgroundColor: "#ECF3A4",
+    width: 327,
+    height: 80,
+    flexDirection: "row",
+    marginHorizontal: 16,
+    marginBottom: 16,
+    paddingVertical: 20,
+    paddingLeft: 20,
+    shadowColor: "grey",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    elevation: 2.5
   },
   emailInput: {
     borderColor: "#EEF4FE",
@@ -578,6 +696,14 @@ const styles = StyleSheet.create({
     fontFamily: "JosefinSans-Bold",
   },
   scrollView: {
+    margin: 150,
+    // alignSelf: "center",
+  },
+  scrollView_: {
+    // margin: 100,
+    alignSelf: "center"
+  },
+  scroll:{
     flex: 1,
     backgroundColor: "#FFFFFFF",
   },

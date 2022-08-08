@@ -198,7 +198,7 @@ list = [
 
                         <View>
                         <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>Type</Text>
-                        <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>Tier-3</Text>
+                        <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>Tier-{this.props.navigation.state.params.tier}</Text>
                         </View>
                         </View>
 
@@ -245,14 +245,14 @@ list = [
         </View>
 
         <View>
-        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+        <TouchableOpacity onPress={()=> this.props.navigation.navigate("TransactionHistory")} style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
           <TransHistIcon/>
         </TouchableOpacity>
         <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Transaction history</Text>
         </View>
 
         <View>
-        <TouchableOpacity style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
+        <TouchableOpacity onPress={()=> this.props.navigation.navigate("SendMoney")} style={{width: 90.3, height: 80, borderRadius: 13, backgroundColor: "#ECF3A4", paddingVertical: 25, paddingHorizontal: 35, shadowColor: "#000000", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, elevation: 3 }}>
           <SendMoneyIcon/>
         </TouchableOpacity>
         <Text style={{ width: 78, color: "#002A14", fontSize: 12, fontWeight: "500", marginTop: 5, alignSelf: "center", textAlign: "center" }}>Send Money</Text>
@@ -459,19 +459,19 @@ list = [
           pageIndicatorStyle={{  bottom: 30, borderColor: "#B2BE35", backgroundColor: "transparent", borderWidth: 1, }}
           inactiveSlideOpacity={0.8}
           inactiveSlideScale={1}>
-              <View style={{ bottom: height * 0.02 }}>
+              <View style={{ bottom: height * 0.018 }}>
               <Image
                 source={require("../assets/advance.png")}
                 style={styles.imageBgd}/>
               </View>
 
-              <View style={{ bottom: height * 0.02 }}>
+              <View style={{ bottom: height * 0.018 }}>
               <Image
                 source={require("../assets/lpo.png")}
                 style={styles.imageBgd}/>
               </View>
 
-              <View style={{ bottom: height * 0.02 }}>
+              <View style={{ bottom: height * 0.018 }}>
               <Image
                 source={require("../assets/micro.png")}
                 style={styles.imageBgd}>

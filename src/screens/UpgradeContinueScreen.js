@@ -310,7 +310,9 @@ class UpgradeContinueScreen extends Component {
                 <TouchableOpacity onPress={()=> this.props.navigation.navigate("BVNQuestion")} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>UPGRADE</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=> alert("Continue")} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#FFF", borderRadius: 10, borderColor: "#002A14", borderWidth: 1, marginBottom: 8, opacity: 1 }}>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate("OTPCodeOption", {
+                    tier: "1"
+                  })} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#FFF", borderRadius: 10, borderColor: "#002A14", borderWidth: 1, marginBottom: 8, opacity: 1 }}>
                     <Text style={styles.getStarted_}>CONTINUE</Text>
                 </TouchableOpacity>
               </View>

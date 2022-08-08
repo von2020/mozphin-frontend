@@ -9,10 +9,17 @@ import SecretQueScreen from './SecretQueScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomTabs from './BottomTabs';
 // import ChangePasswordScreen from './ChangePasswordScreen';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-// import { UserContext } from '../contextApi/Context';
+import ContactScreen from '../screens/ContactScreen';
+import AboutUs from '../screens/AboutUs';
+import SideIcon8 from '../assets/svgs/side8';
+import SideIcon7 from '../assets/svgs/side7';
+import SideIcon6 from '../assets/svgs/side6';
+import SideIcon5 from '../assets/svgs/side5';
+import SideIcon4 from '../assets/svgs/side4';
+import SideIcon3 from '../assets/svgs/side3';
+import SideIcon2 from '../assets/svgs/side2';
+import SideIcon1 from '../assets/svgs/side1';
+import SideIconX from '../assets/svgs/sidex';
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -40,61 +47,100 @@ const HamburgerNavigation = createDrawerNavigator(
                     style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
                 >
                     <View style={{ height: height , width: width, alignItems: 'center', bottom: height * 0.15 }}>
-                    {/* <Image source={require('../assets/bluemenu.png')} resizeMode={'cover'}  position={"absolute"}/>
-                    <Image source={require('../assets/yellowmenu.png')} resizeMode={'cover'} position={"absolute"}/>
-                    <Image source={require('../assets/whitemenu.png')} resizeMode={'cover'} position={"absolute"}/> */}
+                    <View style={{ marginStart: 10, left: width * 0.09, position: "absolute", top: 93, }}>
+                    <TouchableOpacity onPress={() => { props.navigation.closeDrawer() }} style={{ left: 38, alignSelf: "flex-end", top: 30, }}>
+                    <SideIcon5/>
+                    </TouchableOpacity>
                     
-                    {/* <UserContext.Consumer>
-                    {context =>  */}
-                        <View style={{ marginTop: 60 ,position: "absolute", top: height * 0.13, }}>
-                        {/* {context.dataa.schoolCode && <Text style={{color: "#252C57", textAlign: "center", lineHeight: 56.25, fontSize: 48, fontWeight: "900", fontStyle: "normal", bottom: 0, textTransform: "uppercase" }}>{context.dataa.schoolCode}</Text>}
-                        {context.dataa.schoolName && <Text style={{color: "#000", textAlign: "center", lineHeight: 21.09, fontSize: 18, bottom: 10 }}>{context.dataa.schoolName}{"\n"}({context.dataa.schoolTypeName})</Text>}
-                        {context.dataa.currentTermName && context.dataa.currentSessionName ? <Text style={{color: "#000", textAlign: "center", lineHeight: 16.41, fontSize: 14, fontWeight: "900", fontStyle: "normal", marginTop: 5, textTransform: "uppercase" }}>{context.dataa.currentTermName}, {context.dataa.currentSessionName} SESSION</Text> : <Text style={{color: "#000", textAlign: "center", lineHeight: 16.41, fontSize: 14, fontWeight: "900", fontStyle: "normal", marginTop: 5, textTransform: "uppercase" }}>- TERM, - SESSION</Text>} */}
-                        </View>
-                      {/* }
-                    </UserContext.Consumer> */}
-
-                    <View
-                    style={{
-                        height: 0.5, 
-                        width: 240, 
-                        backgroundColor: "#252C57", 
-                        marginTop: 30,
-                        position: "absolute", 
-                        top: height * 0.37,}}
-                    />
-
-                    <View style={{ marginStart: 10, left: width * 0.09, position: "absolute", top: height * 0.42, }}>
                     <TouchableOpacity 
                         onPress={() => {
                             props.navigation.navigate('ProfileScreen');
                             props.navigation.closeDrawer();
                             }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 18.5, marginTop: 57 }}>
-                        <EvilIcons
-                            name="user"
-                            size={45}
-                            color="#252C57"
-                            style={{ alignSelf: "flex-end", marginEnd: 4, bottom: 10, fontWeight: "10" }}/>
-
-                        <Text style={{color: "#252C57", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>
-                            My Profile
+                        <View style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5 }}>
+                        <SideIcon4/>
+                        </View>        
+                        
+                        <Text style={{color: "#FFF", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>
+                        Account Information
                         </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity 
                         onPress={() => {
-                            props.navigation.navigate('SettingsScreen');
+                            props.navigation.navigate('TransactionHistory');
                             props.navigation.closeDrawer();
-                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 25.5, marginTop: 15 }}>
-                        <SimpleLineIcons
-                            name="settings"
-                            size={30}
-                            color="#252C57"
-                            style={{ alignSelf: "flex-end", marginEnd: 11, bottom: 6, fontWeight: "10" }}/>
-
-                        <Text style={{color: "#252C57", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75}}>
-                        Settings
+                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 18.5, marginTop: 26 }}>
+                        <View style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5 }}>
+                        <SideIcon3/>
+                        </View>        
+                        
+                        <Text style={{color: "#FFF", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>
+                        Transaction History
                         </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        onPress={() => {
+                            props.navigation.navigate('ProfileScreen');
+                            props.navigation.closeDrawer();
+                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 18.5, marginTop: 26 }}>
+                        <View style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5 }}>
+                        <SideIconX/>
+                        </View>        
+                        
+                        <Text style={{color: "#FFF", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>Statement Of Account</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        onPress={() => {
+                            props.navigation.navigate('ProfileScreen');
+                            props.navigation.closeDrawer();
+                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 18.5, marginTop: 26 }}>
+                        <View style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5 }}>
+                        <SideIcon6/>
+                        </View>        
+                        
+                        <Text style={{color: "#FFF", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>
+                        Referrals
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        onPress={() => {
+                            props.navigation.navigate('Contact');
+                            props.navigation.closeDrawer();
+                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 18.5, marginTop: 26 }}>
+                        <View style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5 }}>
+                        <SideIcon1/>
+                        </View>        
+                        <Text style={{color: "#FFF", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>
+                        Get Help
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        onPress={() => {
+                            props.navigation.navigate('About');
+                            props.navigation.closeDrawer();
+                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 18.5, marginTop: 26 }}>
+                        <View style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5 }}>
+                        <SideIcon2/>
+                        </View>        
+                        <Text style={{color: "#FFF", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>
+                        About Mozfin
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                        onPress={() => {
+                            props.navigation.navigate('SecretQhueScreen');
+                            props.navigation.closeDrawer();
+                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 18.5, marginTop: 26 }}>
+                        <View style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5 }}>
+                        <SideIcon7/>
+                        </View>        
+                        <Text style={{color: "#FFF", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>Settings</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity 
@@ -102,14 +148,11 @@ const HamburgerNavigation = createDrawerNavigator(
                             removeItemValue("userDetails");
                             props.navigation.navigate('StartUp');
                             props.navigation.closeDrawer();
-                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 28, marginTop: 15 }}>
-                        <AntDesign
-                            name="logout"
-                            size={28}
-                            color="#252C57"
-                            style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5, fontWeight: "10" }}/>
-
-                        <Text style={{color: "#252C57", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75}}>
+                            }} style={{ flexDirection: "row", alignSelf: "flex-start", marginStart: 18.5, marginTop: 26 }}>
+                        <View style={{ alignSelf: "flex-end", marginEnd: 12, bottom: 5 }}>
+                        <SideIcon8/>
+                        </View>        
+                        <Text style={{color: "#FFF", fontWeight: "400", fontSize: 16, fontStyle: "normal", lineHeight: 18.75 }}>
                         Logout
                         </Text>
                     </TouchableOpacity>
@@ -130,27 +173,31 @@ const HamburgerNavigation = createDrawerNavigator(
                 headerShown: null,
             },
      	 },
-          "Help Me!": {
-            screen: HelpScreen, 
-            navigationOptions: {
-                headerStyle: { backgroundColor: '#FFF' },
-                title: "Change Password",
-                headerTintColor: "#000",
-                headerTitleStyle: {
-                    fontWeight: "100",
-                },
-            },
-          },
-          HelpScreen: {
-            screen: HelpScreen,
-            navigationOptions: {
-            headerStyle: { backgroundColor: '#F9AC06' },
-            title: "My Profile",
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-                fontWeight: "100",
-            },
+          Contact: {
+            screen: ContactScreen,
+          navigationOptions: {
+              headerShown: true,
+              headerStyle: { backgroundColor: '#002A14' },
+              title: "GET HELP",
+              headerTintColor: "#FFF",
+              headerTitleStyle: {
+                  fontWeight: "600",
+                  textAlign: "center",
+              },
             }
+        },
+        About: {
+          screen: AboutUs,
+          navigationOptions: {
+            headerShown: true,
+            headerStyle: { backgroundColor: '#002A14' },
+            title: "ABOUT MOZFIN",
+            headerTintColor: "#FFF",
+            headerTitleStyle: {
+                fontWeight: "600",
+                textAlign: "center",
+            },
+          }
         },
         SecretQueScreen: {
             screen: SecretQueScreen,

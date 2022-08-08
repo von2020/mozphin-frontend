@@ -11,9 +11,13 @@ import {
   Image,
   Alert,
   Dimensions,
+  PermissionsAndroid,
   LogBox,
 } from "react-native";
-import ImagePicker, {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+// import ImagePicker from 'react-native-image-crop-picker';
+import * as ImagePicker from "react-native-image-picker"
+// import ImagePicker, {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import StarRating from 'react-native-star-rating';
 import moment from 'moment';
 import  Loader  from './../config/Loader';
 import EyeCloseIcon from '../assets/svgs/eye_close';
@@ -39,6 +43,7 @@ const initialState = {
   tellUs: "Tell us",
   tu: "",
   imageData: "",
+  requester_rate_driver: 0,
   modalVisible_: false,
   errors: {}, 
   checked: false,
@@ -165,6 +170,12 @@ class ProfileInformationScreen extends Component {
   updateSecureTextEntry(){
     this.setState({ password: !this.state.password })
   };
+
+  onStarRatingPress(rating) {
+    this.setState({
+        requester_rate_driver: rating
+    });
+  }
 
   onPressSignUp() {
     this.setState({ isLoading: true });
@@ -422,7 +433,7 @@ class ProfileInformationScreen extends Component {
       console.log('Done.')
     }
 
-    selectFileFromCam = () => {
+     selectFileFromCam = async () => {
         var options = {
           mediaType: 'photo',
           cameraType: 'front',
@@ -436,8 +447,10 @@ class ProfileInformationScreen extends Component {
           quality: 0.5, 
           includeBase64: true
         };
-    
-        launchCamera(options, res => {
+
+//        const res = await launchCamera(options);
+
+ImagePicker.launchCamera(options, res => {
           if (res.didCancel) {
             console.log('User cancelled image picker');
           } else if (res.error) {
@@ -478,8 +491,15 @@ class ProfileInformationScreen extends Component {
           quality: 0.5, 
           includeBase64: true
         };
-    
-        launchImageLibrary(options, res => {
+        // ImagePicker.openPicker({
+        //   width: 300,
+        //   height: 400,
+        //   cropping: true
+        // }).then(image => {
+        //   console.log(image);
+        // });
+        
+        ImagePicker.launchImageLibrary(options, res => {
           if (res.didCancel) {
             console.log('User cancelled image picker');
           } else if (res.error) {
@@ -498,20 +518,78 @@ class ProfileInformationScreen extends Component {
               })
 
           });
+
+
           //  this.setState({ isLoading: false });
           //  let source = res;
           //  console.log("The Fileeeeeeeeeee lib", source.assets[0].uri.replace("file:///","file://"))
-          //  this.setState({ imageData: source.assets[0].uri.replace("file:///","file://"), modalVisible_: false, isLoading: false })
+          //  this.setState({ imageData: source.assets[0].uri, modalVisible_: false, isLoading: false })
           //  if(source){
           //       // AsyncStorage.setItem("userdetailsImage",JSON.stringify(obj))
           //     }    
           }
         });
       }
-  
+
+       requestCameraPermission = async () => {
+        try {
+        const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+        title: "App Camera Permission",
+        message:"App needs access to your camera ",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK",
+        }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Camera permission given");
+        this.openCamera();
+        } else {
+        console.log("Camera permission denied");
+        }
+        } catch (err) {
+        console.warn(err);
+        }
+        };
+        
+        openCamera = () => {
+        //Alert.alert('asdasd');
+        const options = {
+          mediaType: 'photo',
+          cameraType: 'front',
+          storageOptions: {
+            skipBackup: true,
+            path: 'images/jpeg',
+            
+          },
+          storageOptions: { skipBackup: true, path: 'images', cameraRoll: true, waitUntilSaved: true },
+        //   storageOptions: { privateDirectory: true  },
+          maxWidth: 500,
+          maxHeight: 500,
+          quality: 0.5, 
+          includeBase64: true
+        };
+        
+        // ImagePicker.openCamera({
+        //   width: 300,
+        //   height: 400,
+        //   cropping: true,
+        // }).then(image => {
+        //   console.log(image.path);
+        //   this.setState({ imageData: image.path, modalVisible_: false, isLoading: false })
+        // });
+        ImagePicker.launchCamera(options, response => {
+          console.log('Response =', response);
+          this.setState({ imageData: response.assets[0].uri, modalVisible_: false, isLoading: false })
+        });
+        };
+
   render() {
     LogBox.ignoreAllLogs(true);
     const { imageData } = this.state;
+    console.log("Imageeeeeeeee", imageData)
     return (
     <ScrollView
           style={styles.scrollView}
@@ -545,7 +623,7 @@ class ProfileInformationScreen extends Component {
                 <TouchableOpacity
                   activeOpacity={0.5}
                   style={{ lignSelf: "center", width: width * 0.395, height: 30, backgroundColor: "#FFF", borderColor: "#002A14", borderWidth: 1, borderRadius: 10, marginBottom: 5, opacity: 1 }}
-                  onPress={()=> this.selectFileFromCam()}>
+                  onPress={()=> this.requestCameraPermission()}>
                     <Text style={styles.textStylee}>Camera</Text>
                 </TouchableOpacity>
 
@@ -565,7 +643,7 @@ class ProfileInformationScreen extends Component {
             <View style={styles.emailTextStyleView_}>
             <TouchableOpacity onPress={()=> this.setState({ modalVisible_: true })}>
             {imageData == "" ? <Image source={require('../assets/profilepicc.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20} marginTop={32}/> :
-            <Image source={{ uri: imageData }} resizeMode={'cover'} marginTop={32} alignSelf={"center"} height={20} width={20}/>} 
+            <Image source={{uri: imageData }} resizeMode={'cover'} marginTop={32} alignSelf={"center"} height={200} width={200}/>} 
             </TouchableOpacity>
             <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "center", marginTop: 5, lineSpacing: 1 }}>John Doe</Text>  
             <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "center", marginTop: 5, lineSpacing: 1 }}>+234 815 567 8910</Text>
@@ -601,24 +679,47 @@ class ProfileInformationScreen extends Component {
             <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 20.8, width: width, height: 33, textAlign: "left", marginTop: 25, lineSpacing: 1, backgroundColor: "#EFF5B0", padding: 5, paddingLeft: 24 }}>Security Information</Text>  
             <View>
             <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1, paddingLeft: 24 }}>Bank Verification Number</Text>
-            <View syyle={{ flexDirection: "row", justifyContent: "space-between", marginTop: 5,  }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 0,  }}>
             {this.state.password ? <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>*** *** *** **</Text> : 
             <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>245 307 899 12</Text>}
               <TouchableOpacity 
               onPress={this.updateSecureTextEntry.bind(this)}>
                 {this.state.password ?
                 <View
-                style={{alignSelf: "flex-end", right: 33, bottom: 20, }}>
+                style={{alignSelf: "flex-end", right: 33, bottom: 5, }}>
                 <EyeOpenIcon/>
                 </View>
                  :
                  <View
-                 style={{alignSelf: "flex-end", right: 33, bottom: 20, }}>
+                 style={{alignSelf: "flex-end", right: 33, bottom: 5, }}>
                  <EyeCloseIcon/>
                  </View>
                 }
               </TouchableOpacity>
               </View>  
+            </View>
+
+            <View marginBottom={50}>
+            <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 20.8, width: width, height: 33, textAlign: "left", marginTop: 25, lineSpacing: 1, backgroundColor: "#EFF5B0", padding: 5, paddingLeft: 24 }}>Feedback</Text>  
+            <View>
+            <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1, paddingLeft: 24 }}>Rating</Text>
+            <View style={{ flexDirection: "row", marginHorizontal: 10, justifyContent: "space-around" }}>
+            <StarRating
+              disabled={false}
+              maxStars={5}
+              starStyle={styles.star}
+              rating={this.state.requester_rate_driver}
+              selectedStar={(rating) => this.onStarRatingPress(rating)}
+              fullStarColor={'#F6BB42'}
+            />
+              <TouchableOpacity
+                onPress={()=> this.setState({ requester_rate_driver: 0 })}
+                disabled={this.state.requester_rate_driver == 0 ? true : false}
+                style={{ alignSelf: "center", width: width * 0.31, height: 40, backgroundColor: this.state.requester_rate_driver == 0 ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 0, opacity: 1  }}>
+                <Text style={styles.loginButtonText}>RATE</Text>
+            </TouchableOpacity>
+            </View>
+            </View>
             </View>
             </View>
               </View>  
@@ -665,6 +766,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 22
   },
+  loginButtonText: {
+    color: "white",
+    textAlign: "center",
+    alignItems: "center",
+    fontFamily: "JosefinSans-Bold",
+    padding: 5,
+    fontWeight: "400",
+    fontSize: 20,
+  },
   modalView: {
     margin: 40,
     width: 227,
@@ -688,6 +798,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     fontSize: 20,
+  },
+  star:{
+    margin: 3,
   },
   modalText: {
     marginTop: -15,
@@ -934,13 +1047,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
     elevation: 5,
-  },
-  loginButtonText: {
-    color: "white",
-    textAlign: "center",
-    alignItems: "center",
-    fontWeight: "bold",
-    fontFamily: "JosefinSans-Bold",
   },
   signUpButtonText: {
     color: "#4848FF",

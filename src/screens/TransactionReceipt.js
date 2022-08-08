@@ -7,36 +7,28 @@ import {
   StyleSheet,
   ScrollView,
   ImageBackground,
-  Button,
+  Image,
   StatusBar,
   Alert,
   Dimensions,
   LogBox,
 } from "react-native";
-
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-
-// import Toast from 'react-native-toast-message';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import blackTrustService, {
-//   setClientToken,
-// } from "../service/BlackTrustService";
 import  Loader  from './../config/Loader';
-// import { Checkbox } from 'react-native-paper';
-import BellIcon from '../assets/svgs/bell';
-import PhoneIcon from '../assets/svgs/phone';
-import EyeCloseIcon from '../assets/svgs/eye_close';
-import EyeOpenIcon from '../assets/svgs/eye_open';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
-import OTPTextInput from 'react-native-otp-textinput';
+import RightIcon from '../assets/svgs/rightarrow';
+import LeftIcon from '../assets/svgs/leftarrow';
+import Icon2 from '../assets/svgs/icon2';
+import Icon3 from '../assets/svgs/icon3';
+import Icon4 from '../assets/svgs/icon4';
+import Icon5 from '../assets/svgs/icon5';
+import Icon6 from '../assets/svgs/icon6';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get("window");
 
 // const image = { uri: "./../../assets/safexray-logo.png" };
 const initialState = {
-  otpCode: "",
+  username: "",
   us: "",
   password: "", 
   pa: "",
@@ -45,42 +37,27 @@ const initialState = {
   first_name: "",
   last_name: "",
   token: "",
-  phonenum: 0,
-  pn: 0,
-  text: "",
-  showCountDown: false,
+  // requester: 0,
+  // upline: 0,
   checked: false,
   checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
   secureTextEntry: true,
-  seconds: 30,
-  time: {}, 
 };
 
-class OTPCodeScreen extends Component {
+class TransactionReceipt extends Component {
   state = initialState;
 
-  constructor() {
-    super();
-    this.timer = 0;
-    this.startTimer = this.startTimer.bind(this);
-    this.countDown = this.countDown.bind(this);
-  }
-
-    clearText = () => {
-        this.otpInput.clear();
-    }
-
-    setText = () => {
-        this.otpInput.setValue("1234");
-    }
-
-  handleOtpCode = (otpCode) => {
-    if(otpCode != ""){
-      this.setState({ otpCode: otpCode, us: "" });
+  handleEmail = (username) => {
+    if(username != ""){
+      if(username == "chibu@yahoo.com"){
+        this.setState({ username: username, us: "good" });
+      }else{
+      this.setState({ username: username, us: "" });
+      }
     }else {
-      this.setState({ otpCode: otpCode, us: "empty" });
+      this.setState({ username: username, us: "empty" });
     }
   };
 
@@ -97,26 +74,20 @@ class OTPCodeScreen extends Component {
     // this.setState({ password: password, pa: "" });//good
   };
 
-  onChangeTextHandler(len){
-    const newPhone = len.replace(/(\d{3})(\d{3})(\d{3})(\d{2})(\d+)/, '$1-$2-$3-$4');
-    console.log(newPhone)
-    this.setState({ text: newPhone })    
-  };
-
   onPressLogin() {
     this.setState({ isLoading: true });
 
-    const { otpCode, password, checked } = this.state;
+    const { username, password, checked } = this.state;
     
-    if(otpCode == ""){
+    if(username == ""){
       this.setState({ isLoading: false, us: "empty" });
       // Alert.alert(null,'Email field is empty')
     }else if(password == ""){
       this.setState({ isLoading: false, pa: "empty" });
       // Alert.alert(null,'Password field is empty')
     }else{
-    const payload = { otpCode, password };
-    const checkedPayload = { otpCode, password, checked };
+    const payload = { username, password };
+    const checkedPayload = { username, password, checked };
     this.setState({ isLoading: false, isAuthorized: true });
 
     this.props.navigation.push("Dashboard", {
@@ -131,14 +102,13 @@ class OTPCodeScreen extends Component {
       setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
-      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "otpCode": "Chibubu"}
+      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "username": "Chibubu"}
       if (data != null ) {
-        this.props.navigation.push("PasswordScreen", {
+        this.props.navigation.push("SideMenuScreen", {
           data: data,
         });
       }
 
-      
     //   } else if (data.role == "General Manager") {
     //       this.props.navigation.push("GMDNavScreen")
     //   } else if (data.role == "Director") {
@@ -221,7 +191,7 @@ class OTPCodeScreen extends Component {
     //   .then(onSuccess)
     //   .catch(onFailure);
   }
-  }
+  } 
 
 //   async removeItemValue(key) {
 //     try {
@@ -248,39 +218,7 @@ class OTPCodeScreen extends Component {
   // };
 
   _retrieveData() {
-    // this.setState({initialState})
-        
-    // AsyncStorage.getItem("userDetails").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     this.setState({
-    //       role: response.role,
-    //       first_name: response.first_name,
-    //       last_name: response.last_name,
-    //     });
-
-    //     console.log("There is no role dey...", response);
-    //     console.log("I role to make role o", this.state.role);
-    //   } else {
-    //     console.log("There is no role dey...", response);
-    //   }
-    // });
-  
-    // AsyncStorage.getItem("checkedBoxBoolean").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     if(response != null && response.checked == true){
-    //       console.log("Reached.......----",this.state);
-    //         this.setState({
-    //         otpCode: response.otpCode,
-    //         password: response.password,
-    //         checked: response.checked,
-    //         });       
-    //     }
-    //   } else {
-    //     console.log("Check box response... Error...", response);
-    //   }
-    // });
+   
   }
 
   componentWillMount = ()=> {
@@ -288,132 +226,96 @@ class OTPCodeScreen extends Component {
     // this._retrieveData();
   }
 
-  startTimer() {
-      this.setState({ seconds: 30, showCountDown: true })
-      // if (this.timer == 0 && this.state.seconds > 0) {
-        this.timer = setInterval(this.countDown, 1000);
-      // }
-    }
-    
     updateSecureTextEntry(){
       this.setState({ secureTextEntry: !this.state.secureTextEntry})
     } 
 
-    click(){
-        Alert.alert("Good!","Your OTP is correct", [
-            {
-                text: "Ok",
-                onPress: () => this.props.navigation.navigate("PasswordScreen", {
-                  tier: this.props.navigation.state.params.tier
-                }),
-            },
-            ]);
-      } 
-
-    countDown() {
-        // Remove one second, set state so a re-render happens.
-        let seconds = this.state.seconds - 1;
-        this.setState({
-          time: this.secondsToTime(seconds),
-          seconds: seconds,
-        });
-        
-        // Check if we're at zero.
-        if (seconds == 0) { 
-          clearInterval(this.timer);
-        }
-      }
-
-      secondsToTime(secs){
-        let hours = Math.floor(secs / (60 * 60));
-    
-        let divisor_for_minutes = secs % (60 * 60);
-        let minutes = Math.floor(divisor_for_minutes / 60);
-    
-        let divisor_for_seconds = divisor_for_minutes % 60;
-        let seconds = Math.ceil(divisor_for_seconds);
-    
-        let obj = {
-          "h": hours,
-          "m": minutes,
-          "s": seconds
-        };
-        return obj;
-      }
-    
-      componentDidMount() {
-        let timeLeftVar = this.secondsToTime(this.state.seconds);
-        this.setState({ time: timeLeftVar });
-      }
-
-      clear = () => {
-        this.input1.clear();
-      };
-    
-      updateOtpText = () => {
-        // will automatically trigger handleOnTextChange callback passed
-        this.input1.setValue(this.state.otpCode);
-        console.log("codeeee oooooo", this.state.otpCode)
-      };
-
-
-      
   render() {
     LogBox.ignoreAllLogs(true);
-    const { showCountDown, pn, otpCode } = this.state;
+
     return (
         <ScrollView
           style={styles.scrollView}
           keyboardShouldPersistTaps="always">
           
-          <StatusBar backgroundColor="#E5E5E5" barStyle="dark-content"/>
+          <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
-          
-            <View style={styles.cardStyleLong}>
-            <Text style={styles.welcomeTextStyle}>Enter OTP code</Text>
-            
-                <Text style={{
-                    fontSize: 12,
-                    fontFamily: "JosefinSans-Bold",
-                    textAlign: "center",
-                    paddingHorizontal: 5,
-                    opacity: 1,
-                    fontWeight: "600",
-                    color: "#002A14",
-                    width: 268,
-                    alignSelf: "center",
-                    marginTop: 13,
-                    }}>A 6 digit verificaton code has been sent to {"\n"}+234 567 8910</Text>
-                    <OTPTextInput 
-                        ref={e => (this.input1 = e)} 
-                        inputCount={6}
-                        color= {"#002A14"}
-                        offTintColor={"#002A14"}
-                        underlineColorAndroid={"transparent"}
-                        textInputStyle={styles.roundedTextInput}
-                        containerStyle={styles.textInputContainer}
-                        tintColor={"#838E08"}
-                        handleTextChange={(text) => this.handleOtpCode(text)}
-
-                    />
-                    {/* <Button title="clear" onPress={this.clearText}/> Didn’t receive otp?*/}
-                <View style={{ alignSelf: "center", marginTop: 47 }}>
-                <TouchableOpacity disabled={otpCode.length != 6 ? true : false} onPress={()=> this.click()} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: otpCode.length != 6 ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
-                    <Text style={styles.getStarted}>VERIFY OTP</Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity onPress={this.startTimer} disabled={this.state.time.s == 30 | this.state.time.s == 0 ? false : true}>
+          <View style={{ marginTop: 20 }}>
+            <View style={styles.optionContainer}>
                 <View>
-                {showCountDown == true ? 
-                <View flexDirection={"row"} alignSelf={"center"}>
-                <Text style={{color: "grey", fontWeight: "600", fontSize: 17, marginLeft: 30, textAlign: "left", }}>{this.state.time.s} sec</Text>
-                <SimpleLineIcons name="reload" style={styles.reloadIconStyle}/>
-                </View> : null}
-                <Text style={{color: "black", fontWeight: "600", fontSize: 12, marginLeft: 30, textAlign: "center", marginTop: 24, marginBottom: 20 }}>Didn’t receive otp?{"  "}
-                <Text style={{color: "black", fontWeight: "600", fontSize: 16, marginLeft: 30, textAlign: "left", textDecorationLine: "underline", lineHeight: 15 }}>Resend OTP</Text>
-                </Text>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 16, borderBottomWidth: 1.5, borderBottomColor: "#B2BE35", width: 326,}}>Transaction Details</Text>
                 </View>
-                </TouchableOpacity>
+
+                <View>
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Date:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", top: 2 }}>Thursday July 21 2022</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Time:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", top: 2 }}>10:13:13</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Refernce:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", top: 2 }}>22222333444555</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Amount:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", top: 2 }}>NGN 300000</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Status:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", top: 2 }}>Pending</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Type:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", top: 2 }}>Debit</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 0, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Service:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", top: 2 }}>Transfer</Text>
+                </View>
+                </View>
+            </View>
+
+            <View style={styles.optionContainer}>
+                <View>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 16, borderBottomWidth: 1.5, borderBottomColor: "#B2BE35", width: 326, }}>Account Details</Text>
+                </View>
+
+                <View>
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Sender Name:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", width: 247, top: 2 }}>John Doe</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Sender Account Number:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", width: 247, top: 2 }}>****44888</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Receiver Account Number:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", width: 247, top: 2 }}>0340044888</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Receiver Account Name:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", width: 247, top: 2 }}>John Dean</Text>
+                </View>
+
+                <View style={{ flexDirection: "row", marginBottom: 8, }}>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Narration:{" "}</Text>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400", width: 247, top: 2 }}>MOB/TRAN/12345678910/22222222222/Johndoes</Text>
+                </View>
+                </View>
+            </View>
             </View>
         </ScrollView>
     );
@@ -421,7 +323,7 @@ class OTPCodeScreen extends Component {
 }
 
 
-export default OTPCodeScreen;
+export default TransactionReceipt;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
@@ -435,27 +337,14 @@ const styles = StyleSheet.create({
     flex: 1,
     width: width,
   },
-  textInputContainer: {
-    marginBottom: 0,
-    marginTop: 10
-  },
-  roundedTextInput: {
-    borderWidth: 1,
-    borderColor: "#002A14", 
-    marginHorizontal: 2, 
-    borderRadius: 7, 
-    height: 37, 
-    width: 38, 
-    alignSelf: "center", 
-    fontSize: 16,
-  },
-  reloadIconStyle: {
-    fontSize: 20,
-    color: "#045135",
-    left: 20,
-    alignSelf: "flex-start",
-    marginStart: 10,
-    // elevation: 5,
+  optionContainer: {
+      width: 327,
+    //   height: 80,
+    //   flexDirection: "row",
+      marginHorizontal: 16,
+      marginBottom: 16,
+      paddingTop: 10,
+      paddingBottom: 2,
   },
   emailInput: {
     borderColor: "#EEF4FE",
@@ -504,31 +393,15 @@ const styles = StyleSheet.create({
     paddingEnd: 22,
     opacity: 1,
   },
-  getStarted: {
-    color:'#FFF',
-    fontSize: 20,
-    fontWeight: "500",
-    padding: 5, 
-    textAlign: "center",
-    alignSelf: "center"
-    },
-    getStarted_: {
-    color:'#002A14',
-    fontSize: 20,
-    fontWeight: "500",
-    padding: 5, 
-    textAlign: "center",
-    alignSelf: "center"
-    },
   cardStyleLong: {
-    marginTop: height * 0.2,
+    marginTop: height * 0.12,
     marginBottom: 10,
     alignSelf: "center",
-    width: 326,
-    height: 317,// height: height * 0.718,
+    width: width * 0.92,
+    // height: height * 0.718,
     padding: 15,
     color: "#ffffff",
-    borderRadius: 10,
+    borderRadius: 6,
     backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 0 },
@@ -628,7 +501,8 @@ const styles = StyleSheet.create({
     right: 10,
     fontFamily: "Nunito-Black",
     textAlign: "right",
-    top: 18, 
+    marginTop: 18, 
+    marginBottom: 22
   },
   dontHaveAccountTextStyle: {
     fontSize: 12,
@@ -697,7 +571,8 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "#E5E5E5",
+    backgroundColor: "#FFFFFFF",
+    // paddingHorizontal: 16 
   },
   errorMessageContainerStyle: {
     backgroundColor: "#fee8e6",

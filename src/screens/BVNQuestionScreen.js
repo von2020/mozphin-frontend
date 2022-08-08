@@ -296,10 +296,14 @@ class BVNQuestionScreen extends Component {
                     }}>Please indicate if you have a valid bank verification number (BVN)</Text>
 
                 <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
-                <TouchableOpacity onPress={()=> this.props.navigation.navigate("BVNVerification")} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate("BVNVerification", {
+                    tier: "3"
+                  })} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>YES</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=> this.props.navigation.navigate("OTPCodeOption")} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate("OTPCodeOption", {
+                    tier: "1"
+                  })} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>NO</Text>
                 </TouchableOpacity>
               </View>

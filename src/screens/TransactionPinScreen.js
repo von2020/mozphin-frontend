@@ -117,11 +117,11 @@ class TransactionPinScreen extends Component {
     }  else{
       // const why_here = tellUs
       // const birth_year = moment(birthYear).format("YYYY-MM-DD")
-      Alert.alert(null, "Your transaction pin has been set successfully.\n*Now you can now Login and make transactions..*", [
+      Alert.alert(null, "Your transaction pin has been set successfully.\n*Now you can now make transactions..*", [
         {
             text: "Ok",
-            onPress: () => this.props.navigation.navigate("SignIn", {
-              token: "token"
+            onPress: () => this.props.navigation.navigate("Dashboard", {
+              tier: this.props.navigation.state.params.tier
             }),
         },
     ]);

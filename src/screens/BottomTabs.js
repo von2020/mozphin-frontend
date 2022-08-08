@@ -7,14 +7,16 @@ import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import DashboardScreen from "../screens/Dashboard";
 import FaqScreen from "../screens/FaqScreen";
 import PaymentScreen from "../screens/PaymentScreen";
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Entypo from 'react-native-vector-icons/Entypo';
+import SendMoney from '../screens/SendMoney';
+import TransactionHistory from '../screens/TransactionHistory';
+import TransactionReceipt from '../screens/TransactionReceipt';
 import NotificationIcon from '../assets/svgs/notificationicon';
 import LoansIcon from '../assets/svgs/loansicon';
 import HomeIcon from '../assets/svgs/homeicon';
 import PaymentIcon from '../assets/svgs/paymenticon';
 import AirtimeNData from '../screens/AirtimeNData';
 import NotificationScreen from '../screens/NotificationScreen';
+import AddBeneficiary from '../screens/AddBeneficiary';
 
 
 const DashboardStack = createStackNavigator({
@@ -46,16 +48,67 @@ const DashboardStack = createStackNavigator({
       headerTintColor: "#FFF",
       headerTitleStyle: {
           fontWeight: "600",
-          alignSelf: "center"
+          alignSelf: "center",
+          right: 30
         },
       },
     },
-  //   NewObservation: {
-  //     screen: NewObservationScreen,
-  //     navigationOptions: {
-  //       headerShown: true
-  //     },
-  //   },
+    SendMoney: {
+      screen: SendMoney,
+      navigationOptions: {
+        headerShown: true,
+        headerStyle: { backgroundColor: '#002A14' },
+        title: "Send Money",
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+            fontWeight: "600",
+            textAlign: "center",
+            right: 30
+        },
+    },
+  },
+    TransactionHistory: {
+      screen: TransactionHistory,
+      navigationOptions: {
+        headerShown: true,
+        headerStyle: { backgroundColor: '#002A14' },
+        title: "Transaction History",
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+            fontWeight: "600",
+            textAlign: "center",
+            right: 30
+          },
+      },
+    },
+    TransactionReceipt: {
+      screen: TransactionReceipt,
+      navigationOptions: {
+        headerShown: true,
+        headerStyle: { backgroundColor: '#002A14' },
+        title: "Transaction Receipt",
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+            fontWeight: "600",
+            textAlign: "center",
+            right: 30
+          },
+      },
+    },
+    AddBeneficiary: {
+      screen: AddBeneficiary,
+      navigationOptions: {
+        headerShown: true,
+        headerStyle: { backgroundColor: '#002A14' },
+        title: "Beneficiary",
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+            fontWeight: "600",
+            textAlign: "center",
+            right: 30
+          },
+      },
+    },
   //   ObservationList: {
   //     screen: ObservationListScreen,
   //     navigationOptions: {
@@ -85,22 +138,19 @@ const DashboardStack = createStackNavigator({
   
   const NotificationStack = createStackNavigator({
     "Notification": {
-      screen: NotificationScreen,  
+      screen: NotificationScreen, 
+      navigationOptions: { 
       headerShown: true,
       headerStyle: { backgroundColor: '#002A14', },
       title: "Notifications",
       headerTintColor: "#FFF",
       headerTitleStyle: {
           fontWeight: "600",
-          alignSelf: "center"
+          alignSelf: "center",
+          right: 30
         }, 
     },
-    "Add Subject": {
-      screen: DashboardScreen,
-      navigationOptions: {
-        headerShown: true
-      },
-    },
+  },
   })
 //     "Added Subjects": {
 //       screen: AddSubjectList,
@@ -186,7 +236,7 @@ const DashboardStack = createStackNavigator({
       headerTintColor: "#FFF",
       headerTitleStyle: {
           fontWeight: "600",
-          alignSelf: "center"
+          alignSelf: "center",
         },
       },
     },

@@ -55,7 +55,7 @@ class StartUpScreen extends Component {
     }
 
     signUp(){
-      this.props.navigation.navigate("BVNQuestion");
+      this.props.navigation.navigate("Register");
     }
 
     help(){

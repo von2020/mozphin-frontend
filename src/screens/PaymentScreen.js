@@ -241,7 +241,7 @@ class PaymentScreen extends Component {
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
           <View style={{ marginVertical: 30 }}>
-            <TouchableOpacity style={styles.optionContainer}>
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("AirtimeNData")}>
                 <View style={{ margin: 5, }}>
                 <Icon1/>
                 </View>
@@ -308,7 +308,7 @@ class PaymentScreen extends Component {
                 <View style={{ margin: 8, }}>
                 <Icon5/>
                 </View>
-                <View style={{ flexDirection: "row", marginStart: 6 }}>
+                <View style={{ flexDirection: "row", marginStart: 6 }} onPress={()=> this.props.navigation.navigate("SendMoney")}>
                 <View>
                 <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>Send Money</Text>
                 <Text style={{ fontSize: 12, color: "#002A14", width: 240, fontWeight: "400" }}>Make inter and intra bank money transfers</Text>

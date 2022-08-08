@@ -18,8 +18,9 @@ import  Loader  from './../config/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from "react-native-material-dropdown";
 import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
-import { selectContactPhone } from 'react-native-select-contact';
-// import Contacts from 'react-native-contacts';
+import BankIcon from '../assets/svgs/bank';
+
+import Contacts from 'react-native-contacts';
 const { width, height } = Dimensions.get("window");
 
 // const image = { uri: "./../../assets/safexray-logo.png" };
@@ -35,76 +36,129 @@ const initialState = {
   token: "",
   data: "",
   mtn: "",
+  bankName: "",
   airtime: "tapped",
+  airtel: "",
   nineMobile: "",
-  glo: "",
+  glo: "tapped",
   value: "",
   label: "",
-  contact: "",
   displayList: false,
   checked: false,
   checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
   secureTextEntry: true,
-  contactList: [],
+  data: [],
   tellUsList: [
     {
-        value: "200",
-        label: "1gig (7days)  N200",
+        value: "Access Bank",
+        label: "Access Bank",
     },
     {
-        value: "200",
-        label: "350mb (7days)  N200",
+        value: "Citi Bank",
+        label: "Citi Bank",
     },
     {
-        value: "350",
-        label: "750mb (7days)  N350",
+        value: "Ecobank",
+        label: "Ecobank",
     },
     {
-      value: "600",
-      label: "1.5gig (7days)  N600",
+      value: "FCMB",
+      label: "FCMB",
     },
     {
-        value: "1000",
-        label: "3gig  (7days)  N1000",
+        value: "Fidelity Bank",
+        label: "Fidelity Bank",
     },
     {
-      value: "1500",
-      label: "6gig  (7days)  N1500",
+      value: "First Bank of Nigeria",
+      label: "First Bank of Nigeria",
     },
     {
-        value: "500",
-        label: "1gig  (30days)  N500",
+        value: "GTBank Plc",
+        label: "GTBank Plc",
     },
     {
-      value: "1000",
-      label: "1.5gig  (30days)  N1000",
+      value: "Globus Bank",
+      label: "Globus Bank",
     },
     {
-        value: "1500",
-        label: "2gig  (30days)  N1500",
+        value: "Haggai Mortgage Bank Limited",
+        label: "Haggai Mortgage Bank Limited",
     },
     {
-      value: "1800",
-      label: "2.5gig  (30days)  N1800",
+      value: "Heritage Bank",
+      label: "Heritage Bank",
     },
     {
-        value: "2000",
-        label: "4.5gig  (30days)  N2000",
+        value: "JAIZ Bank",
+        label: "JAIZ Bank",
     },
     {
-      value: "2500",
-      label: "6.5gig  (30days)  N2500",
+      value: "PARALLEX Bank",
+      label: "PARALLEX Bank",
     },
     {
-        value: "3000",
-        label: "9gig  (30days)  N3000",
+        value: "Polaris Bank",
+        label: "Polaris Bank",
+    },
+    {
+        value: "Premium Trust Bank",
+        label: "Premium Trust Bank",
+    },
+    {
+        value: "Providus Bank",
+        label: "Providus Bank",
+    },
+    {
+        value: "SUNTRUST Bank",
+        label: "SUNTRUST Bank",
+    },
+    {
+        value: "Standard Chatared Bank",
+        label: "Standard Chatared Bank",
+    },
+    {
+        value: "Sterling Bank",
+        label: "Sterling Bank",
+    },
+    {
+        value: "TITAN TRUST Bank",
+        label: "TITAN TRUST Bank",
+    },
+    {
+        value: "Taj Bank",
+        label: "Taj Bank",
+    },
+    {
+        value: "UNAAB MICROFINANCE BANK",
+        label: "UNAAB MICROFINANCE BANK",
+    },
+    {
+        value: "Union Bank",
+        label: "Union Bank",
+    },
+    {
+        value: "Unity Bank",
+        label: "Unity Bank",
+    },
+    {
+        value: "Wema Bank",
+        label: "Wema Bank",
+    },
+    {
+        value: "YOBE MICROFINANCE Bank",
+        label: "YOBE MICROFINANCE Bank",
+    },
+    {
+        value: "ZENITH BANK PLC",
+        label: "ZENITH BANK PLC",
     },
   ],
 };
 
-class AirtimeNData extends Component {
+class SendMoney extends Component {
   state = initialState;
 
   handleEmail = (username) => {
@@ -251,87 +305,28 @@ class AirtimeNData extends Component {
   }
   } 
 
-  getPhoneNumber() {
-    PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-      {
-        'title': 'Contacts',
-        'message': 'This app would like to view your contacts.',
-        'buttonPositive': 'Accept'
-      }
-    )
-    return selectContactPhone()
-        .then(selection => {
-            if (!selection) {
-                return null;
-            }
-            
-            let { contact, selectedPhone } = selection;
-            console.log(`Selected ${selectedPhone.type} phone number ${selectedPhone.number} from ${contact.name}`);
-            this.setState({ contact: selectedPhone.number })
-            return selectedPhone.number;
-        });  
+  search = txt => {
+    if(txt == ""){
+      this.setState({ data: this.state.tellUsList })
+    }
+    let text = txt.toLowerCase()
+    let tracks = this.state.tellUsList
+    let filterTracks = tracks.filter(item => {
+    if(item.label.toLowerCase().match(text)) {
+      return item
+    }
+    })
+    if(filterTracks.length != 0){
+      this.setState({ data: filterTracks })
+    }else{
+      this.setState({ data: [] })
+      Alert.alert(null,"Your Bank doesn't exist")
+    }
   }
 
-  // selectContact() {
-  //   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-  //     title: 'Contacts',
-  //     message: 'This app would like to view your contacts.',
-  //   }).then(() => {
-  //     Contacts.getAll((err, contacts) => {
-  //       if (err === 'denied') {
-  //         // error
-  //       } else {
-  //         // console.log(contacts);
-  //         var dataList = [];
-  //     contacts.forEach(item => {
-  //         console.log("itemm,...",item);
-  //       if (item.displayName[0] == key) {
-  //         dataList.push(item);
-  //       }
-  //     });
-  //         this.setState({contactList: contacts});
-  //       }
-  //     });
-  //   });
-  // }
-
-  // async selectContactb(){
-  //   // PermissionsAndroid.requestMultiple([
-  //   //   PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
-  //   //   PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-  //   // ])
-  //   // Contacts.getAll().then(contacts => {
-  //   //   console.log('contactis', contacts);
-  //   //   // setContacts(contacts);
-  //   // });
-  //     try{
-        
-  //       const permission = await PermissionsAndroid.requestMultiple(
-  //         [
-  //     PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
-  //     PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-  //       ],
-  //         {
-  //           'title': 'Contacts',
-  //           'message': 'This app would like to view your contacts.',
-  //           'buttonPositive': 'Please accept bare mortal'
-  //         }
-          
-  //       );
-  //       if(permission === PermissionsAndroid.RESULTS.GRANTED){
-  //         const contactis = await Contacts.getAll();
-  //         // console.log('contactis');
-  //         console.log('contactis', contactis);
-  //         // setMycontacts(contactis);
-  //       }else{
-  //         console.log("Permission Denied");
-          
-  //       }
-  //     }catch(error){
-  //       console.log(error);
-  //     }
-    // }
+  selectBeneficiary(){
+      this.props.navigation.navigate("AddBeneficiary")
+    }
 
   _retrieveData() {
     // this.setState({initialState})
@@ -380,7 +375,7 @@ class AirtimeNData extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { data, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
+    const { data, bankName, mtn, glo, airtel, nineMobile, displayList } = this.state;
     return (
         <ScrollView
           style={styles.scrollView}
@@ -388,94 +383,91 @@ class AirtimeNData extends Component {
           
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
-          {airtime == "tapped" && <View>
-            <View style={{ flexDirection: "row", justifyContent: "space-around", width: width * 0.91, alignSelf: "center", marginTop: 32, marginBottom: 31 }}>
-            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "" })}>
-            <Text style={{
-                    fontSize: 20,
-                    color: "#002A14",
-                    alignSelf: "center",
-                    paddingHorizontal: 5,
-                    marginHorizontal: 50,
-                    fontWeight: "700",
-                    opacity: 1,
-                    borderBottomWidth: 3,
-                    width: 163,
-                    textAlign: "center",
-                    borderColor: airtime == "" ? "#B2BE3550" : "#B2BE35"
-                  }}>Airtime</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "" })}>
-            <Text style={{
-                    fontSize: 20,
-                    color: "#002A14",
-                    alignSelf: "center",
-                    paddingHorizontal: 5,
-                    marginHorizontal: 50,
-                    fontWeight: "700",
-                    opacity: 1,
-                    borderBottomWidth: 3,
-                    width: 163,
-                    textAlign: "center",
-                    borderColor: data == "" ? "#B2BE3550" : "#B2BE35"
-                  }}>Data</Text>
-            </TouchableOpacity>
-            </View>
-
-            <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 48 }}>
-            <TouchableOpacity style={{ padding: 10, borderColor: mtn == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "tapped", airtel: "", glo: "", nineMobile: "" })}>
-            <Image source={require('../assets/mtn.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            </TouchableOpacity>
-
+          <View>
+            <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 16, marginTop: 28 }}>
             <TouchableOpacity style={{ padding: 10, borderColor: glo == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "tapped", nineMobile: "" })}>
-            <Image source={require('../assets/glo.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            <Image source={require('../assets/mozfinacc.png')} resizeMode={'cover'} alignSelf={"center"} width={200} height={100}/>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ padding: 10, borderColor: airtel == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "tapped", glo: "", nineMobile: "" })}>
-            <Image source={require('../assets/airtime.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={{ padding: 10, borderColor: nineMobile == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "", nineMobile: "tapped" })}>
-            <Image source={require('../assets/9mobile.png')} resizeMode={'cover'} alignSelf={"center"}/>
+            <TouchableOpacity style={{ padding: 10, borderColor: mtn == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "tapped", airtel: "", glo: "", nineMobile: "" })}>
+            <BankIcon/>
             </TouchableOpacity>
             </View>
 
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 48, marginHorizontal: 28, }}>
+            <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 16, textAlign: "left", }}>Mozfin to Mozfin</Text>  
+            <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 16, textAlign: "left",}}>Mozfin to Other banks</Text>  
+            </View>
+        
+            {glo == "tapped" && 
+            <View>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 0, marginHorizontal: 28, }}>
-            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Phone Number</Text>  
-            <TouchableOpacity onPress={()=> this.getPhoneNumber()}>
-            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", textDecorationLine: "underline" }}>Select from contact</Text>  
-            </TouchableOpacity>
+            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Account Number</Text>  
+            {airtel == "" && 
+            <TouchableOpacity onPress={()=> this.selectBeneficiary()}>
+            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", textDecorationLine: "underline" }}>Select beneficiary</Text>  
+            </TouchableOpacity>}
             </View>
                     <TextInput
                         style={{
-                        width: width * 0.9,
+                        width: width * 0.85,
                         alignSelf: "center"
                         }}
                         underlineColorAndroid={"#B2BE35"}
                         keyboardType={"phone-pad"}
                         paddingHorizontal={1}
                         paddingVertical={10}
-                        marginBottom={10}
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
-                        value={this.state.contact.trim()}
+                        maxLength={10}
+                        // value={this.state.BVN_}
                         paddingBottom={5}
                         // onChangeText={(text) => this.onChangeTextHandler(text)}
                     />
-                    <View style={{ marginTop: 10, marginBottom: 56, marginHorizontal: 28, }}>
-                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Recharge Amount</Text>  
+                    {airtel == "" && 
+                    <TouchableOpacity
+                        onPress={()=> this.setState({ airtel: "tapped" })}
+                        style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 32 }}>
+                        <Text style={styles.loginButtonText}>CONFIRM</Text>
+                    </TouchableOpacity> }
+                    </View>}
+
+                    {airtel == "tapped" && 
+                    <View>
+                    <View style={{ marginTop: 10, marginBottom: 10, marginHorizontal: 28, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Account Name</Text>  
                     <TextInput
                         style={{
-                        width: width * 0.9,
+                        width: width * 0.85,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        keyboardType={"text"}
+                        paddingHorizontal={1}
+                        paddingVertical={10}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        autoCapitalize={"sentences"}
+                        // value={this.state.BVN_}
+                        paddingBottom={5}
+                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                    />
+                    </View>
+
+                    <View style={{ marginTop: 10, marginBottom: 10, marginHorizontal: 28, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Enter Amount</Text>  
+                    <TextInput
+                        style={{
+                        width: width * 0.85,
                         alignSelf: "center"
                         }}
                         underlineColorAndroid={"#B2BE35"}
                         keyboardType={"phone-pad"}
                         paddingHorizontal={1}
-                        paddingVertical={10}
-                        marginBottom={10}
+                        paddingTop={10}
+                        marginBottom={5}
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
@@ -483,98 +475,64 @@ class AirtimeNData extends Component {
                         paddingBottom={5}
                         // onChangeText={(text) => this.onChangeTextHandler(text)}
                     />
+                    <Text style={{color: "#3E3E3E", fontWeight: "600", fontSize: 12, lineHeight: 12, textAlign: "left", marginTop: 0 }}>{" "}* Your daily withdrawal is N5, 000, 000</Text>  
                     </View>
 
-            <TouchableOpacity
-                onPress={this.onPressLogin.bind(this)}
-                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
-                <Text style={styles.loginButtonText}>PAY</Text>
-            </TouchableOpacity>
-            </View>}
-
-            {data == "tapped" && <View>
-            <View style={{ flexDirection: "row", justifyContent: "space-around", width: width * 0.91, alignSelf: "center", marginTop: 32, marginBottom: 31 }}>
-            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "" })}>
-            <Text style={{
-                    fontSize: 20,
-                    color: "#002A14",
-                    alignSelf: "center",
-                    paddingHorizontal: 5,
-                    marginHorizontal: 50,
-                    fontWeight: "700",
-                    opacity: 1,
-                    borderBottomWidth: 3,
-                    width: 163,
-                    textAlign: "center",
-                    borderColor: airtime == "" ? "#B2BE3550" : "#B2BE35"
-                  }}>Airtime</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "" })}>
-            <Text style={{
-                    fontSize: 20,
-                    color: "#002A14",
-                    alignSelf: "center",
-                    paddingHorizontal: 5,
-                    marginHorizontal: 50,
-                    fontWeight: "700",
-                    opacity: 1,
-                    borderBottomWidth: 3,
-                    width: 163,
-                    textAlign: "center",
-                    borderColor: data == "" ? "#B2BE3550" : "#B2BE35"
-                  }}>Data</Text>
-            </TouchableOpacity>
-            </View>
-
-            <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 48 }}>
-            <TouchableOpacity style={{ padding: 10, borderColor: mtn == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "tapped", airtel: "", glo: "", nineMobile: "" })}>
-            <Image source={require('../assets/mtn.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={{ padding: 10, borderColor: glo == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "tapped", nineMobile: "" })}>
-            <Image source={require('../assets/glo.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={{ padding: 10, borderColor: airtel == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "tapped", glo: "", nineMobile: "" })}>
-            <Image source={require('../assets/airtime.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={{ padding: 10, borderColor: nineMobile == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "", nineMobile: "tapped" })}>
-            <Image source={require('../assets/9mobile.png')} resizeMode={'cover'} alignSelf={"center"}/>
-            </TouchableOpacity>
-            </View>
-
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 0, marginHorizontal: 28, }}>
-            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Phone Number</Text>  
-            <TouchableOpacity onPress={()=> this.getPhoneNumber()}>
-            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", textDecorationLine: "underline" }}>Select from contact</Text>  
-            </TouchableOpacity>
-            </View>
+                    <View style={{ marginTop: 24, marginBottom: 10, marginHorizontal: 28, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left" }}>Narration</Text>  
                     <TextInput
                         style={{
-                        width: width * 0.9,
+                        width: width * 0.85,
                         alignSelf: "center"
                         }}
                         underlineColorAndroid={"#B2BE35"}
-                        keyboardType={"phone-pad"}
                         paddingHorizontal={1}
-                        paddingVertical={10}
-                        marginBottom={10}
+                        paddingTop={10}
+                        marginBottom={5}
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
-                        // maxLength={11}
-                        value={this.state.contact.trim()}
+                        // value={this.state.BVN_}
+                        paddingBottom={5}
+                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                    /> 
+                    </View>
+                    <TouchableOpacity
+                        onPress={()=> this.setState({ airtel: "tapped" })}
+                        style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 32, opacity: 1  }}>
+                        <Text style={styles.loginButtonText}>SEND</Text>
+                    </TouchableOpacity>
+            </View>}
+            </View>
+
+            {mtn == "tapped" && <View>
+                    {bankName != "" && <View style={{ marginTop: 10, marginBottom: 10, marginHorizontal: 28, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Bank Name</Text>  
+                    <TextInput
+                        style={{
+                        width: width * 0.85,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        keyboardType={"text"}
+                        paddingHorizontal={1}
+                        paddingVertical={10}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        autoCapitalize={"sentences"}
+                        value={this.state.label}
                         paddingBottom={5}
                         // onChangeText={(text) => this.onChangeTextHandler(text)}
                     />
-                    <View style={{ marginTop: 10, marginHorizontal: 28, }}>
-                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Select Data Bundle</Text>
+                    </View>}
+
+                    <View style={{ marginTop: 24, marginHorizontal: 28, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left" }}>Select Bank</Text>
                     <TouchableOpacity onPress={()=> this.setState({ displayList: true })} style={{ flexDirection: "row", alignSelf: "center"}}>
                     <TextInput
                         style={{
-                        width: width * 0.9,
+                        width: width * 0.85,
                         alignSelf: "center"
                         }}
                         underlineColorAndroid={"#B2BE35"}
@@ -595,22 +553,47 @@ class AirtimeNData extends Component {
                     </View>
                     </TouchableOpacity>  
 
-                    {displayList && <FlatList
-                      data={this.state.tellUsList}
+                    {displayList && 
+                    <View>
+                        <TextInput
+                            backgroundColor = "#EFEDED"
+                            borderWidth = {1}
+                            borderColor={"#B2BE35"}
+                            width= {320}
+                            height= {36}
+                            borderRadius= {7}
+                            top = {-14}
+                            paddingVertical={5}
+                            paddingStart ={5}
+                            paddingEnd= {12}
+                            opacity= {1}
+                            alignSelf={"center"}
+                            underlineColorAndroid="transparent"
+                            autoCapitalize="none"                
+                            placeholder={"Search bank..."}
+                            placeholderTextColor={"#00000074"}
+                            color={"#000"}
+                            onChangeText={(value) => this.search(value)}
+                            />
+                    <FlatList
+                      data={this.state.data.length != 0 ? this.state.data : this.state.tellUsList}
                       renderItem={({ item,index }) => (
                         <View style={{ marginBottom: 12 }}>
                           <TouchableOpacity onPress={()=> this.setState({ label: item.label, value: item.value, displayList: false })}>
                           <Text style={{ fontSize: 14, color: "#000", fontWeight: "400", }}>{item.label}</Text>    
                           </TouchableOpacity>
                         </View>
-                      )}/>}
+                      )}/>
+                      </View>}
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 0, marginTop: 10,}}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Account Number</Text>  
+                    {nineMobile == "" && <TouchableOpacity onPress={()=> this.selectBeneficiary()}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", textDecorationLine: "underline" }}>Select beneficiary</Text>  
+                    </TouchableOpacity>}
                     </View>
-
-                    <View style={{ marginTop: 10, marginBottom: 56, marginHorizontal: 28, }}>
-                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Cost</Text>  
                     <TextInput
                         style={{
-                        width: width * 0.9,
+                        width: width * 0.85,
                         alignSelf: "center"
                         }}
                         underlineColorAndroid={"#B2BE35"}
@@ -619,11 +602,83 @@ class AirtimeNData extends Component {
                         paddingVertical={10}
                         marginBottom={10}
                         fontSize={16}
-                        color={"#000"}
-                        editable={false}
                         fontWeight={"400"}
                         textAlign={"left"}
-                        value={this.state.value}
+                        maxLength={11}
+                        // value={this.state.BVN_}
+                        paddingBottom={5}
+                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                    />
+                    
+                    {nineMobile == "" && 
+                    <TouchableOpacity
+                        onPress={()=> this.setState({ nineMobile: "tapped", bankName: "hi" })}
+                        style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 32 }}>
+                        <Text style={styles.loginButtonText}>CONFIRM</Text>
+                    </TouchableOpacity> }
+                    </View>
+                    </View>}
+
+                    {nineMobile == "tapped" && 
+                    <View>
+                    <View style={{ marginTop: 24, marginBottom: 10, marginHorizontal: 28, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Account Name</Text>  
+                    <TextInput
+                        style={{
+                        width: width * 0.85,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        keyboardType={"text"}
+                        paddingHorizontal={1}
+                        paddingVertical={10}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        autoCapitalize={"sentences"}
+                        // value={this.state.BVN_}
+                        paddingBottom={5}
+                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                    />
+                    </View>
+
+                    <View style={{ marginTop: 24, marginBottom: 10, marginHorizontal: 28, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left",  }}>Enter Amount</Text>  
+                    <TextInput
+                        style={{
+                        width: width * 0.85,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        keyboardType={"phone-pad"}
+                        paddingHorizontal={1}
+                        paddingTop={10}
+                        marginBottom={5}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        // value={this.state.BVN_}
+                        paddingBottom={5}
+                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                    />
+                    <Text style={{color: "#3E3E3E", fontWeight: "600", fontSize: 12, lineHeight: 12, textAlign: "left", }}>{" "}* Your daily withdrawal is N5, 000, 000</Text>  
+                    </View>
+
+                    <View style={{ marginTop: 24, marginBottom: 10, marginHorizontal: 28, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Narration</Text>  
+                    <TextInput
+                        style={{
+                        width: width * 0.85,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        paddingHorizontal={1}
+                        paddingTop={10}
+                        marginBottom={5}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        // value={this.state.BVN_}
                         paddingBottom={5}
                         // onChangeText={(text) => this.onChangeTextHandler(text)}
                     />
@@ -631,8 +686,8 @@ class AirtimeNData extends Component {
 
             <TouchableOpacity
                 onPress={this.onPressLogin.bind(this)}
-                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
-                <Text style={styles.loginButtonText}>PAY</Text>
+                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 32, opacity: 1  }}>
+                <Text style={styles.loginButtonText}>SEND</Text>
             </TouchableOpacity>
             </View>}
         </ScrollView>
@@ -641,7 +696,7 @@ class AirtimeNData extends Component {
 }
 
 
-export default AirtimeNData;
+export default SendMoney;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {

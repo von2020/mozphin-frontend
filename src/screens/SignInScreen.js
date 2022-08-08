@@ -86,8 +86,8 @@ class SignInScreen extends Component {
     const checkedPayload = { username, password, checked };
     this.setState({ isLoading: false, isAuthorized: true });
 
-    this.props.navigation.push("Dashboard", {
-      data: "data",
+    this.props.navigation.navigate("Dashboard", {
+      tier: "3",
     });
     console.log(payload);
 

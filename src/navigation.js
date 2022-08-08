@@ -4,8 +4,6 @@ import { createAppContainer,createSwitchNavigator }  from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';  
 import { createDrawerNavigator } from 'react-navigation-drawer';
-// import { createDrawerNavigator } from '@react-navigation/drawer';
-import Dashboard from '../src/screens/Dashboard';
 import SplashScreen from '../src/screens/SplashScreen';
 import StartUpScreen from '../src/screens/StartUpScreen';
 import UpdateUserDetails from '../src/screens/UpdateUserDetailsScreen';
@@ -230,7 +228,8 @@ const Stack = createStackNavigator(
               title: "Change Password",
               headerTintColor: "#000",
               headerTitleStyle: {
-                  fontWeight: "100",
+                  fontWeight: "600",
+                  right: 30
               },
           },
         },
@@ -241,7 +240,8 @@ const Stack = createStackNavigator(
           title: "My Profile",
           headerTintColor: "#fff",
           headerTitleStyle: {
-              fontWeight: "100",
+              fontWeight: "600",
+              right: 30
           },
           }
       },
@@ -277,7 +277,8 @@ const StartUpStackMain = createStackNavigator(
               title: "",
               headerTintColor: "#002A14",
               headerTitleStyle: {
-                  fontWeight: "100",
+                  fontWeight: "600",
+                  right: 30
               },
             },
         },
@@ -289,7 +290,8 @@ const StartUpStackMain = createStackNavigator(
               title: "Register",
               headerTintColor: "#FFF",
               headerTitleStyle: {
-                  fontWeight: "100",
+                  fontWeight: "600",
+                  right: 30
               },
               },
         },
@@ -303,6 +305,7 @@ const StartUpStackMain = createStackNavigator(
             headerTitleStyle: {
                 fontWeight: "600",
                 textAlign: "center",
+                right: 30
             },
           }
         },
@@ -316,6 +319,7 @@ const StartUpStackMain = createStackNavigator(
               headerTitleStyle: {
                   fontWeight: "600",
                   textAlign: "center",
+                  right: 30
               },
             }
         },
@@ -329,6 +333,7 @@ const StartUpStackMain = createStackNavigator(
             headerTitleStyle: {
                 fontWeight: "600",
                 textAlign: "center",
+                right: 30
             },
           }
         },
@@ -353,7 +358,7 @@ const StartUpStackMain = createStackNavigator(
               title: "",
               headerTintColor: "#002A14",
               headerTitleStyle: {
-                  fontWeight: "100",
+                  fontWeight: "600",
                 },
               },
         },
@@ -431,7 +436,8 @@ const StartUpStackMain = createStackNavigator(
             headerTintColor: "#FFF",
             headerTitleStyle: {
                 fontWeight: "600",
-                alignSelf: "center"
+                alignSelf: "center",
+                right: 30
               },
             },
       },
@@ -470,11 +476,12 @@ const StartUpStackMain = createStackNavigator(
                 title: "",
                 headerTintColor: "#002A14",
                 headerTitleStyle: {
-                    fontWeight: "100",
+                    fontWeight: "600",
+                    right: 30
                   },
                 },
           },
-    }
+  }
   );
 
   

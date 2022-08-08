@@ -6,7 +6,7 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  ImageBackground,
+  Image,
   StatusBar,
   Modal,
   Alert,
@@ -48,6 +48,7 @@ const initialState = {
   secureTextEntry: true,
   secureConfirmTextEntry: true,
   modeDateOfBirth: "date",
+  modalVisible_: false,
   token: "",
   DateOfBirthShow: false,
 };
@@ -117,14 +118,10 @@ class PasswordScreen extends Component {
     }  else{
       // const why_here = tellUs
       // const birth_year = moment(birthYear).format("YYYY-MM-DD")
-      Alert.alert(null, ' Your password set up was successful..', [
-        {
-            text: "Ok",
-            onPress: () => this.props.navigation.navigate("TransactionPin", {
-              token: "token"
-            }),
-        },
-    ]);
+      
+    this.setState({
+      modalVisible_: true
+    });
       const payload = { 
         email, 
         username, 
@@ -347,6 +344,13 @@ class PasswordScreen extends Component {
       console.log('Done.')
     }
 
+    visibleView(){
+      this.setState({ view: true, modalVisible_: false });
+      this.props.navigation.navigate("TransactionPin", {
+        tier: this.props.navigation.state.params.tier
+      })
+    }
+    
   render() {
     LogBox.ignoreAllLogs(true);
     const { modeDateOfBirth, DateOfBirthShow, isChecked } = this.state;
@@ -360,7 +364,39 @@ class PasswordScreen extends Component {
           keyboardShouldPersistTaps="always">
         <StatusBar backgroundColor="#E5E5E5" barStyle="dark-content"/>
         <Loader loading={this.state.isLoading} />
+        <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.modalVisible_}
+                    onRequestClose={() => {
+                      this.setState({ modalVisible_: false });
+                    }}
+                  >
+                <View style={styles.modalBackground}>
+                <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                <View>
+                <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+                <Image source={require('../assets/circlemark.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20}/>
+                <View alignItems={"center"}>
+                <Text style={styles.statusModalText}>SUCCESSFUL!</Text>
+                <Text style={styles.modalText}>
+                {" "}Congratulations John, your tier-{this.props.navigation.state.params.tier} account was successfully created
+                </Text>
+                </View>
+                </View>
 
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ lignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
+                  onPress={() => this.visibleView()}>
+                    <Text style={styles.textStylee}>PROCEED</Text>
+                </TouchableOpacity>   
+                        
+                </View>
+              </View>
+              </View>
+              </Modal>
         <View>
             <View style={styles.cardStyleLong}>
             <Text style={styles.headerTextStyleView}>Set Password</Text>
@@ -484,7 +520,7 @@ class PasswordScreen extends Component {
                 
               </TouchableOpacity> : null} 
             </View>
-            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginTop: 20, paddingTop: 5 }}>* * Password must be 8 characters long and must contain an upper case letter with special charaters i.e Toopwer1!  </Text>
+            <Text style={{ fontSize: 12, fontWeight: "400", lineHeight: 12, color: "#3E3E3E", marginBottom: 32, marginTop: 15 }}>* * Password must be 8 characters long and must contain an upper case letter with special charaters i.e Toopwer1!  </Text>
             
             <TouchableOpacity
                 onPress={this.onPressSignUp.bind(this)}
@@ -579,6 +615,61 @@ const styles = StyleSheet.create({
     height: 50,
     alignSelf: "center",
     width: width * 0.80,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 40,
+    width: 346,
+    height: 320,
+    backgroundColor: "white",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowopacity: 0.95,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  textStylee: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 5,
+    fontSize: 20,
+  },
+  modalText: {
+    marginBottom: 15,
+    width: width * 0.6,
+    marginHorizontal: 15,
+    fontFamily: "Nunito_400Regular",
+    alignSelf: "center",
+    textAlign: "center",
+    color: "#002A14DE"
+  },
+  statusModalText: {
+    color: "#002A14",
+    fontFamily: "Nunito_400Regular",
+    fontWeight: "700",
+    fontSize: 20,
+    textAlign: "center",
+    alignSelf: "center"
+  },
+  modalBackground:{
+    flex:1,
+    alignItems:'center',
+    flexDirection:'column',
+    justifyContent:'space-around',
+    backgroundColor:'#000000'
   },
   invalidPasswordTextStyle: {
     fontSize: 13,

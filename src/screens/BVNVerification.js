@@ -100,7 +100,8 @@ class BVN_Verification extends Component {
               othernames: data.bvnDetails.OtherNames,
               bvn: data.bvnDetails.BVN,
               phoneno: data.bvnDetails.phoneNumber,
-              dob: data.bvnDetails.DOB
+              dob: data.bvnDetails.DOB,
+              tier: "3"
             }),
         },
         ]);
@@ -125,7 +126,6 @@ class BVN_Verification extends Component {
         Alert.alert(null,'Incorrect Login Details')
         if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
         this.setState({ isLoading: false });
-          this.props.navigation.replace("SignUp");
           Alert.alert(null,'Please change your password and be activated')
         }
       } else if(error.response.status == 404){

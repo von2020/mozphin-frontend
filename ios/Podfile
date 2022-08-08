@@ -35,6 +35,8 @@ target 'Mozfin_App' do
 
   pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
 
+  pod 'react-native-select-contact', :path => '../node_modules/react-native-select-contact'
+
   target 'Mozfin_AppTests' do
     inherit! :complete
     # Pods for testing

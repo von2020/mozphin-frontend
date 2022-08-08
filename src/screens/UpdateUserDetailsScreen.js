@@ -1286,8 +1286,8 @@ handleFirstname = (FirstName) => {
 
     visibleView(){
       this.setState({ view: true, modalVisible_: false });
-      this.props.navigation.push("PasswordScreen", {
-                  token: "token"
+      this.props.navigation.push("OTPCodeOption", {
+                  tier: "3"
                 });
     } 
     

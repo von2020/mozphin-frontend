@@ -297,7 +297,9 @@ class OTPCodeOptionScreen extends Component {
     } 
 
     click(){
-        this.props.navigation.navigate("OTPCode")
+        this.props.navigation.navigate("OTPCode", {
+          tier: this.props.navigation.state.params.tier
+        })
     } 
 
     countDown() {

@@ -6,37 +6,27 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  ImageBackground,
-  Button,
+  FlatList,
+  PermissionsAndroid,
+  Image,
   StatusBar,
   Alert,
   Dimensions,
   LogBox,
 } from "react-native";
-
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-
-// import Toast from 'react-native-toast-message';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import blackTrustService, {
-//   setClientToken,
-// } from "../service/BlackTrustService";
 import  Loader  from './../config/Loader';
-// import { Checkbox } from 'react-native-paper';
-import BellIcon from '../assets/svgs/bell';
-import PhoneIcon from '../assets/svgs/phone';
-import EyeCloseIcon from '../assets/svgs/eye_close';
-import EyeOpenIcon from '../assets/svgs/eye_open';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
-import OTPTextInput from 'react-native-otp-textinput';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Dropdown } from "react-native-material-dropdown";
+import AlarmIcon from '../assets/svgs/alarm';
+import BinIcon from '../assets/svgs/bin';
+import NoBeneficiaryIcon from '../assets/svgs/nobeneficiary';
 
+import Contacts from 'react-native-contacts';
 const { width, height } = Dimensions.get("window");
 
 // const image = { uri: "./../../assets/safexray-logo.png" };
 const initialState = {
-  otpCode: "",
+  username: "",
   us: "",
   password: "", 
   pa: "",
@@ -45,42 +35,88 @@ const initialState = {
   first_name: "",
   last_name: "",
   token: "",
-  phonenum: 0,
-  pn: 0,
-  text: "",
-  showCountDown: false,
+  data: "",
+  view: "",
+  airtime: "",
+  mtn: "",
+  nineMobile: "",
+  glo: "",
+  value: "",
+  label: "",
+  displayList: false,
   checked: false,
   checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
   secureTextEntry: true,
-  seconds: 30,
-  time: {}, 
+  tellUsList: [
+    {
+        value: "200",
+        label: "1gig (7days)  N200",
+    },
+    {
+        value: "200",
+        label: "350mb (7days)  N200",
+    },
+    {
+        value: "350",
+        label: "750mb (7days)  N350",
+    },
+    {
+      value: "600",
+      label: "1.5gig (7days)  N600",
+    },
+    {
+        value: "1000",
+        label: "3gig  (7days)  N1000",
+    },
+    {
+      value: "1500",
+      label: "6gig  (7days)  N1500",
+    },
+    {
+        value: "500",
+        label: "1gig  (30days)  N500",
+    },
+    {
+      value: "1000",
+      label: "1.5gig  (30days)  N1000",
+    },
+    {
+        value: "1500",
+        label: "2gig  (30days)  N1500",
+    },
+    {
+      value: "1800",
+      label: "2.5gig  (30days)  N1800",
+    },
+    {
+        value: "2000",
+        label: "4.5gig  (30days)  N2000",
+    },
+    {
+      value: "2500",
+      label: "6.5gig  (30days)  N2500",
+    },
+    {
+        value: "3000",
+        label: "9gig  (30days)  N3000",
+    },
+  ],
 };
 
-class OTPCodeScreen extends Component {
+class AddBeneficiary extends Component {
   state = initialState;
 
-  constructor() {
-    super();
-    this.timer = 0;
-    this.startTimer = this.startTimer.bind(this);
-    this.countDown = this.countDown.bind(this);
-  }
-
-    clearText = () => {
-        this.otpInput.clear();
-    }
-
-    setText = () => {
-        this.otpInput.setValue("1234");
-    }
-
-  handleOtpCode = (otpCode) => {
-    if(otpCode != ""){
-      this.setState({ otpCode: otpCode, us: "" });
+  handleEmail = (username) => {
+    if(username != ""){
+      if(username == "chibu@yahoo.com"){
+        this.setState({ username: username, us: "good" });
+      }else{
+      this.setState({ username: username, us: "" });
+      }
     }else {
-      this.setState({ otpCode: otpCode, us: "empty" });
+      this.setState({ username: username, us: "empty" });
     }
   };
 
@@ -97,26 +133,20 @@ class OTPCodeScreen extends Component {
     // this.setState({ password: password, pa: "" });//good
   };
 
-  onChangeTextHandler(len){
-    const newPhone = len.replace(/(\d{3})(\d{3})(\d{3})(\d{2})(\d+)/, '$1-$2-$3-$4');
-    console.log(newPhone)
-    this.setState({ text: newPhone })    
-  };
-
   onPressLogin() {
     this.setState({ isLoading: true });
 
-    const { otpCode, password, checked } = this.state;
+    const { username, password, checked } = this.state;
     
-    if(otpCode == ""){
+    if(username == ""){
       this.setState({ isLoading: false, us: "empty" });
       // Alert.alert(null,'Email field is empty')
     }else if(password == ""){
       this.setState({ isLoading: false, pa: "empty" });
       // Alert.alert(null,'Password field is empty')
     }else{
-    const payload = { otpCode, password };
-    const checkedPayload = { otpCode, password, checked };
+    const payload = { username, password };
+    const checkedPayload = { username, password, checked };
     this.setState({ isLoading: false, isAuthorized: true });
 
     this.props.navigation.push("Dashboard", {
@@ -131,14 +161,13 @@ class OTPCodeScreen extends Component {
       setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
-      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "otpCode": "Chibubu"}
+      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "username": "Chibubu"}
       if (data != null ) {
-        this.props.navigation.push("PasswordScreen", {
+        this.props.navigation.push("SideMenuScreen", {
           data: data,
         });
       }
 
-      
     //   } else if (data.role == "General Manager") {
     //       this.props.navigation.push("GMDNavScreen")
     //   } else if (data.role == "Director") {
@@ -221,31 +250,39 @@ class OTPCodeScreen extends Component {
     //   .then(onSuccess)
     //   .catch(onFailure);
   }
-  }
+  } 
 
-//   async removeItemValue(key) {
-//     try {
-//       await AsyncStorage.removeItem(key);
-//       return true;
-//     } catch (exception) {
-//       return false;
-//     }
-//   }
+  componentDidMount(){ 
+        var that = this;  
+        setTimeout(function(){  
+            that.setState({ view: "yaaay"});  
+        }, 3000);  
+    }
 
-  // _storeData = async (value, payload) => {
-    // await this.removeItemValue("userDetails");
-    // await this.removeItemValue("checkedBoxBoolean");
-
-    // try {
-    //   await AsyncStorage.setItem("userDetails", JSON.stringify(value));
-    //   await AsyncStorage.setItem("checkedBoxBoolean", JSON.stringify(payload));
-
-    // } catch (error) {
-    // }
-    // console.log("This is for storing data...", value);
-    // console.log("This is for storing data...", payload);
-
-  // };
+  async selectContact(){
+      try{
+        
+        const permission = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+          {
+            'title': 'Contacts',
+            'message': 'This app would like to view your contacts.',
+            'buttonPositive': 'Please accept bare mortal'
+          }
+          
+        );
+        if(permission === PermissionsAndroid.RESULTS.GRANTED){
+          const contactis = await Contacts.getAll();
+          console.log('contactis');
+          // setMycontacts(contactis);
+        }else{
+          console.log("Permission Denied");
+          
+        }
+      }catch(error){
+        console.log(error);
+      }
+    }
 
   _retrieveData() {
     // this.setState({initialState})
@@ -272,7 +309,7 @@ class OTPCodeScreen extends Component {
     //     if(response != null && response.checked == true){
     //       console.log("Reached.......----",this.state);
     //         this.setState({
-    //         otpCode: response.otpCode,
+    //         username: response.username,
     //         password: response.password,
     //         checked: response.checked,
     //         });       
@@ -288,140 +325,143 @@ class OTPCodeScreen extends Component {
     // this._retrieveData();
   }
 
-  startTimer() {
-      this.setState({ seconds: 30, showCountDown: true })
-      // if (this.timer == 0 && this.state.seconds > 0) {
-        this.timer = setInterval(this.countDown, 1000);
-      // }
-    }
-    
     updateSecureTextEntry(){
       this.setState({ secureTextEntry: !this.state.secureTextEntry})
     } 
 
-    click(){
-        Alert.alert("Good!","Your OTP is correct", [
-            {
-                text: "Ok",
-                onPress: () => this.props.navigation.navigate("PasswordScreen", {
-                  tier: this.props.navigation.state.params.tier
-                }),
-            },
-            ]);
-      } 
-
-    countDown() {
-        // Remove one second, set state so a re-render happens.
-        let seconds = this.state.seconds - 1;
-        this.setState({
-          time: this.secondsToTime(seconds),
-          seconds: seconds,
-        });
-        
-        // Check if we're at zero.
-        if (seconds == 0) { 
-          clearInterval(this.timer);
-        }
-      }
-
-      secondsToTime(secs){
-        let hours = Math.floor(secs / (60 * 60));
-    
-        let divisor_for_minutes = secs % (60 * 60);
-        let minutes = Math.floor(divisor_for_minutes / 60);
-    
-        let divisor_for_seconds = divisor_for_minutes % 60;
-        let seconds = Math.ceil(divisor_for_seconds);
-    
-        let obj = {
-          "h": hours,
-          "m": minutes,
-          "s": seconds
-        };
-        return obj;
-      }
-    
-      componentDidMount() {
-        let timeLeftVar = this.secondsToTime(this.state.seconds);
-        this.setState({ time: timeLeftVar });
-      }
-
-      clear = () => {
-        this.input1.clear();
-      };
-    
-      updateOtpText = () => {
-        // will automatically trigger handleOnTextChange callback passed
-        this.input1.setValue(this.state.otpCode);
-        console.log("codeeee oooooo", this.state.otpCode)
-      };
-
-
-      
   render() {
     LogBox.ignoreAllLogs(true);
-    const { showCountDown, pn, otpCode } = this.state;
+    const { view, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
     return (
         <ScrollView
-          style={styles.scrollView}
+          style={styles.scroll}
           keyboardShouldPersistTaps="always">
           
-          <StatusBar backgroundColor="#E5E5E5" barStyle="dark-content"/>
+          <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
-          
-            <View style={styles.cardStyleLong}>
-            <Text style={styles.welcomeTextStyle}>Enter OTP code</Text>
-            
-                <Text style={{
-                    fontSize: 12,
-                    fontFamily: "JosefinSans-Bold",
-                    textAlign: "center",
-                    paddingHorizontal: 5,
-                    opacity: 1,
-                    fontWeight: "600",
-                    color: "#002A14",
-                    width: 268,
-                    alignSelf: "center",
-                    marginTop: 13,
-                    }}>A 6 digit verificaton code has been sent to {"\n"}+234 567 8910</Text>
-                    <OTPTextInput 
-                        ref={e => (this.input1 = e)} 
-                        inputCount={6}
-                        color= {"#002A14"}
-                        offTintColor={"#002A14"}
-                        underlineColorAndroid={"transparent"}
-                        textInputStyle={styles.roundedTextInput}
-                        containerStyle={styles.textInputContainer}
-                        tintColor={"#838E08"}
-                        handleTextChange={(text) => this.handleOtpCode(text)}
+          {view == "" ? 
+          <View style={styles.scrollView}>
+          <View alignSelf={"center"}>
+          <NoBeneficiaryIcon/> 
+          </View>
+          <Text style={{ fontSize: 20, color: "#CFCFCF", width: width * 0.9, fontWeight: "600", alignSelf: "center", textAlign: "center", marginTop: 10, }}>You don’t have any beneficiary list</Text>
+          <TouchableOpacity
+            onPress={()=> this.setState({ airtel: "tapped" })}
+            style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginVertical: 32, opacity: 1  }}>
+            <Text style={styles.loginButtonText}>Add Beneficiary</Text>
+          </TouchableOpacity>
 
-                    />
-                    {/* <Button title="clear" onPress={this.clearText}/> Didn’t receive otp?*/}
-                <View style={{ alignSelf: "center", marginTop: 47 }}>
-                <TouchableOpacity disabled={otpCode.length != 6 ? true : false} onPress={()=> this.click()} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: otpCode.length != 6 ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
-                    <Text style={styles.getStarted}>VERIFY OTP</Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity onPress={this.startTimer} disabled={this.state.time.s == 30 | this.state.time.s == 0 ? false : true}>
+          </View>:
+          <View style={styles.scrollView_}>
+          <View style={{ marginVertical: 30 }}>
+          <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
                 <View>
-                {showCountDown == true ? 
-                <View flexDirection={"row"} alignSelf={"center"}>
-                <Text style={{color: "grey", fontWeight: "600", fontSize: 17, marginLeft: 30, textAlign: "left", }}>{this.state.time.s} sec</Text>
-                <SimpleLineIcons name="reload" style={styles.reloadIconStyle}/>
-                </View> : null}
-                <Text style={{color: "black", fontWeight: "600", fontSize: 12, marginLeft: 30, textAlign: "center", marginTop: 24, marginBottom: 20 }}>Didn’t receive otp?{"  "}
-                <Text style={{color: "black", fontWeight: "600", fontSize: 16, marginLeft: 30, textAlign: "left", textDecorationLine: "underline", lineHeight: 15 }}>Resend OTP</Text>
-                </Text>
+                <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Mozfin</Text>
                 </View>
-                </TouchableOpacity>
+                </View>
+                
+                <View style={{ flexDirection: "row", }}>
+                <View>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 5 }}>John Snow</Text>
+                <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
+                </View>
+
+                </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+                <View>
+                <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>GT Bank</Text>
+                </View>
+                </View>
+                
+                <View style={{ flexDirection: "row",}}>
+                <View>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 5 }}>John Snow</Text>
+                <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
+                </View>
+                </View>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+                <View>
+                <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>First Bank</Text>
+                </View>
+                </View>
+                
+                <View style={{ flexDirection: "row", }}>
+                <View>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 5 }}>John Snow</Text>
+                <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
+                </View>
+
+                </View>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+                <View>
+                <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>GT Bank</Text>
+                </View>
+                </View>
+                
+                <View style={{ flexDirection: "row", }}>
+                <View>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 5 }}>John Snow</Text>
+                <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
+                </View>
+
+                </View>
+            </TouchableOpacity>
+
+            
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+                <View>
+                <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>Mozfin</Text>
+                </View>
+                </View>
+                
+                <View style={{ flexDirection: "row", }} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+                <View>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 5 }}>John Snow</Text>
+                <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
+                </View>
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+                <View>
+                <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
+                <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
+                <Text style={{ fontSize: 14, color: "#002A14", fontWeight: "400" }}>GT Bank</Text>
+                </View>
+                </View>
+                
+                <View style={{ flexDirection: "row", }}>
+
+                <View>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 5 }}>John Snow</Text>
+                <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
+                </View>
+                </View>
+            </TouchableOpacity>
             </View>
+          </View>}
         </ScrollView>
     );
   }
 }
 
 
-export default OTPCodeScreen;
+export default AddBeneficiary;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
@@ -435,27 +475,15 @@ const styles = StyleSheet.create({
     flex: 1,
     width: width,
   },
-  textInputContainer: {
-    marginBottom: 0,
-    marginTop: 10
-  },
-  roundedTextInput: {
-    borderWidth: 1,
-    borderColor: "#002A14", 
-    marginHorizontal: 2, 
-    borderRadius: 7, 
-    height: 37, 
-    width: 38, 
-    alignSelf: "center", 
-    fontSize: 16,
-  },
-  reloadIconStyle: {
-    fontSize: 20,
-    color: "#045135",
-    left: 20,
-    alignSelf: "flex-start",
-    marginStart: 10,
-    // elevation: 5,
+  optionContainer: {
+    width: 327,
+    //   height: 80,
+    //   flexDirection: "row",
+      marginHorizontal: 16,
+      marginBottom: 8,
+      paddingBottom: 2,
+      borderBottomWidth: 1.5,
+      borderBottomColor: "#B2BE35",
   },
   emailInput: {
     borderColor: "#EEF4FE",
@@ -504,31 +532,15 @@ const styles = StyleSheet.create({
     paddingEnd: 22,
     opacity: 1,
   },
-  getStarted: {
-    color:'#FFF',
-    fontSize: 20,
-    fontWeight: "500",
-    padding: 5, 
-    textAlign: "center",
-    alignSelf: "center"
-    },
-    getStarted_: {
-    color:'#002A14',
-    fontSize: 20,
-    fontWeight: "500",
-    padding: 5, 
-    textAlign: "center",
-    alignSelf: "center"
-    },
   cardStyleLong: {
-    marginTop: height * 0.2,
+    marginTop: height * 0.12,
     marginBottom: 10,
     alignSelf: "center",
-    width: 326,
-    height: 317,// height: height * 0.718,
+    width: width * 0.92,
+    // height: height * 0.718,
     padding: 15,
     color: "#ffffff",
-    borderRadius: 10,
+    borderRadius: 6,
     backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 0 },
@@ -574,9 +586,11 @@ const styles = StyleSheet.create({
     color: "#002A14",
     alignSelf: "center",
     paddingLeft: 5,
-    marginTop: 15,
+    marginVertical: 15,
     fontWeight: "700",
     opacity: 1,
+    borderBottomWidth: 1,
+    borderColor: "#000"
   },
   emailTextStyleView: {
     marginTop: 20,
@@ -628,7 +642,8 @@ const styles = StyleSheet.create({
     right: 10,
     fontFamily: "Nunito-Black",
     textAlign: "right",
-    top: 18, 
+    marginTop: 18, 
+    marginBottom: 22
   },
   dontHaveAccountTextStyle: {
     fontSize: 12,
@@ -696,8 +711,16 @@ const styles = StyleSheet.create({
     fontFamily: "JosefinSans-Bold",
   },
   scrollView: {
+    margin: 110,
+    alignContent: "center",
+  },
+  scrollView_: {
+    // margin: 100,
+    alignSelf: "center"
+  },
+  scroll:{
     flex: 1,
-    backgroundColor: "#E5E5E5",
+    backgroundColor: "#FFFFFFF",
   },
   errorMessageContainerStyle: {
     backgroundColor: "#fee8e6",

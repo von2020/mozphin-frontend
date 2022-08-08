@@ -1027,10 +1027,10 @@ const styles = StyleSheet.create({
     bottom: 3
   },
   dontHaveAccountMintTextStyle: {
-    fontSize: 12,
+    fontSize: 16,
     color: "#000",
     marginBottom: 1,
-    fontWeight: "500",
+    fontWeight: "600",
     opacity: 1,
     fontFamily: "JosefinSans-Bold",
     alignSelf: "center",
