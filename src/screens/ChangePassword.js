@@ -11,21 +11,17 @@ import {
   Image,
   StatusBar,
   Alert,
-  AppRegistry,
-  Linking,
   Dimensions,
   LogBox,
 } from "react-native";
 import  Loader  from './../config/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from "react-native-material-dropdown";
-import AlarmIcon from '../assets/svgs/alarm';
-import BinIcon from '../assets/svgs/bin';
-import NoBeneficiaryIcon from '../assets/svgs/nobeneficiary';
-import QRCodeScanner from 'react-native-qrcode-scanner';
-import { RNCamera } from 'react-native-camera';
-
-import Contacts from 'react-native-contacts';
+import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
+import { selectContactPhone } from 'react-native-select-contact';
+// import Contacts from 'react-native-contacts';
+import EyeCloseIcon from '../assets/svgs/eye_close';
+import EyeOpenIcon from '../assets/svgs/eye_open';
 const { width, height } = Dimensions.get("window");
 
 // const image = { uri: "./../../assets/safexray-logo.png" };
@@ -40,19 +36,25 @@ const initialState = {
   last_name: "",
   token: "",
   data: "",
-  view: "",
-  airtime: "",
   mtn: "",
+  airtime: "tapped",
   nineMobile: "",
   glo: "",
   value: "",
   label: "",
+  contact: "",
+  current_password: "",
+  confirm_password: "",
+  new_password: "",
   displayList: false,
   checked: false,
   checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
-  secureTextEntry: true,
+  newSecureTextEntry: true,
+  currentSecureTextEntry: true,
+  confirmSecureTextEntry: true,
+  contactList: [],
   tellUsList: [
     {
         value: "200",
@@ -109,38 +111,19 @@ const initialState = {
   ],
 };
 
-class QRCodeScreen extends Component {
+class ChangePassword extends Component {
   state = initialState;
 
-  onSuccess = e => {
-    Linking.openURL(e.data).catch(err =>
-      console.error('An error occured', err)
-    );
+  handleNewPassword = (new_password) => {
+      this.setState({ new_password: new_password });
   };
 
-  handleEmail = (username) => {
-    if(username != ""){
-      if(username == "chibu@yahoo.com"){
-        this.setState({ username: username, us: "good" });
-      }else{
-      this.setState({ username: username, us: "" });
-      }
-    }else {
-      this.setState({ username: username, us: "empty" });
-    }
+  handleCurrentPassword = (current_password) => {  
+      this.setState({ current_password: current_password });
   };
 
-  handlePassword = (password) => {  
-    if(password != ""){
-      if(password == "12345"){
-        this.setState({ password: password, pa: "empty" });
-      }else{
-      this.setState({ password: password, pa: "" });
-      }
-    }else {
-      this.setState({ password: password, pa: "empty" });
-    } 
-    // this.setState({ password: password, pa: "" });//good
+  handleConfirmPassword = (confirm_password) => {  
+    this.setState({ confirm_password: confirm_password });
   };
 
   onPressLogin() {
@@ -262,119 +245,168 @@ class QRCodeScreen extends Component {
   }
   } 
 
-  componentDidMount(){ 
-        var that = this;  
-        setTimeout(function(){  
-            that.setState({ view: "yaaay"});  
-        }, 3000);  
+    newUpdateSecureTextEntry(){
+      this.setState({ newSecureTextEntry: !this.state.newSecureTextEntry})
+    }
+    
+    currentUpdateSecureTextEntry(){
+        this.setState({ currentSecureTextEntry: !this.state.currentSecureTextEntry})
     }
 
-  async selectContact(){
-      try{
-        
-        const permission = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-          {
-            'title': 'Contacts',
-            'message': 'This app would like to view your contacts.',
-            'buttonPositive': 'Please accept bare mortal'
-          }
-          
-        );
-        if(permission === PermissionsAndroid.RESULTS.GRANTED){
-          const contactis = await Contacts.getAll();
-          console.log('contactis');
-          // setMycontacts(contactis);
-        }else{
-          console.log("Permission Denied");
-          
-        }
-      }catch(error){
-        console.log(error);
-      }
+    confirmUpdateSecureTextEntry(){
+    this.setState({ confirmSecureTextEntry: !this.state.confirmSecureTextEntry})
     }
-
-  _retrieveData() {
-    // this.setState({initialState})
-        
-    // AsyncStorage.getItem("userDetails").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     this.setState({
-    //       role: response.role,
-    //       first_name: response.first_name,
-    //       last_name: response.last_name,
-    //     });
-
-    //     console.log("There is no role dey...", response);
-    //     console.log("I role to make role o", this.state.role);
-    //   } else {
-    //     console.log("There is no role dey...", response);
-    //   }
-    // });
-  
-    // AsyncStorage.getItem("checkedBoxBoolean").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     if(response != null && response.checked == true){
-    //       console.log("Reached.......----",this.state);
-    //         this.setState({
-    //         username: response.username,
-    //         password: response.password,
-    //         checked: response.checked,
-    //         });       
-    //     }
-    //   } else {
-    //     console.log("Check box response... Error...", response);
-    //   }
-    // });
-  }
-
-  componentWillMount = ()=> {
-    console.log("I don mount o");
-    // this._retrieveData();
-  }
-
-    updateSecureTextEntry(){
-      this.setState({ secureTextEntry: !this.state.secureTextEntry})
-    } 
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { view, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
+    const { data, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
     return (
         <ScrollView
-          style={styles.scroll}
+          style={styles.scrollView}
           keyboardShouldPersistTaps="always">
           
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
-          <Loader loading={this.state.isLoading} />
-          <View style={{ alignSelf: "center", padding: 70,   }}>
-          <View style={{ borderTopRightRadius: 1, borderBottomColor: "#000" }}>
-          <QRCodeScanner
-              onRead={this.onSuccess}
-              // showMarker={true}
-              cameraStyle={{ width: 268, height: 272, alignSelf: "center", top: 70 }}
-              // flashMode={RNCamera.Constants.FlashMode.torch}
-              topContent={
-                <View style={{ alignSelf: "center", marginBottom: 20  }}>
+          <Loader loading={this.state.isLoading} />  
+            <View style={{ marginTop: 32, marginHorizontal: 20, }}>
+            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Current Password</Text>  
+            <View style={{ flexDirection: "row" }}>
+                    <TextInput
+                        style={{
+                        width: width * 0.9,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        paddingStart={2}
+                        paddingVertical={10}
+                        marginBottom={10}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        returnKeyType="next"
+                        onSubmitEditing={() => { this.secondTextInput.focus(); }}
+                        blurOnSubmit={false}
+                        value={this.state.current_password}
+                        secureTextEntry={this.state.currentSecureTextEntry?true:false}
+                        paddingBottom={5}
+                        onChangeText={this.handleCurrentPassword}
+                    />
+
+            <TouchableOpacity 
+              onPress={this.currentUpdateSecureTextEntry.bind(this)}>
+                {this.state.currentSecureTextEntry ?
+                <View
+                style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
+                <EyeOpenIcon/>
                 </View>
-              }
-              // bottomContent={
-              //   <TouchableOpacity style={styles.buttonTouchable}>
-              //     <Text style={styles.buttonText}>OK. Got it!</Text>
-              //   </TouchableOpacity>
-              // }
-            />
-          </View>
-          </View>
+                 :
+                 <View
+                 style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
+                 <EyeCloseIcon/>
+                 </View>
+                }
+              </TouchableOpacity>
+                    </View>
+                    </View>
+
+                    <View style={{ marginTop: 10, marginHorizontal: 20, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>New Password</Text>  
+                    <View style={{ flexDirection: "row" }}>
+                    <TextInput
+                        style={{
+                        width: width * 0.9,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        paddingStart={2}
+                        paddingVertical={10}
+                        marginBottom={10}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        value={this.state.new_password}
+                        secureTextEntry={this.state.newSecureTextEntry?true:false}
+                        paddingBottom={5}
+                        ref={(input) => { this.secondTextInput = input; }}
+                        returnKeyType="next"
+                        onSubmitEditing={() => { this.thirdTextInput.focus(); }}
+                        blurOnSubmit={false}
+                        onChangeText={this.handleNewPassword}
+                    />
+
+                    <TouchableOpacity 
+                        onPress={this.newUpdateSecureTextEntry.bind(this)}>
+                            {this.state.newSecureTextEntry ?
+                            <View
+                            style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
+                            <EyeOpenIcon/>
+                            </View>
+                            :
+                            <View
+                            style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
+                            <EyeCloseIcon/>
+                            </View>
+                            }
+                            
+                        </TouchableOpacity>
+                    </View>
+                    {this.state.pac == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
+                    {this.state.new_password != this.state.confirm_password && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
+                    </View>
+
+                    <View style={{ marginTop: 10, marginBottom: 16, marginHorizontal: 28 }}>
+                    
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Confirm Password</Text>  
+                    <View style={{ flexDirection: "row" }}>
+                    <TextInput
+                        style={{
+                        width: width * 0.9,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        paddingStart={2}
+                        paddingVertical={10}
+                        marginBottom={10}
+                        // paddingEnd={90}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        ref={(input) => { this.thirdTextInput = input; }}
+                        value={this.state.confirm_password}
+                        secureTextEntry={this.state.confirmSecureTextEntry?true:false}
+                        paddingBottom={5}
+                        onChangeText={this.handleConfirmPassword}
+                    />
+                    <TouchableOpacity 
+                        onPress={this.confirmUpdateSecureTextEntry.bind(this)}>
+                            {this.state.confirmSecureTextEntry ?
+                            <View
+                            style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
+                            <EyeOpenIcon/>
+                            </View>
+                            :
+                            <View
+                            style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
+                            <EyeCloseIcon/>
+                            </View>
+                            }
+                    </TouchableOpacity>
+                    </View>
+                    {this.state.pac == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
+                    {this.state.new_password != this.state.confirm_password && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
+                    </View>
+
+            <TouchableOpacity
+                onPress={this.onPressLogin.bind(this)}
+                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1,  }}>
+                <Text style={styles.loginButtonText}>NEXT</Text>
+            </TouchableOpacity>
         </ScrollView>
     );
   }
 }
 
 
-export default QRCodeScreen;
+export default ChangePassword;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
@@ -387,16 +419,6 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     width: width,
-  },
-  optionContainer: {
-    width: 327,
-    //   height: 80,
-    //   flexDirection: "row",
-      marginHorizontal: 16,
-      marginBottom: 8,
-      paddingBottom: 2,
-      borderBottomWidth: 1.5,
-      borderBottomColor: "#B2BE35",
   },
   emailInput: {
     borderColor: "#EEF4FE",
@@ -411,23 +433,6 @@ const styles = StyleSheet.create({
     paddingStart: 30,
     paddingEnd: 40,
   },
-  // centerText: {
-  //   flex: 1,
-  //   fontSize: 18,
-  //   padding: 32,
-  //   color: '#777'
-  // },
-  // textBold: {
-  //   fontWeight: '500',
-  //   color: '#000'
-  // },
-  buttonText: {
-    fontSize: 21,
-    color: 'rgb(0,122,255)'
-  },
-  // buttonTouchable: {
-  //   padding: 16
-  // },
   iconViewStyle: {
       fontSize: 20,
       bottom: 56,
@@ -548,7 +553,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     textAlign: "left",
     opacity: 1,
-    top: 5,
+    top: -10,
     // marginBottom: 10
   },
   linearGradient: {
@@ -641,14 +646,6 @@ const styles = StyleSheet.create({
     fontFamily: "JosefinSans-Bold",
   },
   scrollView: {
-    margin: 110,
-    alignContent: "center",
-  },
-  scrollView_: {
-    // margin: 100,
-    alignSelf: "center"
-  },
-  scroll:{
     flex: 1,
     backgroundColor: "#FFFFFFF",
   },

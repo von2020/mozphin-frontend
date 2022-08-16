@@ -257,7 +257,7 @@ class PaymentScreen extends Component {
                 </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.optionContainer}>
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("SelectUtility")}>
                 <View style={{ margin: 5, }}>
                 <Icon2/>
                 </View>
@@ -272,7 +272,7 @@ class PaymentScreen extends Component {
                 </View>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.optionContainer}>
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("SelectCableSub")}>
                 <View style={{ margin: 5, }}>
                 <Icon3/>
                 </View>
@@ -288,7 +288,7 @@ class PaymentScreen extends Component {
                 </View>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.optionContainer}>
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("SelectBetVendor")}>
                 <View style={{ margin: 5, }}>
                 <Icon4/>
                 </View>
@@ -304,11 +304,11 @@ class PaymentScreen extends Component {
                 </View>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.optionContainer}>
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("SendMoney")}>
                 <View style={{ margin: 8, }}>
                 <Icon5/>
                 </View>
-                <View style={{ flexDirection: "row", marginStart: 6 }} onPress={()=> this.props.navigation.navigate("SendMoney")}>
+                <View style={{ flexDirection: "row", marginStart: 6 }}>
                 <View>
                 <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>Send Money</Text>
                 <Text style={{ fontSize: 12, color: "#002A14", width: 240, fontWeight: "400" }}>Make inter and intra bank money transfers</Text>
@@ -318,7 +318,7 @@ class PaymentScreen extends Component {
                 </View>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.optionContainer}>
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("QRCode")}>
                 <View style={{ margin: 5, }}>
                 <Icon6/>
                 </View>

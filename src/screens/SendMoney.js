@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   FlatList,
-  PermissionsAndroid,
   Image,
   StatusBar,
   Alert,
@@ -16,14 +15,11 @@ import {
 } from "react-native";
 import  Loader  from './../config/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Dropdown } from "react-native-material-dropdown";
 import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
 import BankIcon from '../assets/svgs/bank';
 
-import Contacts from 'react-native-contacts';
 const { width, height } = Dimensions.get("window");
 
-// const image = { uri: "./../../assets/safexray-logo.png" };
 const initialState = {
   username: "",
   us: "",
@@ -44,9 +40,6 @@ const initialState = {
   value: "",
   label: "",
   displayList: false,
-  checked: false,
-  checkedDB: false,
-  isAuthorized: false, 
   isLoading: false, 
   secureTextEntry: true,
   data: [],
@@ -161,31 +154,6 @@ const initialState = {
 class SendMoney extends Component {
   state = initialState;
 
-  handleEmail = (username) => {
-    if(username != ""){
-      if(username == "chibu@yahoo.com"){
-        this.setState({ username: username, us: "good" });
-      }else{
-      this.setState({ username: username, us: "" });
-      }
-    }else {
-      this.setState({ username: username, us: "empty" });
-    }
-  };
-
-  handlePassword = (password) => {  
-    if(password != ""){
-      if(password == "12345"){
-        this.setState({ password: password, pa: "empty" });
-      }else{
-      this.setState({ password: password, pa: "" });
-      }
-    }else {
-      this.setState({ password: password, pa: "empty" });
-    } 
-    // this.setState({ password: password, pa: "" });//good
-  };
-
   onPressLogin() {
     this.setState({ isLoading: true });
 
@@ -220,53 +188,6 @@ class SendMoney extends Component {
           data: data,
         });
       }
-
-    //   } else if (data.role == "General Manager") {
-    //       this.props.navigation.push("GMDNavScreen")
-    //   } else if (data.role == "Director") {
-    //       this.props.navigation.push("DirectorNavScreen")
-    //   } else if (data.role == "Supervisor") {
-    //       this.props.navigation.push("SupervisorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Staff") {
-    //       this.props.navigation.push("StaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver Admin") {
-    //       this.props.navigation.push("DriverAdminNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver") {
-    //       this.props.navigation.push("DriverStaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Procurement") {
-    //     this.props.navigation.push("pOfficerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Finance") {
-    //       this.props.navigation.push("FinanceNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Facility Officer") {
-    //     this.props.navigation.push("FacilityManagerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Auditor") {
-    //       this.props.navigation.push("AuditorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   }
-      
     };
 
     const onFailure = (error) => {
@@ -326,53 +247,8 @@ class SendMoney extends Component {
 
   selectBeneficiary(){
       this.props.navigation.navigate("AddBeneficiary")
-    }
-
-  _retrieveData() {
-    // this.setState({initialState})
-        
-    // AsyncStorage.getItem("userDetails").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     this.setState({
-    //       role: response.role,
-    //       first_name: response.first_name,
-    //       last_name: response.last_name,
-    //     });
-
-    //     console.log("There is no role dey...", response);
-    //     console.log("I role to make role o", this.state.role);
-    //   } else {
-    //     console.log("There is no role dey...", response);
-    //   }
-    // });
-  
-    // AsyncStorage.getItem("checkedBoxBoolean").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     if(response != null && response.checked == true){
-    //       console.log("Reached.......----",this.state);
-    //         this.setState({
-    //         username: response.username,
-    //         password: response.password,
-    //         checked: response.checked,
-    //         });       
-    //     }
-    //   } else {
-    //     console.log("Check box response... Error...", response);
-    //   }
-    // });
   }
-
-  componentWillMount = ()=> {
-    console.log("I don mount o");
-    // this._retrieveData();
-  }
-
-    updateSecureTextEntry(){
-      this.setState({ secureTextEntry: !this.state.secureTextEntry})
-    } 
-
+    
   render() {
     LogBox.ignoreAllLogs(true);
     const { data, bankName, mtn, glo, airtel, nineMobile, displayList } = this.state;

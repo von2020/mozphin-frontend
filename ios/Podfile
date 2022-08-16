@@ -27,7 +27,6 @@ target 'Mozfin_App' do
 
   pod 'RNFS', :path => '../node_modules/react-native-fs'
 
-  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
@@ -36,6 +35,10 @@ target 'Mozfin_App' do
   pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
 
   pod 'react-native-select-contact', :path => '../node_modules/react-native-select-contact'
+
+
+
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
   target 'Mozfin_AppTests' do
     inherit! :complete

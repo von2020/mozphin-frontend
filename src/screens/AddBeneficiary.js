@@ -354,7 +354,7 @@ class AddBeneficiary extends Component {
           </View>:
           <View style={styles.scrollView_}>
           <View style={{ marginVertical: 30 }}>
-          <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+          <View style={styles.optionContainer}>
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
                 <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
@@ -369,9 +369,9 @@ class AddBeneficiary extends Component {
                 </View>
 
                 </View>
-            </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+            <View style={styles.optionContainer}>
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
                 <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
@@ -385,9 +385,9 @@ class AddBeneficiary extends Component {
                 <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
                 </View>
                 </View>
-            </TouchableOpacity>
+            </View>
             
-            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+            <View style={styles.optionContainer}>
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
                 <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
@@ -402,9 +402,9 @@ class AddBeneficiary extends Component {
                 </View>
 
                 </View>
-            </TouchableOpacity>
+            </View>
             
-            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+            <View style={styles.optionContainer}>
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
                 <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
@@ -419,10 +419,10 @@ class AddBeneficiary extends Component {
                 </View>
 
                 </View>
-            </TouchableOpacity>
+            </View>
 
             
-            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+            <View style={styles.optionContainer}>
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
                 <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
@@ -430,14 +430,14 @@ class AddBeneficiary extends Component {
                 </View>
                 </View>
                 
-                <View style={{ flexDirection: "row", }} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+                <View style={{ flexDirection: "row", }}>
                 <View>
                 <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 5 }}>John Snow</Text>
                 <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
                 </View>
                 </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("TransactionReceipt")}>
+            </View>
+            <View style={styles.optionContainer}>
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 5, width: width * 0.85, justifyContent: "space-between" }}>
                 <Text style={{ fontSize: 12, color: "#002A14", fontWeight: "400" }}>0234568822</Text>
@@ -452,7 +452,7 @@ class AddBeneficiary extends Component {
                 <Text style={{ fontSize: 12, color: "#929191", width: 250, fontWeight: "400" }}>Tap to Select</Text>
                 </View>
                 </View>
-            </TouchableOpacity>
+            </View>
             </View>
           </View>}
         </ScrollView>

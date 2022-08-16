@@ -251,8 +251,8 @@ class AirtimeNData extends Component {
   }
   } 
 
-  getPhoneNumber() {
-    PermissionsAndroid.request(
+  async getPhoneNumber() {
+    const permission = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
       {
         'title': 'Contacts',
@@ -260,17 +260,32 @@ class AirtimeNData extends Component {
         'buttonPositive': 'Accept'
       }
     )
-    return selectContactPhone()
-        .then(selection => {
-            if (!selection) {
-                return null;
+    if(permission === PermissionsAndroid.RESULTS.GRANTED){
+      return selectContactPhone()
+      .then(selection => {
+          if (!selection) {
+              return null;
+          }
+          
+          let { contact, selectedPhone } = selection;
+          console.log(`Selected ${selectedPhone.type} phone number ${selectedPhone.number} from ${contact.name}`);
+          this.setState({ contact: selectedPhone.number })
+          return selectedPhone.number;
+      })
+            }else{
+             Alert.alert(null,"You just denied selecting contacts\rClick to Accept")
+              console.log("Denied");
             }
-            
-            let { contact, selectedPhone } = selection;
-            console.log(`Selected ${selectedPhone.type} phone number ${selectedPhone.number} from ${contact.name}`);
-            this.setState({ contact: selectedPhone.number })
-            return selectedPhone.number;
-        });  
+    
+        // PermissionsAndroid.request(
+        //   PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+        //   {
+        //     'title': 'Contacts',
+        //     'message': 'This app would like to view your contacts.'
+        //   }
+        // ).then(() => {
+        //    // do something in this 
+        // })  
   }
 
   // selectContact() {

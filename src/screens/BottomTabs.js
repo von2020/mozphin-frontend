@@ -1,9 +1,7 @@
 import React from 'react';
-import { Text } from 'react-native';
 import { createAppContainer } from "react-navigation";
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';  
 import { createStackNavigator } from 'react-navigation-stack';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import DashboardScreen from "../screens/Dashboard";
 import FaqScreen from "../screens/FaqScreen";
 import PaymentScreen from "../screens/PaymentScreen";
@@ -17,7 +15,6 @@ import PaymentIcon from '../assets/svgs/paymenticon';
 import AirtimeNData from '../screens/AirtimeNData';
 import NotificationScreen from '../screens/NotificationScreen';
 import AddBeneficiary from '../screens/AddBeneficiary';
-
 
 const DashboardStack = createStackNavigator({
   Dashboard: {
@@ -53,20 +50,6 @@ const DashboardStack = createStackNavigator({
         },
       },
     },
-    SendMoney: {
-      screen: SendMoney,
-      navigationOptions: {
-        headerShown: true,
-        headerStyle: { backgroundColor: '#002A14' },
-        title: "Send Money",
-        headerTintColor: "#FFF",
-        headerTitleStyle: {
-            fontWeight: "600",
-            textAlign: "center",
-            right: 30
-        },
-    },
-  },
     TransactionHistory: {
       screen: TransactionHistory,
       navigationOptions: {
@@ -109,31 +92,6 @@ const DashboardStack = createStackNavigator({
           },
       },
     },
-  //   ObservationList: {
-  //     screen: ObservationListScreen,
-  //     navigationOptions: {
-  //       headerShown: true
-  //     },
-  //   }, 
-  //   ViewObservation: {
-  //     screen: ViewObservationScreen,
-  //     navigationOptions: {
-  //       headerShown: true
-  //     },
-  //   }, 
-  //   EditObservation: {
-  //     screen: EditObservationScreen,
-  //     navigationOptions: {
-  //       headerShown: true
-  //     },
-  //   }, 
-  //   ConfirmObservation: {
-  //     screen: ConfirmObservationScreen,
-  //     navigationOptions: {
-  //       headerShown: true
-  //     },
-  //   }
-  
   });
   
   const NotificationStack = createStackNavigator({
@@ -152,81 +110,8 @@ const DashboardStack = createStackNavigator({
     },
   },
   })
-//     "Added Subjects": {
-//       screen: AddSubjectList,
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Class Subjects": {
-//       screen: ClassSubject,
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Assign Subject(s)": {
-//       screen: AssignSubjects,
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Assigned Subjects": {
-//       screen: AssignedSubjectList,
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "School Subjects": {
-//       screen: SchoolSubject,
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "UnAssigned Subjects": {
-//       screen: UnAssignedSubject,
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Report Card Configuration": {
-//       screen: ReportCard,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Report Card Config List": {
-//       screen: ReportCardConfigList,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Compute Result": {
-//       screen: ComputeResult,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Computed Result": {
-//       screen: ComputeResultList,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Lesson Note": {
-//       screen: LessonNote,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Lesson Note List": {
-//       screen: LessonNoteList,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//   });
 
-  const AdministrationStack = createStackNavigator({
+  const PaymentStack = createStackNavigator({
     Payment: {
       screen: PaymentScreen,
       navigationOptions: {
@@ -240,165 +125,22 @@ const DashboardStack = createStackNavigator({
         },
       },
     },
-    "All Students": {
-      screen: DashboardScreen,  
+    SendMoney: {
+      screen: SendMoney,
       navigationOptions: {
-        headerShown: true
-      },
+        headerShown: true,
+        headerStyle: { backgroundColor: '#002A14' },
+        title: "Send Money",
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+            fontWeight: "600",
+            textAlign: "center",
+            right: 30
+        },
     },
+  }
   })
-//     "Add Students": {
-//       screen: AddStudents,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "View Parents": {
-//       screen: ViewParents,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Assign Students": {
-//       screen: AssignStudents,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Assigned Students": {
-//       screen: AssignedStudents,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "All Staff": {
-//       screen: AllStaff,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "All Teachers": {
-//       screen: AllTeachers,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "All Campus": {
-//       screen: AllCampus,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Add Campus": {
-//       screen: AddCampus,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Update School": {
-//       screen: UpdateSchool,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Add Staff": {
-//       screen: AddStaff,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Add Teacher": {
-//       screen: AddTeacher,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Assign Class Arm": {
-//       screen: AssignClassArm,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Assigned Class Arm": {
-//       screen: AssignedClassArm,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "All Classes": {
-//       screen: AllClasses,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "All Class Arm": {
-//       screen: AllClassArm,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Add Class": {
-//       screen: AddClass,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Add Class Arm": {
-//       screen: AddClassArm,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Manage Session": {
-//       screen: ManageSession,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Academic Session": {
-//       screen: AcademicSession,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Manage Score Category": {
-//       screen: ManageScoreCategory,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Manage Score SubCategory": {
-//       screen: ManageScoreSubCategory,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Bulk Upload": {
-//       screen: BulkUpload,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Move Students": {
-//       screen: MoveStudents,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "Moved Students": {
-//       screen: MovedStudents,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//     "View Moved Students": {
-//       screen: CheckedMoveStudents,  
-//       navigationOptions: {
-//         headerShown: true
-//       },
-//     },
-//   });
-  
+
 const TabNavigator = createMaterialBottomTabNavigator({  
     Home:{  
       screen: DashboardStack,  
@@ -412,7 +154,7 @@ const TabNavigator = createMaterialBottomTabNavigator({
       }  
     },   
     Payment:{  
-      screen: AdministrationStack,  
+      screen: PaymentStack,  
       navigationOptions:{  
         tabBarLabel:'Payments',  
         tabBarIcon:({focused})=>(  

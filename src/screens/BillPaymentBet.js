@@ -11,21 +11,15 @@ import {
   Image,
   StatusBar,
   Alert,
-  AppRegistry,
-  Linking,
   Dimensions,
   LogBox,
 } from "react-native";
 import  Loader  from './../config/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from "react-native-material-dropdown";
-import AlarmIcon from '../assets/svgs/alarm';
-import BinIcon from '../assets/svgs/bin';
-import NoBeneficiaryIcon from '../assets/svgs/nobeneficiary';
-import QRCodeScanner from 'react-native-qrcode-scanner';
-import { RNCamera } from 'react-native-camera';
-
-import Contacts from 'react-native-contacts';
+import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
+import { selectContactPhone } from 'react-native-select-contact';
+// import Contacts from 'react-native-contacts';
 const { width, height } = Dimensions.get("window");
 
 // const image = { uri: "./../../assets/safexray-logo.png" };
@@ -40,83 +34,30 @@ const initialState = {
   last_name: "",
   token: "",
   data: "",
-  view: "",
-  airtime: "",
   mtn: "",
+  airtime: "tapped",
   nineMobile: "",
   glo: "",
   value: "",
   label: "",
+  contact: "",
   displayList: false,
   checked: false,
   checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
   secureTextEntry: true,
+  contactList: [],
   tellUsList: [
     {
-        value: "200",
-        label: "1gig (7days)  N200",
-    },
-    {
-        value: "200",
-        label: "350mb (7days)  N200",
-    },
-    {
-        value: "350",
-        label: "750mb (7days)  N350",
-    },
-    {
-      value: "600",
-      label: "1.5gig (7days)  N600",
-    },
-    {
-        value: "1000",
-        label: "3gig  (7days)  N1000",
-    },
-    {
-      value: "1500",
-      label: "6gig  (7days)  N1500",
-    },
-    {
-        value: "500",
-        label: "1gig  (30days)  N500",
-    },
-    {
-      value: "1000",
-      label: "1.5gig  (30days)  N1000",
-    },
-    {
-        value: "1500",
-        label: "2gig  (30days)  N1500",
-    },
-    {
-      value: "1800",
-      label: "2.5gig  (30days)  N1800",
-    },
-    {
-        value: "2000",
-        label: "4.5gig  (30days)  N2000",
-    },
-    {
-      value: "2500",
-      label: "6.5gig  (30days)  N2500",
-    },
-    {
-        value: "3000",
-        label: "9gig  (30days)  N3000",
+        value: "4,000",
+        label: "Player Account",
     },
   ],
 };
 
-class QRCodeScreen extends Component {
+class BillPaymentBet extends Component {
   state = initialState;
-
-  onSuccess = e => {
-    Linking.openURL(e.data).catch(err =>
-      console.error('An error occured', err)
-    );
-  };
 
   handleEmail = (username) => {
     if(username != ""){
@@ -141,6 +82,16 @@ class QRCodeScreen extends Component {
       this.setState({ password: password, pa: "empty" });
     } 
     // this.setState({ password: password, pa: "" });//good
+  };
+
+  onChangeTextHandler(len){
+    if(len != ""){
+    const newPhone = len.replace(/(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{2})(\d+)/, '$1 $2 $3 $4 $5 $6');
+    console.log(newPhone)
+    this.setState({ contact: newPhone, bn: "" })    
+    }else{
+        this.setState({contact: "", contact: "empty"})
+    }
   };
 
   onPressLogin() {
@@ -262,37 +213,42 @@ class QRCodeScreen extends Component {
   }
   } 
 
-  componentDidMount(){ 
-        var that = this;  
-        setTimeout(function(){  
-            that.setState({ view: "yaaay"});  
-        }, 3000);  
-    }
-
-  async selectContact(){
-      try{
-        
-        const permission = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-          {
-            'title': 'Contacts',
-            'message': 'This app would like to view your contacts.',
-            'buttonPositive': 'Please accept bare mortal'
+  async getPhoneNumber() {
+    const permission = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+      {
+        'title': 'Contacts',
+        'message': 'This app would like to view your contacts.',
+        'buttonPositive': 'Accept'
+      }
+    )
+    if(permission === PermissionsAndroid.RESULTS.GRANTED){
+      return selectContactPhone()
+      .then(selection => {
+          if (!selection) {
+              return null;
           }
           
-        );
-        if(permission === PermissionsAndroid.RESULTS.GRANTED){
-          const contactis = await Contacts.getAll();
-          console.log('contactis');
-          // setMycontacts(contactis);
-        }else{
-          console.log("Permission Denied");
-          
-        }
-      }catch(error){
-        console.log(error);
-      }
-    }
+          let { contact, selectedPhone } = selection;
+          console.log(`Selected ${selectedPhone.type} phone number ${selectedPhone.number} from ${contact.name}`);
+          this.setState({ contact: selectedPhone.number })
+          return selectedPhone.number;
+      })
+            }else{
+             Alert.alert(null,"You just denied selecting contacts\rClick to Accept")
+              console.log("Denied");
+            }
+    
+        // PermissionsAndroid.request(
+        //   PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+        //   {
+        //     'title': 'Contacts',
+        //     'message': 'This app would like to view your contacts.'
+        //   }
+        // ).then(() => {
+        //    // do something in this 
+        // })  
+  }
 
   _retrieveData() {
     // this.setState({initialState})
@@ -341,40 +297,108 @@ class QRCodeScreen extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { view, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
+    const { data, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
     return (
         <ScrollView
-          style={styles.scroll}
+          style={styles.scrollView}
           keyboardShouldPersistTaps="always">
           
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
-          <View style={{ alignSelf: "center", padding: 70,   }}>
-          <View style={{ borderTopRightRadius: 1, borderBottomColor: "#000" }}>
-          <QRCodeScanner
-              onRead={this.onSuccess}
-              // showMarker={true}
-              cameraStyle={{ width: 268, height: 272, alignSelf: "center", top: 70 }}
-              // flashMode={RNCamera.Constants.FlashMode.torch}
-              topContent={
-                <View style={{ alignSelf: "center", marginBottom: 20  }}>
-                </View>
-              }
-              // bottomContent={
-              //   <TouchableOpacity style={styles.buttonTouchable}>
-              //     <Text style={styles.buttonText}>OK. Got it!</Text>
-              //   </TouchableOpacity>
-              // }
-            />
-          </View>
-          </View>
+            <View style={{ width: width, alignSelf: "center", marginTop: 32, marginBottom: 31 }}>
+            <View style={{ marginTop: 10, marginHorizontal: 20, }}>
+            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Customer ID</Text>  
+                    <TextInput
+                        style={{
+                        width: width * 0.9,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        paddingHorizontal={1}
+                        paddingVertical={10}
+                        marginBottom={10}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        maxLength={6}
+                        // value={this.state.contact}
+                        paddingBottom={5}
+                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                    />
+                    </View>
+                    <View style={{ marginTop: 10, marginHorizontal: 20, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Select Package</Text>
+                    <TouchableOpacity onPress={()=> this.setState({ displayList: true })} style={{ flexDirection: "row", alignSelf: "center"}}>
+                    <TextInput
+                        style={{
+                        width: width * 0.9,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        keyboardType={"phone-pad"}
+                        paddingHorizontal={1}
+                        paddingTop={10}
+                        marginBottom={8}
+                        fontSize={16}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        color={"#000"}
+                        value={this.state.label}
+                        editable={false}
+                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                    />
+                    <View style={{ position: "absolute", right: 0, marginEnd: 8, bottom: 24 }}>
+                    <ArrowDropDownIcon/>
+                    </View>
+                    </TouchableOpacity>  
+
+                    {displayList && <FlatList
+                      data={this.state.tellUsList}
+                      renderItem={({ item,index }) => (
+                        <View style={{ marginBottom: 12 }}>
+                          <TouchableOpacity onPress={()=> this.setState({ label: item.label, value: item.value, displayList: false })}>
+                          <Text style={{ fontSize: 14, color: "#000", fontWeight: "400", }}>{item.label}</Text>    
+                          </TouchableOpacity>
+                        </View>
+                      )}/>}
+                    </View>
+
+                    <View style={{ marginTop: 10, marginBottom: 56, marginHorizontal: 20, }}>
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Cost</Text>  
+                    <TextInput
+                        style={{
+                        width: width * 0.9,
+                        alignSelf: "center"
+                        }}
+                        underlineColorAndroid={"#B2BE35"}
+                        keyboardType={"phone-pad"}
+                        paddingHorizontal={1}
+                        paddingVertical={10}
+                        marginBottom={10}
+                        fontSize={16}
+                        color={"#000"}
+                        editable={false}
+                        fontWeight={"400"}
+                        textAlign={"left"}
+                        value={this.state.value}
+                        paddingBottom={5}
+                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                    />
+                    </View>
+
+            <TouchableOpacity
+                onPress={this.onPressLogin.bind(this)}
+                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
+                <Text style={styles.loginButtonText}>PAY</Text>
+            </TouchableOpacity>
+            </View>
         </ScrollView>
     );
   }
 }
 
 
-export default QRCodeScreen;
+export default BillPaymentBet;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
@@ -387,16 +411,6 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     width: width,
-  },
-  optionContainer: {
-    width: 327,
-    //   height: 80,
-    //   flexDirection: "row",
-      marginHorizontal: 16,
-      marginBottom: 8,
-      paddingBottom: 2,
-      borderBottomWidth: 1.5,
-      borderBottomColor: "#B2BE35",
   },
   emailInput: {
     borderColor: "#EEF4FE",
@@ -411,23 +425,6 @@ const styles = StyleSheet.create({
     paddingStart: 30,
     paddingEnd: 40,
   },
-  // centerText: {
-  //   flex: 1,
-  //   fontSize: 18,
-  //   padding: 32,
-  //   color: '#777'
-  // },
-  // textBold: {
-  //   fontWeight: '500',
-  //   color: '#000'
-  // },
-  buttonText: {
-    fontSize: 21,
-    color: 'rgb(0,122,255)'
-  },
-  // buttonTouchable: {
-  //   padding: 16
-  // },
   iconViewStyle: {
       fontSize: 20,
       bottom: 56,
@@ -641,14 +638,6 @@ const styles = StyleSheet.create({
     fontFamily: "JosefinSans-Bold",
   },
   scrollView: {
-    margin: 110,
-    alignContent: "center",
-  },
-  scrollView_: {
-    // margin: 100,
-    alignSelf: "center"
-  },
-  scroll:{
     flex: 1,
     backgroundColor: "#FFFFFFF",
   },
