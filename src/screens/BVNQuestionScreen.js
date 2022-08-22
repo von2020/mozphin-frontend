@@ -270,6 +270,7 @@ class BVNQuestionScreen extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
+    console.log(this.props.navigation.state.params.id)
     return (
         <ScrollView
           style={styles.scrollView}
@@ -297,13 +298,25 @@ class BVNQuestionScreen extends Component {
 
                 <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
                 <TouchableOpacity onPress={()=> this.props.navigation.navigate("BVNVerification", {
-                    tier: "3"
+                    tier: "3",
+                    screen: this.props.navigation.state.params.screen,
+                    customerID: this.props.navigation.state.params.customerID,
+                    id: this.props.navigation.state.params.id,
                   })} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>YES</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=> this.props.navigation.navigate("OTPCodeOption", {
-                    tier: "1"
-                  })} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                <TouchableOpacity onPress={()=> {
+                  if(this.props.navigation.state.params.screen == ""){
+                  this.props.navigation.navigate("OTPCodeOption", {
+                    tier: "1",
+                  })}else{
+                   Alert.alert(null,"Contact us for Help", [
+                    {
+                      text: "Ok",
+                      onPress: () => navigation.navigate("Contact"),
+                  },
+                   ]) 
+                  }}} style={{alignSelf: "center", width: width * 0.2, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>NO</Text>
                 </TouchableOpacity>
               </View>

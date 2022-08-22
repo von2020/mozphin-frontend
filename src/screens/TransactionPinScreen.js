@@ -19,6 +19,9 @@ import Feather from 'react-native-vector-icons/Feather';
 import LockIcon from '../assets/svgs/lock';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
+import mozfinOnboardingService, {
+  setClientOnboardToken,
+} from "../service/MozfinOnboardingService";
 const { width, height } = Dimensions.get("window");
 
 const initialState = {
@@ -87,6 +90,7 @@ class TransactionPinScreen extends Component {
     // this.setState({ isLoading: true });
 
     const { email, username, pin, pinConfirm, city, tellUs } = this.state;
+    const user_id = this.props.navigation.state.params.id
     // {
     //   "email": "valid_email@domain.com",
     //   "username": "any_username",
@@ -115,38 +119,26 @@ class TransactionPinScreen extends Component {
           this.setState({ isLoading: false, by: "empty", click: true });
           // Alert.alert(null,'Middle Name field is empty')
     }  else{
-      // const why_here = tellUs
-      // const birth_year = moment(birthYear).format("YYYY-MM-DD")
-      Alert.alert(null, "Your transaction pin has been set successfully.\n*Now you can now make transactions..*", [
-        {
-            text: "Ok",
-            onPress: () => this.props.navigation.navigate("Dashboard", {
-              tier: this.props.navigation.state.params.tier
-            }),
-        },
-    ]);
+      
+    const transaction_pin = pin 
       const payload = { 
-        email, 
-        username, 
-        city,
-        // birth_year, 
-        // why_here, 
-        pin
+        user_id, 
+        transaction_pin
         };
     
     console.log(payload);
 
     const onSuccess = ({ data }) => {  
-      setClientToken(data.token);
+      // setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
       
       if (data != null) {
-        Alert.alert("Info: ", data.response+"😁", [
+        Alert.alert(null, "Your transaction pin has been set successfully.\n*Now you can now make transactions..*", [
           {
               text: "Ok",
-              onPress: () => this.props.navigation.push("SignIn", {
-                token: "token"
+              onPress: () => this.props.navigation.navigate("SignIn", {
+                tier: this.props.navigation.state.params.tier
               }),
           },
       ]);
@@ -162,10 +154,10 @@ class TransactionPinScreen extends Component {
       }
       if(error.response.status == 400){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure you enter the details required😩')
+        Alert.alert('Info: ','Ensure you enter the details required')
       } else if(error.response.status == 500){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure your Network is Stable😩')
+        Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')
@@ -175,10 +167,10 @@ class TransactionPinScreen extends Component {
 
     // this.setState({ isLoading: true });
 
-    // blackTrustService
-    //   .post("/accounts/register", payload)
-    //   .then(onSuccess)
-    //   .catch(onFailure);
+    mozfinOnboardingService
+      .post("/api/v1/auth/createTransactionPin", payload)
+      .then(onSuccess)
+      .catch(onFailure);
   }
   }
 

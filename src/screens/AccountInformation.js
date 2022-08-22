@@ -105,7 +105,11 @@ class AccountInformation extends Component {
                 <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", textAlign: "right" }}>Tier-{this.state.tier}</Text>
                 <TouchableOpacity
                 onPress={()=> { 
-                  this.props.navigation.navigate("BVNQuestion")
+                  this.props.navigation.navigate("BVNQuestion",{
+                    screen: "AccountUpgrade",
+                    customerID: "006414",//this.state.customerID
+                    id: 0
+                  })
                   this.setState({ tier: "3" })}}
                 disabled={this.state.tier == "3" ? true : false}
                 style={{ alignSelf: "flex-end", width: 164, height: 30, backgroundColor: this.state.tier == "3" ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>

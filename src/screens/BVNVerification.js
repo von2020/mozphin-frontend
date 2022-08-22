@@ -101,7 +101,10 @@ class BVN_Verification extends Component {
               bvn: data.bvnDetails.BVN,
               phoneno: data.bvnDetails.phoneNumber,
               dob: data.bvnDetails.DOB,
-              tier: "3"
+              tier: "3", 
+              screen: this.props.navigation.state.params.screen,
+              customerID: this.props.navigation.state.params.customerID,
+              id: this.props.navigation.state.params.id,
             }),
         },
         ]);

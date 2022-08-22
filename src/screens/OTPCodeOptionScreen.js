@@ -297,9 +297,23 @@ class OTPCodeOptionScreen extends Component {
     } 
 
     click(){
+      if(this.state.sm == "clicked"){
         this.props.navigation.navigate("OTPCode", {
-          tier: this.props.navigation.state.params.tier
+          tier: this.props.navigation.state.params.tier,
+          id: this.props.navigation.state.params.id,
+          means: "SMS",
+          phone: this.props.navigation.state.params.phone,
+          email: this.props.navigation.state.params.email
         })
+      } else if(this.state.em == "clicked"){
+        this.props.navigation.navigate("OTPCode", {
+          tier: this.props.navigation.state.params.tier,
+          id: this.props.navigation.state.params.id,
+          means: "Email",
+          phone: this.props.navigation.state.params.phone,
+          email: this.props.navigation.state.params.email
+        })
+      }
     } 
 
     countDown() {
@@ -353,6 +367,7 @@ class OTPCodeOptionScreen extends Component {
   render() {
     LogBox.ignoreAllLogs(true);
     const { showCountDown, pn, otpCode } = this.state;
+    // console.log("Hereeeeeeeeeeeeeeeeee otp code question", this.props.navigation.state.params.id)
     return (
         <ScrollView
           style={styles.scrollView}

@@ -12,6 +12,7 @@ import {
   StatusBar,
   Alert,
   Dimensions,
+  Modal,
   LogBox,
 } from "react-native";
 import  Loader  from './../config/Loader';
@@ -20,6 +21,13 @@ import { Dropdown } from "react-native-material-dropdown";
 import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
 import { selectContactPhone } from 'react-native-select-contact';
 // import Contacts from 'react-native-contacts';
+import OTPInput from "../component/OTP/OTPInput";
+import EyeCloseIcon from '../assets/svgs/eye_close';
+import EyeOpenIcon from '../assets/svgs/eye_open';
+import mozfinOnboardingService, {
+  setClientOnboardToken,
+} from "../service/MozfinOnboardingService";
+
 const { width, height } = Dimensions.get("window");
 
 // const image = { uri: "./../../assets/safexray-logo.png" };
@@ -41,12 +49,33 @@ const initialState = {
   value: "",
   label: "",
   contact: "",
+  hi: "",
+  one: "",
+  two: "",
+  three: "",
+  four: "",
+  pin: "",
+  accessToken: "",
+  token: "",
+  userId: "",
+  msg: "",
+  amount: "",
+  am: "", 
+  co: "",
+  bu: "",
+  bundle: "",
   displayList: false,
+  modalVisible_: false,
+  modalPinVisible_: false,
+  modalErrorVisible_: false,
+  isDataChecked: false,
+  isAirtimeChecked: false,
   checked: false,
   checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
   secureTextEntry: true,
+  selected: "",
   contactList: [],
   tellUsList: [
     {
@@ -107,112 +136,105 @@ const initialState = {
 class AirtimeNData extends Component {
   state = initialState;
 
-  handleEmail = (username) => {
-    if(username != ""){
-      if(username == "chibu@yahoo.com"){
-        this.setState({ username: username, us: "good" });
-      }else{
-      this.setState({ username: username, us: "" });
-      }
+  handleBundle = (value) => {
+    if(value != ""){
+      this.setState({ value: value, bu: "" });
     }else {
-      this.setState({ username: username, us: "empty" });
+      this.setState({ value: value, bu: "empty" });
+    }
+    if(this.state.mtn == "tapped"){
+      this.setState({ selected: "true" });
+    } else if(this.state.glo == "tapped"){
+      this.setState({ selected: "true" });
+    } else if(this.state.airtel == "tapped"){
+      this.setState({ selected: "true" });
+    } else if(this.state.nineMobile == "tapped"){
+      this.setState({ selected: "true" });
+    }
+    console.log("Valueeeee", this.state.contact != "" && value != "" && this.state.data == "tapped" && this.state.selected == "true")
+    console.log("Valueeeee-------->", "this.state.contact: "+this.state.contact, "Value: "+value, "Data: "+this.state.data, "Selected: "+this.state.selected)
+    
+    if(this.state.contact != "" && this.state.amount != "" && this.state.airtime == "tapped" && this.state.selected == "true"){
+      this.setState({ isAirtimeChecked: true });
+    }
+    if(this.state.contact != "" && value != "" && this.state.data == "tapped" && this.state.selected == "true"){
+      this.setState({ isDataChecked: true });
     }
   };
 
-  handlePassword = (password) => {  
-    if(password != ""){
-      if(password == "12345"){
-        this.setState({ password: password, pa: "empty" });
+  handleContact = (contact) => {
+    if(contact != ""){
+        this.setState({ contact: contact, co: "" });
       }else{
-      this.setState({ password: password, pa: "" });
+      this.setState({ contact: contact, co: "empty" });
       }
+      if(this.state.mtn == "tapped"){
+        this.setState({ selected: "true" });
+      } else if(this.state.glo == "tapped"){
+        this.setState({ selected: "true" });
+      } else if(this.state.airtel == "tapped"){
+        this.setState({ selected: "true" });
+      } else if(this.state.nineMobile == "tapped"){
+        this.setState({ selected: "true" });
+      }
+      console.log("Valueeeee-------->", "this.state.contact: "+this.state.contact, "Data: "+this.state.data, "Selected: "+this.state.selected)
+      if(contact != "" && this.state.amount != "" && this.state.airtime == "tapped" && this.state.selected == "true"){
+        this.setState({ isAirtimeChecked: true });
+      }
+      if(contact != "" && this.state.value != "" && this.state.data == "tapped" && this.state.selected == "true"){
+        this.setState({ isDataChecked: true });
+      }
+  }
+
+  handleAmount = (amount) => {  
+    if(amount != ""){
+      this.setState({ amount: amount, am: "" });
     }else {
-      this.setState({ password: password, pa: "empty" });
+      this.setState({ amount: amount, am: "empty" });
     } 
-    // this.setState({ password: password, pa: "" });//good
+    if(this.state.mtn == "tapped"){
+      this.setState({ selected: "true" });
+    } else if(this.state.glo == "tapped"){
+      this.setState({ selected: "true" });
+    } else if(this.state.airtel == "tapped"){
+      this.setState({ selected: "true" });
+    } else if(this.state.nineMobile == "tapped"){
+      this.setState({ selected: "true" });
+    }
+    console.log("Valueeeee-------->", "this.state.contact: "+this.state.contact, "Data: "+this.state.data, "Selected: "+this.state.selected)
+    if(this.state.contact != "" && amount != "" && this.state.airtime == "tapped" && this.state.selected == "true"){
+      this.setState({ isAirtimeChecked: true });
+    }
+    if(this.state.contact != "" && this.state.value != "" && this.state.data == "tapped" && this.state.selected == "true"){
+      this.setState({ isDataChecked: true });
+    }
   };
 
-  onPressLogin() {
+  onPressValidatePin() {
     this.setState({ isLoading: true });
 
-    const { username, password, checked } = this.state;
-    
-    if(username == ""){
+    const { username, password, userId, pin } = this.state;
+    const user_id = userId
+    const transaction_pin = pin
+
+    if(transaction_pin == ""){
       this.setState({ isLoading: false, us: "empty" });
-      // Alert.alert(null,'Email field is empty')
-    }else if(password == ""){
-      this.setState({ isLoading: false, pa: "empty" });
-      // Alert.alert(null,'Password field is empty')
-    }else{
-    const payload = { username, password };
-    const checkedPayload = { username, password, checked };
+      Alert.alert(null,'Enter pin')
+    } else{
+    const payload = { user_id, transaction_pin }
     this.setState({ isLoading: false, isAuthorized: true });
 
-    this.props.navigation.push("Dashboard", {
-      data: "data",
-    });
     console.log(payload);
 
     const onSuccess = ({ data }) => {
-      // insert into db...
-      // this._storeData(data, checkedPayload);
-      
-      setClientToken(data.token);
-      this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
-      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "username": "Chibubu"}
       if (data != null ) {
-        this.props.navigation.push("SideMenuScreen", {
-          data: data,
-        });
-      }
-
-    //   } else if (data.role == "General Manager") {
-    //       this.props.navigation.push("GMDNavScreen")
-    //   } else if (data.role == "Director") {
-    //       this.props.navigation.push("DirectorNavScreen")
-    //   } else if (data.role == "Supervisor") {
-    //       this.props.navigation.push("SupervisorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Staff") {
-    //       this.props.navigation.push("StaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver Admin") {
-    //       this.props.navigation.push("DriverAdminNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver") {
-    //       this.props.navigation.push("DriverStaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Procurement") {
-    //     this.props.navigation.push("pOfficerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Finance") {
-    //       this.props.navigation.push("FinanceNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Facility Officer") {
-    //     this.props.navigation.push("FacilityManagerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Auditor") {
-    //       this.props.navigation.push("AuditorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   }
-      
+        if(data.success == true){
+        this.setState({ msg: data.msg, modalPinVisible_: false, isLoading: false, isAuthorized: true, modalVisible_: true, modalErrorVisible_: false })
+        }else{
+          this.setState({ msg: data.msg, modalPinVisible_: false, isLoading: false, isAuthorized: true, modalErrorVisible_: true, modalVisible_: false })
+        }
+      }  
     };
 
     const onFailure = (error) => {
@@ -244,10 +266,10 @@ class AirtimeNData extends Component {
     };
 
     this.setState({ isLoading: true });
-    // blackTrustService
-    //   .post("/accounts/login", payload)
-    //   .then(onSuccess)
-    //   .catch(onFailure);
+    mozfinOnboardingService
+      .post("/api/v1/auth/validateTransactionPin", payload)
+      .then(onSuccess)
+      .catch(onFailure);
   }
   } 
 
@@ -288,114 +310,63 @@ class AirtimeNData extends Component {
         // })  
   }
 
-  // selectContact() {
-  //   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
-  //     title: 'Contacts',
-  //     message: 'This app would like to view your contacts.',
-  //   }).then(() => {
-  //     Contacts.getAll((err, contacts) => {
-  //       if (err === 'denied') {
-  //         // error
-  //       } else {
-  //         // console.log(contacts);
-  //         var dataList = [];
-  //     contacts.forEach(item => {
-  //         console.log("itemm,...",item);
-  //       if (item.displayName[0] == key) {
-  //         dataList.push(item);
-  //       }
-  //     });
-  //         this.setState({contactList: contacts});
-  //       }
-  //     });
-  //   });
-  // }
+    airtimeCheck(){
+      const { contact, amount } = this.state;
+    if(contact != "" && amount != ""){
+      this.setState({ isAirtimeChecked: true });
+    }else{
+      this.setState({ isAirtimeChecked: false });
+    }
+    }
 
-  // async selectContactb(){
-  //   // PermissionsAndroid.requestMultiple([
-  //   //   PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
-  //   //   PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-  //   // ])
-  //   // Contacts.getAll().then(contacts => {
-  //   //   console.log('contactis', contacts);
-  //   //   // setContacts(contacts);
-  //   // });
-  //     try{
-        
-  //       const permission = await PermissionsAndroid.requestMultiple(
-  //         [
-  //     PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
-  //     PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-  //       ],
-  //         {
-  //           'title': 'Contacts',
-  //           'message': 'This app would like to view your contacts.',
-  //           'buttonPositive': 'Please accept bare mortal'
-  //         }
-          
-  //       );
-  //       if(permission === PermissionsAndroid.RESULTS.GRANTED){
-  //         const contactis = await Contacts.getAll();
-  //         // console.log('contactis');
-  //         console.log('contactis', contactis);
-  //         // setMycontacts(contactis);
-  //       }else{
-  //         console.log("Permission Denied");
-          
-  //       }
-  //     }catch(error){
-  //       console.log(error);
-  //     }
-    // }
+    dataCheck(){
+      const { contact, amount, value } = this.state;
+    if(contact != "" && amount != "" && value != ""){
+      this.setState({ isDataChecked: true });
+    }else{
+      this.setState({ isDataChecked: false });
+    }
+    }
 
-  _retrieveData() {
-    // this.setState({initialState})
-        
-    // AsyncStorage.getItem("userDetails").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     this.setState({
-    //       role: response.role,
-    //       first_name: response.first_name,
-    //       last_name: response.last_name,
-    //     });
+  _retrieveData() {    
+    AsyncStorage.getItem("userDetails").then((res) => {
+      const response = JSON.parse(res);
+      if (res !== null) {
+        this.setState({
+          token: response.token,
+          userId: response.id,
+          accessToken: response.accessToken,
+        });
 
-    //     console.log("There is no role dey...", response);
-    //     console.log("I role to make role o", this.state.role);
-    //   } else {
-    //     console.log("There is no role dey...", response);
-    //   }
-    // });
-  
-    // AsyncStorage.getItem("checkedBoxBoolean").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     if(response != null && response.checked == true){
-    //       console.log("Reached.......----",this.state);
-    //         this.setState({
-    //         username: response.username,
-    //         password: response.password,
-    //         checked: response.checked,
-    //         });       
-    //     }
-    //   } else {
-    //     console.log("Check box response... Error...", response);
-    //   }
-    // });
+        console.log("There is no role dey...", response);
+        console.log("I role to make role o", this.state.role);
+      } else {
+        console.log("There is no role dey...", response);
+      }
+    });
+  }
+
+  enable(text){
+    const { one, two, three, four } = this.state;
+    const pin = one+""+two+""+three+""+text
+    if(pin.length == 4){
+      this.setState({ pin: pin });
+      console.log("hiiiiiiiiiii", pin)
+    }
   }
 
   componentWillMount = ()=> {
     console.log("I don mount o");
-    // this._retrieveData();
+    this._retrieveData();
   }
 
-    updateSecureTextEntry(){
-      this.setState({ secureTextEntry: !this.state.secureTextEntry})
-    } 
+  updateSecureTextEntry(){
+    this.setState({ secureTextEntry: !this.state.secureTextEntry})
+  } 
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { data, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
+    const { data, airtime, mtn, glo, airtel, nineMobile, displayList, pin, isAirtimeChecked, isDataChecked, co, am, bu } = this.state;
     return (
         <ScrollView
           style={styles.scrollView}
@@ -403,9 +374,257 @@ class AirtimeNData extends Component {
           
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
+              <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.modalVisible_}
+                    onRequestClose={() => {
+                      this.setState({ modalVisible_: false });
+                    }}
+                  >
+                <View style={styles.modalBackground}>
+                <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                <View>
+                <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+                <Image source={require('../assets/circlemark.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20}/>
+                <View alignItems={"center"}>
+                <Text style={styles.statusModalText}>SUCCESSFUL!</Text>
+                <Text style={styles.modalText}>
+                {" "}{this.state.msg}
+                </Text>
+                </View>
+                </View>
+
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
+                  onPress={() => this.setState({ modalVisible_: false })}
+                  >
+                    <Text style={styles.textStylee}>BACK TO HOME</Text>
+                </TouchableOpacity>
+                        
+                </View>
+              </View>
+              </View>
+              </Modal>
+
+              <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.modalErrorVisible_}
+                    onRequestClose={() => {
+                      this.setState({ modalErrorVisible_: false });
+                    }}
+                  >
+                <View style={styles.modalBackground}>
+                <View style={styles.centeredView}>
+                <View style={styles.modalErrorView}>
+                <View>
+                <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+                <Image source={require('../assets/fail.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20}/>
+                <View alignItems={"center"}>
+                <Text style={styles.statusModalTextError}>Failed!</Text>
+                <Text style={styles.modalTextError}>
+                {" "}{this.state.msg}
+                </Text>
+                </View>
+                </View>
+
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1, marginTop: 12 }}
+                  onPress={() => this.setState({ modalErrorVisible_: false, modalPinVisible_: true, one: "", two: "", three: "", four: "" })}
+                  >
+                    <Text style={styles.textStylee}>RETRY</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#FFFFFF", borderRadius: 10, marginBottom: 5, opacity: 1, borderColor: "#002A14", borderWidth: 1 }}
+                  onPress={() => this.setState({ modalErrorVisible_: false })}
+                  >
+                    <Text style={styles.textStyleeCancel}>CANCEL</Text>
+                </TouchableOpacity>
+                </View>
+              </View>
+              </View>
+              </Modal>
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.modalPinVisible_}
+                    onRequestClose={() => {
+                      this.setState({ modalPinVisible_: false });
+                    }}>
+                <View style={styles.modalBackground}>
+                <View style={styles.centeredView}>
+                <View style={styles.modalPinView}>
+                <View>
+                <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+                {/* <Image source={require('../assets/circlemark.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20}/> */}
+                <View alignItems={"center"}>
+                <Text style={{ fontSize: 20, lineHeight: 24, fontWeight: "700", textAlign: "center", color: "#002A14" }}>Enter Pin</Text>
+                <Text style={{ fontSize: 12, lineHeight: 14.4, marginTop: 13, fontWeight: "600", textAlign: "center", color: "#B2BE35", }}>Please enter your 4-digit pin </Text>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 26 }}>
+                {/* <OTPInput/> */}
+                <View style={{ flexDirection: "row", justifyContent: "space-between", marginEnd: 21 }}>
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={16}
+                  borderColor={this.state.one == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  marginEnd={5}
+                  paddingVertical={5}
+                  ref={(input) => { this.firstTextInput = input; }}
+                  style={{ textAlign: "center" }}
+                  value={this.state.one}
+                  keyboardType={"numeric"}
+                  secureTextEntry={this.state.secureTextEntry?true:false}
+                  onChangeText={(text) => {
+                    if(text){
+                      this.secondTextInput.focus()
+                      this.setState({ one: text });
+                    }else{
+                      this.setState({ one: "" });
+                    }
+                  }}
+                />
+
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={16}
+                  borderColor={this.state.two == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  ref={(input) => { this.secondTextInput = input; }}
+                  value={this.state.two}
+                  marginEnd={5}
+                  paddingVertical={5}
+                  style={{ textAlign: "center" }}
+                  keyboardType={"numeric"}
+                  secureTextEntry={this.state.secureTextEntry?true:false}
+                  onChangeText={(text) => {
+                    if(text){
+                      this.thirdTextInput.focus()
+                      this.setState({ two: text });
+                    }else{
+                      this.firstTextInput.focus()
+                      this.setState({ two: "" });
+                    }
+                  }}
+                />
+
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={16}
+                  borderColor={this.state.three == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  ref={(input) => { this.thirdTextInput = input; }}
+                  value={this.state.three}
+                  marginEnd={5}
+                  paddingVertical={5}
+                  style={{ textAlign: "center" }}
+                  keyboardType={"numeric"}
+                  secureTextEntry={this.state.secureTextEntry?true:false}
+                  onChangeText={(text) => {
+                      if(text){
+                        this.fourTextInput.focus()
+                        this.setState({ three: text });
+                      }else{
+                        this.secondTextInput.focus()
+                        this.setState({ three: "" });
+                      }
+                  }}
+                />
+
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={16}
+                  borderColor={this.state.four == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  paddingVertical={5}
+                  ref={(input) => { this.fourTextInput = input; }}
+                  value={this.state.four}
+                  style={{ textAlign: "center" }}
+                  keyboardType={"numeric"}
+                  secureTextEntry={this.state.secureTextEntry?true:false}
+                  onChangeText={(text) => {
+                    if(text){
+                      this.fourTextInput.focus()
+                      this.setState({ four: text });
+                      this.enable(text);
+                    }else{
+                      this.thirdTextInput.focus()
+                      this.setState({ four: "" });
+                    }
+                  }}
+                />
+                </View>
+                <TouchableOpacity 
+                    onPress={this.updateSecureTextEntry.bind(this)}>
+                      {this.state.secureTextEntry ?
+                      <View
+                      style={{alignSelf: "flex-end", right: 3, marginTop: 10, }}>
+                      <EyeOpenIcon/>
+                      </View>
+                      :
+                      <View
+                      style={{alignSelf: "flex-end", right: 3, marginTop: 10, }}>
+                      <EyeCloseIcon/>
+                      </View>
+                      }
+                      
+                    </TouchableOpacity>
+                </View>
+                </View>
+                </View>
+
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ alignSelf: "center", width: 296, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 21, marginTop: 26, opacity: 1 }}
+                  onPress={() => this.onPressValidatePin()}>
+                    <Text style={styles.textStylee}>PROCEED</Text>
+                </TouchableOpacity>  
+
+                <TouchableOpacity
+                  onPress={() =>
+                    this.setState({ modalPinVisible_: false })
+                      }>
+                  <Text style={styles.dontHaveAccountMintTextStyle}>Cancel</Text>
+                </TouchableOpacity>   
+                </View>
+              </View>
+              </View>
+              </Modal>
+              
           {airtime == "tapped" && <View>
             <View style={{ flexDirection: "row", justifyContent: "space-around", width: width * 0.91, alignSelf: "center", marginTop: 32, marginBottom: 31 }}>
-            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "" })}>
+            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "", amount: "" })}>
             <Text style={{
                     fontSize: 20,
                     color: "#002A14",
@@ -421,7 +640,7 @@ class AirtimeNData extends Component {
                   }}>Airtime</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "" })}>
+            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "", amount: "" })}>
             <Text style={{
                     fontSize: 20,
                     color: "#002A14",
@@ -439,19 +658,19 @@ class AirtimeNData extends Component {
             </View>
 
             <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 48 }}>
-            <TouchableOpacity style={{ padding: 10, borderColor: mtn == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "tapped", airtel: "", glo: "", nineMobile: "" })}>
+            <TouchableOpacity style={{ padding: 10, borderColor: mtn == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "tapped", airtel: "", glo: "", nineMobile: "", selected: "true" })}>
             <Image source={require('../assets/mtn.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ padding: 10, borderColor: glo == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "tapped", nineMobile: "" })}>
+            <TouchableOpacity style={{ padding: 10, borderColor: glo == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "tapped", nineMobile: "", selected: "true" })}>
             <Image source={require('../assets/glo.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ padding: 10, borderColor: airtel == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "tapped", glo: "", nineMobile: "" })}>
+            <TouchableOpacity style={{ padding: 10, borderColor: airtel == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "tapped", glo: "", nineMobile: "", selected: "true" })}>
             <Image source={require('../assets/airtime.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ padding: 10, borderColor: nineMobile == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "", nineMobile: "tapped" })}>
+            <TouchableOpacity style={{ padding: 10, borderColor: nineMobile == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "", nineMobile: "tapped", selected: "true" })}>
             <Image source={require('../assets/9mobile.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </TouchableOpacity>
             </View>
@@ -467,7 +686,7 @@ class AirtimeNData extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.co == "" ? "#B2BE35" : "#FF0000"}
                         keyboardType={"phone-pad"}
                         paddingHorizontal={1}
                         paddingVertical={10}
@@ -477,7 +696,7 @@ class AirtimeNData extends Component {
                         textAlign={"left"}
                         value={this.state.contact.trim()}
                         paddingBottom={5}
-                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                        onChangeText={(text) => this.handleContact(text)}
                     />
                     <View style={{ marginTop: 10, marginBottom: 56, marginHorizontal: 28, }}>
                     <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Recharge Amount</Text>  
@@ -486,7 +705,7 @@ class AirtimeNData extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.am == "" ? "#B2BE35" : "#FF0000"}
                         keyboardType={"phone-pad"}
                         paddingHorizontal={1}
                         paddingVertical={10}
@@ -494,22 +713,23 @@ class AirtimeNData extends Component {
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
-                        // value={this.state.BVN_}
+                        value={this.state.amount}
                         paddingBottom={5}
-                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                        onChangeText={(text) => this.handleAmount(text)}
                     />
                     </View>
 
             <TouchableOpacity
-                onPress={this.onPressLogin.bind(this)}
-                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
+                disabled={isAirtimeChecked != true ? true : false}
+                onPress={()=> this.setState({ modalPinVisible_: true, one: 0, two: 0, three: 0, four: 0, selected: "" })}
+                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: isAirtimeChecked != true ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
                 <Text style={styles.loginButtonText}>PAY</Text>
             </TouchableOpacity>
             </View>}
 
             {data == "tapped" && <View>
             <View style={{ flexDirection: "row", justifyContent: "space-around", width: width * 0.91, alignSelf: "center", marginTop: 32, marginBottom: 31 }}>
-            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "" })}>
+            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "", amount: "" })}>
             <Text style={{
                     fontSize: 20,
                     color: "#002A14",
@@ -525,7 +745,7 @@ class AirtimeNData extends Component {
                   }}>Airtime</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "" })}>
+            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "", amount: "" })}>
             <Text style={{
                     fontSize: 20,
                     color: "#002A14",
@@ -543,19 +763,19 @@ class AirtimeNData extends Component {
             </View>
 
             <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 48 }}>
-            <TouchableOpacity style={{ padding: 10, borderColor: mtn == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "tapped", airtel: "", glo: "", nineMobile: "" })}>
+            <TouchableOpacity style={{ padding: 10, borderColor: mtn == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "tapped", airtel: "", glo: "", nineMobile: "", selected: "true" })}>
             <Image source={require('../assets/mtn.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ padding: 10, borderColor: glo == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "tapped", nineMobile: "" })}>
+            <TouchableOpacity style={{ padding: 10, borderColor: glo == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "tapped", nineMobile: "", selected: "true" })}>
             <Image source={require('../assets/glo.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ padding: 10, borderColor: airtel == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "tapped", glo: "", nineMobile: "" })}>
+            <TouchableOpacity style={{ padding: 10, borderColor: airtel == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "tapped", glo: "", nineMobile: "", selected: "true" })}>
             <Image source={require('../assets/airtime.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{ padding: 10, borderColor: nineMobile == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "", nineMobile: "tapped" })}>
+            <TouchableOpacity style={{ padding: 10, borderColor: nineMobile == "tapped" ? "#B2BE35" : "transparent", borderWidth: 1, borderRadius: 4 }} onPress={()=> this.setState({ mtn: "", airtel: "", glo: "", nineMobile: "tapped", selected: "true" })}>
             <Image source={require('../assets/9mobile.png')} resizeMode={'cover'} alignSelf={"center"}/>
             </TouchableOpacity>
             </View>
@@ -571,7 +791,7 @@ class AirtimeNData extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.co == "" ? "#B2BE35" : "#FF0000"}
                         keyboardType={"phone-pad"}
                         paddingHorizontal={1}
                         paddingVertical={10}
@@ -582,7 +802,7 @@ class AirtimeNData extends Component {
                         // maxLength={11}
                         value={this.state.contact.trim()}
                         paddingBottom={5}
-                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                        onChangeText={(text) => this.handleContact(text)}
                     />
                     <View style={{ marginTop: 10, marginHorizontal: 28, }}>
                     <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Select Data Bundle</Text>
@@ -592,7 +812,7 @@ class AirtimeNData extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.bu == "" ? "#B2BE35" : "#FF0000"}
                         keyboardType={"phone-pad"}
                         paddingHorizontal={1}
                         paddingTop={10}
@@ -601,9 +821,9 @@ class AirtimeNData extends Component {
                         fontWeight={"400"}
                         textAlign={"left"}
                         color={"#000"}
-                        value={this.state.label}
+                        value={this.state.value}
                         editable={false}
-                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                        onChangeText={(text) => this.handleBundle(text)}
                     />
                     <View style={{ position: "absolute", right: 0, marginEnd: 8, bottom: 24 }}>
                     <ArrowDropDownIcon/>
@@ -614,7 +834,9 @@ class AirtimeNData extends Component {
                       data={this.state.tellUsList}
                       renderItem={({ item,index }) => (
                         <View style={{ marginBottom: 12 }}>
-                          <TouchableOpacity onPress={()=> this.setState({ label: item.label, value: item.value, displayList: false })}>
+                          <TouchableOpacity onPress={()=> { 
+                            this.handleBundle(item.value)
+                            this.setState({ label: item.label, value: item.value, displayList: false })}}>
                           <Text style={{ fontSize: 14, color: "#000", fontWeight: "400", }}>{item.label}</Text>    
                           </TouchableOpacity>
                         </View>
@@ -628,7 +850,7 @@ class AirtimeNData extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.am == "" ? "#B2BE35" : "#FF0000"}
                         keyboardType={"phone-pad"}
                         paddingHorizontal={1}
                         paddingVertical={10}
@@ -640,13 +862,13 @@ class AirtimeNData extends Component {
                         textAlign={"left"}
                         value={this.state.value}
                         paddingBottom={5}
-                        // onChangeText={(text) => this.onChangeTextHandler(text)}
+                        onChangeText={(text) => this.handleAmount(text)}
                     />
                     </View>
 
             <TouchableOpacity
-                onPress={this.onPressLogin.bind(this)}
-                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
+                disabled={isDataChecked != true ? true : false} onPress={()=> this.setState({ modalPinVisible_: true, one: 0, two: 0, three: 0, four: 0, selected: "" })}
+                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: isDataChecked != true ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
                 <Text style={styles.loginButtonText}>PAY</Text>
             </TouchableOpacity>
             </View>}
@@ -806,6 +1028,134 @@ const styles = StyleSheet.create({
     top: 5,
     // marginBottom: 10
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 40,
+    width: 346,
+    height: 320,
+    backgroundColor: "white",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowopacity: 0.95,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  modalErrorView: {
+    margin: 40,
+    width: 326,
+    height: 393,
+    backgroundColor: "white",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowopacity: 0.95,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  modalPinView: {
+    margin: 40,
+    width: 326,
+    height: 281,
+    backgroundColor: "white",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowopacity: 0.95,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  textStylee: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 5,
+    fontSize: 20,
+  },
+  textStyleeCancel: {
+    color: "#002A14",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 5,
+    fontSize: 20,
+  },
+  modalText: {
+    marginBottom: 15,
+    width: width * 0.6,
+    marginHorizontal: 15,
+    fontFamily: "Nunito_400Regular",
+    alignSelf: "center",
+    textAlign: "center",
+    color: "#002A14DE"
+  },
+  statusModalText: {
+    color: "#002A14",
+    fontFamily: "Nunito_400Regular",
+    fontWeight: "700",
+    fontSize: 20,
+    textAlign: "center",
+    alignSelf: "center"
+  },
+  modalTextError: {
+    marginBottom: 23,
+    marginTop: 6,
+    width: width * 0.6,
+    fontFamily: "Nunito_400Regular",
+    alignSelf: "center",
+    textAlign: "center",
+    color: "#002A14DE"
+  },
+  statusModalTextError: {
+    color: "#002A14",
+    fontFamily: "Nunito_400Regular",
+    fontWeight: "700",
+    fontSize: 20,
+    marginBottom: 11,
+    marginTop: 5,
+    textAlign: "center",
+    alignSelf: "center"
+  },
+  modalBackground:{
+    flex:1,
+    alignItems:'center',
+    flexDirection:'column',
+    justifyContent:'space-around',
+    backgroundColor:'#000000'
+  },
+  dontHaveAccountMintTextStyle: {
+    fontSize: 16,
+    color: "#000000",
+    marginBottom: 1,
+    fontWeight: "600",
+    opacity: 1,
+    lineHeight: 19.2,
+    fontFamily: "JosefinSans-Bold",
+    alignSelf: "center",
+    textDecorationLine: "underline"
+  },
   linearGradient: {
     flex: 1,
     height: 88,
@@ -839,16 +1189,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontFamily: "JosefinSans-Bold",
     alignSelf: "center",
-  },
-  dontHaveAccountMintTextStyle: {
-    fontSize: 16,
-    color: "#000000",
-    marginBottom: 1,
-    fontWeight: "600",
-    opacity: 1,
-    fontFamily: "JosefinSans-Bold",
-    alignSelf: "center",
-    textDecorationLine: "underline"
   },
   buttonView: {
     borderWidth: 1,

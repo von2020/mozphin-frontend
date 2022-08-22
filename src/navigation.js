@@ -25,6 +25,7 @@ import BottomTabs from '../src/screens/BottomTabs';
 import TransactionPinScreen from './screens/TransactionPinScreen';
 import PasswordScreen from '../src/screens/PasswordScreen';
 import ProfileInformationScreen from '../src/screens/ProfileInformationScreen';
+import Otppcode from '../src/screens/Otppcode';
 import ReferralsScreen from './screens/ReferralsScreen';
 import AccountInformation from './screens/AccountInformation';
 import SettingsScreen from './screens/SettingsScreen';
@@ -408,19 +409,32 @@ const StartUpStackMain = createStackNavigator(
               },
             },
       },
-        // UpdateUserDetails: {
-        //     screen: UpdateUserDetails,
-        //     navigationOptions: {
-        //       headerShown: false,
-        //       headerTransparent: true,
-        //       headerStyle: { backgroundColor: 'transparent', },
-        //         title: "",
-        //         headerTintColor: "#002A14",
-        //         headerTitleStyle: {
-        //             fontWeight: "100",
-        //           },
-        //         },
-        // },
+      UpdateUserDetails: {
+            screen: UpdateUserDetails,
+            navigationOptions: {
+              headerShown: false,
+              headerTransparent: true,
+              headerStyle: { backgroundColor: 'transparent', },
+                title: "",
+                headerTintColor: "#002A14",
+                headerTitleStyle: {
+                    fontWeight: "100",
+                  },
+                },
+        },
+        Otppcode: {
+          screen: Otppcode,
+          navigationOptions: {
+            headerShown: true,
+            headerTransparent: true,
+            headerStyle: { backgroundColor: 'transparent', },
+              title: "",
+              headerTintColor: "#002A14",
+              headerTitleStyle: {
+                  fontWeight: "100",
+                },
+              },
+        },
         TransactionPin: {
             screen: TransactionPinScreen,
             navigationOptions: {

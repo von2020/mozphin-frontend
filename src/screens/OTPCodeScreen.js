@@ -17,7 +17,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-
+import OTPInput from "../component/OTP/OTPInput";
 // import Toast from 'react-native-toast-message';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import blackTrustService, {
@@ -46,6 +46,12 @@ const initialState = {
   last_name: "",
   token: "",
   phonenum: 0,
+  one: "",
+  two: "",
+  three: "",
+  four: "",
+  five: "",
+  six: "",
   pn: 0,
   text: "",
   showCountDown: false,
@@ -135,6 +141,7 @@ class OTPCodeScreen extends Component {
       if (data != null ) {
         this.props.navigation.push("PasswordScreen", {
           data: data,
+          id: this.props.navigation.state.params.id,
         });
       }
 
@@ -304,7 +311,8 @@ class OTPCodeScreen extends Component {
             {
                 text: "Ok",
                 onPress: () => this.props.navigation.navigate("PasswordScreen", {
-                  tier: this.props.navigation.state.params.tier
+                  tier: this.props.navigation.state.params.tier,
+                  id: this.props.navigation.state.params.id
                 }),
             },
             ]);
@@ -356,11 +364,25 @@ class OTPCodeScreen extends Component {
         console.log("codeeee oooooo", this.state.otpCode)
       };
 
-
+      enable(text){
+        const { one, two, three, four, five, six } = this.state;
+        const otp = one+""+two+""+three+""+four+""+five+""+text
+        if(otp.length == 6){
+          this.setState({ otpCode: otp });
+        }
+      }
+      // useEffect(() => {
+      //   // update pin ready status
+      //   setIsPinReady(code.length === maximumLength);
+      //   // clean up function
+      //   return () => {
+      //     setIsPinReady(false);
+      //   };
+      // }, [code]);
       
   render() {
     LogBox.ignoreAllLogs(true);
-    const { showCountDown, pn, otpCode } = this.state;
+    const { showCountDown, pn, otpCode, one, two, three, four, five, six } = this.state;
     return (
         <ScrollView
           style={styles.scrollView}
@@ -371,7 +393,12 @@ class OTPCodeScreen extends Component {
           
             <View style={styles.cardStyleLong}>
             <Text style={styles.welcomeTextStyle}>Enter OTP code</Text>
-            
+            {/* <OTPInput
+            code={otpCode}
+            setCode={otpCode}
+            maximumLength={5}
+            setIsPinReady={true}/> */}
+                {this.props.navigation.state.params.means == "SMS" ? 
                 <Text style={{
                     fontSize: 12,
                     fontFamily: "JosefinSans-Bold",
@@ -383,8 +410,200 @@ class OTPCodeScreen extends Component {
                     width: 268,
                     alignSelf: "center",
                     marginTop: 13,
-                    }}>A 6 digit verificaton code has been sent to {"\n"}+234 567 8910</Text>
-                    <OTPTextInput 
+                    marginBottom: 30,
+                    }}>A 6 digit verificaton code has been sent to {"\n"}{this.props.navigation.state.params.phone}</Text> 
+                    :
+                    <Text style={{
+                    fontSize: 12,
+                    fontFamily: "JosefinSans-Bold",
+                    textAlign: "center",
+                    paddingHorizontal: 5,
+                    opacity: 1,
+                    fontWeight: "600",
+                    color: "#002A14",
+                    width: 268,
+                    alignSelf: "center",
+                    marginTop: 13,
+                    marginBottom: 30,
+                    }}>A 6 digit verificaton code has been sent to {this.props.navigation.state.params.email}
+                    </Text>
+                   }
+
+                <View style={{ flexDirection: "row", justifyContent: "space-between", width: width * 0.8, alignSelf: "center", }}>
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={20}
+                  fontWeight={"600"}
+                  borderColor={this.state.one == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  marginEnd={5}
+                  ref={(input) => { this.firstTextInput = input; }}
+                  style={{ textAlign: "center" }}
+                  value={this.state.one}
+                  keyboardType={"numeric"}
+                  paddingVertical={5}
+                  onChangeText={(text) => {
+                    if(text){
+                      this.secondTextInput.focus()
+                      this.setState({ one: text });
+                    }else{
+                      this.setState({ one: "" });
+                    }
+                  }}
+                />
+
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={20}
+                  fontWeight={"600"}
+                  borderColor={this.state.two == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  ref={(input) => { this.secondTextInput = input; }}
+                  value={this.state.two}
+                  marginEnd={5}
+                  paddingVertical={5}
+                  style={{ textAlign: "center" }}
+                  keyboardType={"numeric"}
+                  onChangeText={(text) => {
+                    if(text){
+                      this.thirdTextInput.focus()
+                      this.setState({ two: text });
+                    }else{
+                      this.firstTextInput.focus()
+                      this.setState({ two: "" });
+                    }
+                  }}
+                />
+
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={20}
+                  fontWeight={"600"}
+                  borderColor={this.state.three == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  ref={(input) => { this.thirdTextInput = input; }}
+                  value={this.state.three}
+                  marginEnd={5}
+                  style={{ textAlign: "center" }}
+                  keyboardType={"numeric"}
+                  paddingVertical={5}
+                  onChangeText={(text) => {
+                      if(text){
+                        this.fourTextInput.focus()
+                        this.setState({ three: text });
+                      }else{
+                        this.secondTextInput.focus()
+                        this.setState({ three: "" });
+                      }
+                  }}
+                />
+
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={20}
+                  fontWeight={"600"}
+                  borderColor={this.state.four == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  ref={(input) => { this.fourTextInput = input; }}
+                  value={this.state.four}
+                  style={{ textAlign: "center" }}
+                  marginEnd={5}
+                  paddingVertical={5}
+                  keyboardType={"numeric"}
+                  onChangeText={(text) => {
+                    if(text){
+                      this.fiveTextInput.focus()
+                      this.setState({ four: text });
+                    }else{
+                      this.thirdTextInput.focus()
+                      this.setState({ four: "" });
+                    }
+                  }}
+                />
+
+                <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={20}
+                  fontWeight={"600"}
+                  borderColor={this.state.five == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  ref={(input) => { this.fiveTextInput = input; }}
+                  value={this.state.five}
+                  style={{ textAlign: "center" }}
+                  keyboardType={"numeric"}
+                  marginEnd={5}
+                  paddingVertical={5}
+                  onChangeText={(text) => {
+                    if(text){
+                      this.sixTextInput.focus()
+                      this.setState({ five: text });
+                    }else{
+                      this.fourTextInput.focus()
+                      this.setState({ five: "" });
+                    }
+                  }}
+                />
+
+              <TextInput
+                  backgroundColor= "#FFF"
+                  borderWidth = {1}
+                  fontSize={20}
+                  fontWeight={"600"}
+                  borderColor={this.state.six == "" ? "#002A14" : "#B2BE35"}
+                  width= {38}
+                  height= {37}
+                  borderRadius= {7}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  maxLength={1}
+                  ref={(input) => { this.sixTextInput = input; }}
+                  value={this.state.six}
+                  style={{ textAlign: "center" }}
+                  keyboardType={"numeric"}
+                  paddingVertical={5}
+                  onChangeText={(text) => {
+                    if(text){
+                      this.sixTextInput.focus()
+                      this.setState({ six: text });
+                      this.enable(text);
+                    }else{
+                      this.fiveTextInput.focus()
+                      this.setState({ six: "" });
+                    }
+                  }}
+                />
+                </View>
+                    {/* <OTPTextInput 
                         ref={e => (this.input1 = e)} 
                         inputCount={6}
                         color= {"#002A14"}
@@ -395,21 +614,22 @@ class OTPCodeScreen extends Component {
                         tintColor={"#838E08"}
                         handleTextChange={(text) => this.handleOtpCode(text)}
 
-                    />
+                    /> */}
                     {/* <Button title="clear" onPress={this.clearText}/> Didn’t receive otp?*/}
+
                 <View style={{ alignSelf: "center", marginTop: 47 }}>
                 <TouchableOpacity disabled={otpCode.length != 6 ? true : false} onPress={()=> this.click()} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: otpCode.length != 6 ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>VERIFY OTP</Text>
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={this.startTimer} disabled={this.state.time.s == 30 | this.state.time.s == 0 ? false : true}>
-                <View>
+              <TouchableOpacity onPress={this.startTimer} disabled={this.state.time.s == 30 | this.state.time.s == 0 ? false : true} alignSelf={"center"}>
+                <View flexDirection={"row"} alignSelf={"center"}>
                 {showCountDown == true ? 
                 <View flexDirection={"row"} alignSelf={"center"}>
-                <Text style={{color: "grey", fontWeight: "600", fontSize: 17, marginLeft: 30, textAlign: "left", }}>{this.state.time.s} sec</Text>
+                <Text style={{color: "grey", fontWeight: "600", fontSize: 17, marginLeft: 25, textAlign: "left", }}>{this.state.time.s} sec</Text>
                 <SimpleLineIcons name="reload" style={styles.reloadIconStyle}/>
                 </View> : null}
-                <Text style={{color: "black", fontWeight: "600", fontSize: 12, marginLeft: 30, textAlign: "center", marginTop: 24, marginBottom: 20 }}>Didn’t receive otp?{"  "}
+                <Text style={{color: "black", fontWeight: "600", fontSize: 12, marginLeft: 5, textAlign: "center", marginTop: 24, marginBottom: 20 }}>Didn’t receive otp?{"  "}
                 <Text style={{color: "black", fontWeight: "600", fontSize: 16, marginLeft: 30, textAlign: "left", textDecorationLine: "underline", lineHeight: 15 }}>Resend OTP</Text>
                 </Text>
                 </View>
@@ -452,9 +672,9 @@ const styles = StyleSheet.create({
   reloadIconStyle: {
     fontSize: 20,
     color: "#045135",
-    left: 20,
+    left: 5,
     alignSelf: "flex-start",
-    marginStart: 10,
+    marginEnd: 5,
     // elevation: 5,
   },
   emailInput: {

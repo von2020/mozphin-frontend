@@ -16,10 +16,12 @@ import {
 } from "react-native";
 // import ImagePicker from 'react-native-image-crop-picker';
 // import * as ImagePicker from "react-native-image-picker"//^2.3.4
-import ImagePicker, {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+// import ImagePicker, { openPicker } from 'react-native-new-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import StarRating from 'react-native-star-rating';
 import Toast from 'react-native-tiny-toast';
 import moment from 'moment';
+import * as RNFS from 'react-native-fs';
 import  Loader  from './../config/Loader';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
@@ -89,16 +91,13 @@ class ProfileInformationScreen extends Component {
 
       selectFileFromLib = () => {
         var options = {
+          selectionLimit: 1,
           mediaType: 'photo',
-          type: 'library',
-          storageOptions: {
-            skipBackup: true,
-            path: 'images',
-          },
+          // includeBase64: false,
         // storageOptions: { privateDirectory: true  },
           includeBase64: true,
           includeExtra: false,
-          selectionLimit: 0,
+          // selectionLimit: 0,
       
           // saveToPhotos: false,
           // durationLimit: 10
@@ -138,13 +137,22 @@ class ProfileInformationScreen extends Component {
 
 
           //  this.setState({ imageData: "data:image/jpeg;base64,"+res.assets[0].base64, modalVisible_: false, isLoading: false })
-           this.setState({ imageData: response.assets[0].uri, modalVisible_: false, isLoading: false })
+          //  this.setState({ imageData: response.assets[0].uri, modalVisible_: false, isLoading: false })
 
 
 
-          //  if(source){
-          //       // AsyncStorage.setItem("userdetailsImage",JSON.stringify(obj))
-          //     }    
+          let uri = res.assets && res.assets[0].uri;
+          console.log('Uri uri uri uri uri =', uri);
+          if(uri){
+          
+            const path=uri.split("/")
+            let values = Object.values(path)
+            const fileName=values[values.length - 1]
+            const androidPath = RNFS.DocumentDirectoryPath 
+            uri = "file://"+androidPath+"/"+fileName;
+            this.setState({ imageData: uri, modalVisible_: false, isLoading: false })
+          }
+
           let source = res;
             console.log("The Fileeeeeeeeeee cam", source)
             let imageSizeInKb = source.fileSize / 1024
@@ -181,17 +189,27 @@ class ProfileInformationScreen extends Component {
         }
         };
         
+        // testCamera = () => {
+        //  ImagePicker.openPicker({
+        //    isCamera: true,
+        //     width: 300,
+        //     height: 400,
+        //     cropping: true,
+        //     multiple: false
+        //   }).then(image => {
+        //     console.log(image);
+        //     this.setState({ imageData: image, modalVisible_: false, isLoading: false })
+        //   });
+        // }
+
         openCamera = async () => {
         //Alert.alert('asdasd');
+        // var RNFS = require('react-native-fs');
+        
         const options = {
-          title: 'Take Image',
-          cameraType: 'front',
-          options: {
-            saveToPhotos: true,
-            mediaType: 'photo',
-            includeBase64: true,
-            includeExtra: true,
-          },
+          selectionLimit: 1,
+          mediaType: 'photo',
+          includeBase64: false,
           // storageOptions: { privateDirectory: true },
         };
         
@@ -205,7 +223,19 @@ class ProfileInformationScreen extends Component {
         // });
         await launchCamera(options, response => {
           console.log('Response =', response);
-          if(response.assets[0].uri){
+          let uri = response?.assets && response.assets[0].uri;
+          console.log('Uri uri uri uri uri =', uri);
+          if(uri){
+          
+            const path=uri.split("/")
+            let values = Object.values(path)
+            const fileName=values[values.length - 1]
+            const androidPath = RNFS.DocumentDirectoryPath 
+            uri = "file://"+androidPath+"/"+fileName;
+            this.setState({ imageData: uri, modalVisible_: false, isLoading: false })
+          }
+        
+          if(response.assets){
             // let source = response;
             // console.log("The Fileeeeeeeeeee cam", source)
             // let imageSizeInKb = source.fileSize / 1024
@@ -214,7 +244,7 @@ class ProfileInformationScreen extends Component {
             //   this.setState({ imageData: "data:image/jpeg;base64,"+source.assets[0].base64, modalVisible_: false, isLoading: false })
             // }
           // this.setState({ imageData: "data:image/jpeg;base64,"+response.assets[0].base64, modalVisible_: false, isLoading: false })
-          this.setState({ imageData: response.assets[0].uri, modalVisible_: false, isLoading: false })
+          // this.setState({ imageData: response.assets[0].uri, modalVisible_: false, isLoading: false })
 
           }
         });
@@ -294,9 +324,9 @@ class ProfileInformationScreen extends Component {
             <View>
             <View style={styles.emailTextStyleView_}>
             <TouchableOpacity onPress={()=> this.setState({ modalVisible_: true })}>
-            {imageData == "" ? <Image source={require('../assets/profilepicc.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20} marginTop={32}/> :
-            <View key={imageData.replace('file://', '')} style={styles.image}>
-            <Image source={{ uri: imageData.replace('file://', '') }} resizeMode={'cover'} marginTop={32} alignSelf={"center"} height={50} width={50} resizeMethod="scale"/>
+            {this.state.imageData == "" ? <Image source={require('../assets/profilepicc.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20} marginTop={32}/> :
+            <View key={this.state.imageData} style={styles.image}>
+            <Image source={{ uri: this.state.imageData }} resizeMode={'cover'} marginTop={32} alignSelf={"center"} height={50} width={50}/>
             </View>} 
 
             </TouchableOpacity>

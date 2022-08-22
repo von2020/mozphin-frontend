@@ -19,12 +19,15 @@ import PhoneIcon from '../assets/svgs/phone';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import mozfinOnboardingService, {
+  setClientOnboardToken,
+} from "../service/MozfinOnboardingService";
 
 const { width, height } = Dimensions.get("window");
 
 // const image = { uri: "./../../assets/safexray-logo.png" };
 const initialState = {
-  username: "",
+  phone: "",
   us: "",
   password: "", 
   pa: "",
@@ -45,15 +48,15 @@ const initialState = {
 class SignInScreen extends Component {
   state = initialState;
 
-  handleEmail = (username) => {
-    if(username != ""){
-      if(username == "chibu@yahoo.com"){
-        this.setState({ username: username, us: "good" });
+  handlePhone = (phone) => {
+    if(phone != ""){
+      if(phone == "chibu@yahoo.com"){
+        this.setState({ phone: phone, us: "good" });
       }else{
-      this.setState({ username: username, us: "" });
+      this.setState({ phone: phone, us: "" });
       }
     }else {
-      this.setState({ username: username, us: "empty" });
+      this.setState({ phone: phone, us: "empty" });
     }
   };
 
@@ -73,36 +76,37 @@ class SignInScreen extends Component {
   onPressLogin() {
     this.setState({ isLoading: true });
 
-    const { username, password, checked } = this.state;
+    const { phone, password, checked } = this.state;
     
-    if(username == ""){
+    if(phone == ""){
       this.setState({ isLoading: false, us: "empty" });
       // Alert.alert(null,'Email field is empty')
     }else if(password == ""){
       this.setState({ isLoading: false, pa: "empty" });
       // Alert.alert(null,'Password field is empty')
     }else{
-    const payload = { username, password };
-    const checkedPayload = { username, password, checked };
+    const payload = { phone, password };
+    // const checkedPayload = { phone, password, checked };
     this.setState({ isLoading: false, isAuthorized: true });
 
-    this.props.navigation.navigate("Dashboard", {
-      tier: "3",
-    });
     console.log(payload);
 
     const onSuccess = ({ data }) => {
       // insert into db...
-      // this._storeData(data, checkedPayload);
+      this._storeData(data);
       
-      setClientToken(data.token);
+      setClientOnboardToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
-      console.log(data);
-      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "username": "Chibubu"}
+      console.log("Dataaa",data);
+      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "phone": "Chibubu"}
       if (data != null ) {
-        this.props.navigation.push("SideMenuScreen", {
-          data: data,
+      // if(data.isApproved){
+        this.props.navigation.navigate("Dashboard", {
+          tier: data.tier,
         });
+      // } else {
+      //   Alert.alert(null,"Awaiting Approval..")
+      // }
       }
 
     //   } else if (data.role == "General Manager") {
@@ -168,7 +172,7 @@ class SignInScreen extends Component {
         Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 401){
         this.setState({ isLoading: false });
-        Alert.alert(null,'Incorrect Login Details')
+        Alert.alert(null,error.response.data)
         if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
         this.setState({ isLoading: false });
           this.props.navigation.replace("SignUp");
@@ -176,42 +180,42 @@ class SignInScreen extends Component {
         }
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Not Found')
+        Alert.alert('Info: ','User not found')
       }
       this.setState({ errors: error.response.data, isLoading: false });
     };
 
     this.setState({ isLoading: true });
-    // blackTrustService
-    //   .post("/accounts/login", payload)
-    //   .then(onSuccess)
-    //   .catch(onFailure);
+    mozfinOnboardingService
+      .post("/api/v1/auth/login", payload)
+      .then(onSuccess)
+      .catch(onFailure);
   }
   } 
 
-//   async removeItemValue(key) {
-//     try {
-//       await AsyncStorage.removeItem(key);
-//       return true;
-//     } catch (exception) {
-//       return false;
-//     }
-//   }
+  async removeItemValue(key) {
+    try {
+      await AsyncStorage.removeItem(key);
+      return true;
+    } catch (exception) {
+      return false;
+    }
+  }
 
-  // _storeData = async (value, payload) => {
-    // await this.removeItemValue("userDetails");
+  _storeData = async (value) => {
+    await this.removeItemValue("userDetails");
     // await this.removeItemValue("checkedBoxBoolean");
 
-    // try {
-    //   await AsyncStorage.setItem("userDetails", JSON.stringify(value));
-    //   await AsyncStorage.setItem("checkedBoxBoolean", JSON.stringify(payload));
+    try {
+      await AsyncStorage.setItem("userDetails", JSON.stringify(value));
+      // await AsyncStorage.setItem("checkedBoxBoolean", JSON.stringify(payload));
 
-    // } catch (error) {
-    // }
-    // console.log("This is for storing data...", value);
+    } catch (error) {
+    }
+    console.log("This is for storing data...", value);
     // console.log("This is for storing data...", payload);
 
-  // };
+  };
 
   _retrieveData() {
     // this.setState({initialState})
@@ -238,7 +242,7 @@ class SignInScreen extends Component {
     //     if(response != null && response.checked == true){
     //       console.log("Reached.......----",this.state);
     //         this.setState({
-    //         username: response.username,
+    //         phone: response.phone,
     //         password: response.password,
     //         checked: response.checked,
     //         });       
@@ -308,14 +312,15 @@ class SignInScreen extends Component {
                 paddingEnd= {22}
                 opacity= {1}
                 fontSize={16}
+                maxLength={11}
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 keyboardType="number-pad"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.secondTextInput.focus(); }}
                 blurOnSubmit={false}
-                value={this.state.username}
-                onChangeText={this.handleEmail}
+                value={this.state.phone}
+                onChangeText={this.handlePhone}
               />
               
                 <View      
@@ -323,8 +328,8 @@ class SignInScreen extends Component {
                 <PhoneIcon/>
               </View>
               </View>
-              {this.state.username == "chibu@yahoo.com" && this.state.us == "good" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
-              {this.state.us == "empty" && this.state.username == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
+              {this.state.phone == "chibu@yahoo.com" && this.state.us == "good" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
+              {this.state.us == "empty" && this.state.phone == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
             </View>
             {/* fontSize: 12,
               fontFamily: "JosefinSans-Bold",

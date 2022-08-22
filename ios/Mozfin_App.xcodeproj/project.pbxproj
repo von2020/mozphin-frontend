@@ -30,6 +30,7 @@
 		D0861D88446546D1BDA38261 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 37D7F9F9D1BD4590B49634CB /* Octicons.ttf */; };
 		DBED8DE65CB7499EAA10B63B /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7159E08FC5184AF097C04E63 /* SimpleLineIcons.ttf */; };
 		074B1CBA0DC649E7AD12266D /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1DE657FE6CB4D2C88FBE9EC /* Zocial.ttf */; };
+		99653725527F4C3A8981C2D4 /* librnImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 268612844DA84FB19F344E45 /* librnImagePicker.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,8 @@
 		37D7F9F9D1BD4590B49634CB /* Octicons.ttf */ = {isa = PBXFileReference; name = "Octicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		7159E08FC5184AF097C04E63 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		A1DE657FE6CB4D2C88FBE9EC /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2EDF3A4453C54E6F92F27666 /* rnImagePicker.xcodeproj */ = {isa = PBXFileReference; name = "rnImagePicker.xcodeproj"; path = "../node_modules/react-native-new-image-picker/ios/rnImagePicker.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		268612844DA84FB19F344E45 /* librnImagePicker.a */ = {isa = PBXFileReference; name = "librnImagePicker.a"; path = "librnImagePicker.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +95,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-Mozfin_App.a in Frameworks */,
+				99653725527F4C3A8981C2D4 /* librnImagePicker.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +145,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				2EDF3A4453C54E6F92F27666 /* rnImagePicker.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -523,6 +528,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mozfin_App.app/Mozfin_App";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-new-image-picker/ios/**",
+				);
 			};
 			name = Debug;
 		};
@@ -547,6 +560,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mozfin_App.app/Mozfin_App";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-new-image-picker/ios/**",
+				);
 			};
 			name = Release;
 		};
@@ -573,6 +594,10 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-new-image-picker/ios/**",
+				);
 			};
 			name = Debug;
 		};
@@ -597,6 +622,10 @@
 				PRODUCT_NAME = Mozfin_App;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-new-image-picker/ios/**",
+				);
 			};
 			name = Release;
 		};

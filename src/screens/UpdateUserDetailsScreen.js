@@ -23,7 +23,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import DocumentPicker from 'react-native-document-picker';
 import ImgToBase64 from 'react-native-image-base64';
-// import * as RNFS from 'react-native-fs';
+import * as RNFS from 'react-native-fs';
 import { Dropdown } from "react-native-material-dropdown";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RadioForm, {
@@ -48,10 +48,12 @@ import LocationIcon from '../assets/svgs/location';
 import OccupationIcon from '../assets/svgs/occupation';
 import RoleIcon from '../assets/svgs/role';
 import MoneyIcon from '../assets/svgs/money';
-
 import mozfinService, {
   setClientToken,
 } from "../service/MozfinService";
+import mozfinOnboardingService, {
+  setClientOnboardToken,
+} from "../service/MozfinOnboardingService";
 import NumberFormat from 'react-number-format';
 
 const { width, height } = Dimensions.get("window");
@@ -1124,7 +1126,7 @@ handleFirstname = (FirstName) => {
         const AccountTier = 3
         const DateOfBirth = moment(DateOfBirth_).format("YYYY-MM-DD")
         const TransactionTrackingRef = "012220"
-        const CustomerID = "006474"
+        const CustomerID = this.props.navigation.state.params.customerID
         const AccountReferenceNumber = ""
         const AccountOpeningTrackingRef = "00000"
         const ProductCode = "101"
@@ -1179,11 +1181,190 @@ handleFirstname = (FirstName) => {
           Role,  
           Occupation,
           Company,
-          CustomerType,
           AccountOfficerCode,
           Gender,
           AccountTier, 
           IdentificationImageType
+          };
+      
+      console.log(payload);
+  
+      const onSuccess = ({ data }) => {  
+        // this.setState({ isLoading: false, isAuthorized: true });
+        console.log(data);
+        if (data != null) {
+            var that = this;
+          setTimeout(function(){  
+            that.onPressOnboardSignUp(data)
+            }, 1000);
+          // this.setState({
+          //   item: data,
+          //   modalVisible_: true
+          // });
+        }
+      };
+  
+      const onFailure = (error) => {
+        console.log(error && error.response);
+        this.setState({ isLoading: false });
+        if(error.response == null){
+          this.setState({ isLoading: false });
+          Alert.alert('Info: ','Network Error')
+        }
+        if(error.response.status == 400){
+          this.setState({ isLoading: false });
+          Alert.alert('Info: ','Ensure you enter the details required')
+        } else if(error.response.status == 500){
+          this.setState({ isLoading: false });
+          Alert.alert('Info: ','Ensure your Network is Stable')
+        } else if(error.response.status == 404){
+          this.setState({ isLoading: false });
+          Alert.alert('Info: ','Not Found')
+        }
+        this.setState({ errors: error.response.data, isLoading: false });
+      };
+
+    mozfinService
+      .post(`/BankOneWebAPI/api/Account/CreateAccountQuick/2?authtoken=94aa5c7b-feec-4f30-bd68-df1b405d40e1`, payload)
+      .then(onSuccess)
+      .catch(onFailure);
+  }
+  }
+
+  onPressOnboardSignUp(data) {
+    this.setState({ isLoading: true });
+    // setClientOnboardToken("94aa5c7b-feec-4f30-bd68-df1b405d40e1");
+
+    const { 
+      Email,
+      AccountNumber,
+      Address,
+      state,
+      lga,
+      CustomerType,
+      AccountOfficerCode,
+      Gender, 
+      status,
+      PlaceOfBirth,
+      NationalIdentityNo,
+      NextOfKinAddress,
+      NextOfKinEmail,
+      NextOfKinFirstName,
+      NextOfKinLastName,
+      NextOfKinPhoneNumber,
+      Relationship,
+      NextOfKinGender,
+      CompanyAddress, 
+      idFile,
+      utilityFile,
+      passportFile,
+      signFile,
+      Role, 
+      Money, 
+      Occupation,
+      Company,
+       } = this.state;
+
+      if(AccountNumber == ""){
+        this.setState({ isLoading: false, an: "empty" });
+      }else if(Email == ""){
+        this.setState({ isLoading: false, em: "empty" });
+      }else if(state == "Select State"){
+        this.setState({ isLoading: false, tu: "empty" });
+      }else if(lga == "Select LGA"){
+        this.setState({ isLoading: false, lg: "empty" });
+      }else if(Address == ""){
+        this.setState({ isLoading: false, add: "empty" });
+      }else if(status == ""){
+        this.setState({ isLoading: false, stu: "empty" });
+      }else if(Gender == ""){
+        this.setState({ isLoading: false, ge: "empty" });
+      }else if(NextOfKinFirstName == ""){
+        this.setState({ isLoading: false, nfn: "empty" });
+      }else if(NextOfKinLastName == ""){
+        this.setState({ isLoading: false, nln: "empty" });
+      }else if(NextOfKinEmail == ""){
+        this.setState({ isLoading: false, nem: "empty" });
+      }else if(NextOfKinPhoneNumber == ""){
+        this.setState({ isLoading: false, npn: "empty" });
+      }else if(NextOfKinAddress == ""){
+        this.setState({ isLoading: false, nadd: "empty" });
+      }else if(NextOfKinGender == ""){
+        this.setState({ isLoading: false, nge: "empty" });
+      }else if(Relationship == ""){
+        this.setState({ isLoading: false, re: "empty" });
+      }else if(Company == ""){
+        this.setState({ isLoading: false, co: "empty" });
+      }else if(CompanyAddress == ""){
+        this.setState({ isLoading: false, ca: "empty" });
+      }else if(Occupation == ""){
+        this.setState({ isLoading: false, oc: "empty" });
+      }else if(Role == ""){
+        this.setState({ isLoading: false, ro: "empty" });
+      }else if(Money == ""){
+        this.setState({ isLoading: false, re: "empty" });
+      }else if(idFile == ""){
+        this.setState({ isLoading: false, idd: "empty" });
+      }else if(utilityFile == ""){
+        this.setState({ isLoading: false, bi: "empty" });
+      }else if(passportFile == ""){
+        this.setState({ isLoading: false, pass: "empty" });
+      }else if(signFile == ""){
+        this.setState({ isLoading: false, si: "empty" });
+      }else{
+        const FirstName = this.props.navigation.state.params.firstname
+        const BVN = this.props.navigation.state.params.bvn
+        const LastName = this.props.navigation.state.params.lastname
+        const AccountName = ""
+        const PhoneNo = this.props.navigation.state.params.phoneno
+        const DateOfBirth_ = this.props.navigation.state.params.dob
+        const OtherNames = this.props.navigation.state.params.othernames
+        const IdentificationImage = idFile
+        const CustomerSignature = signFile
+        const AccountTier = 3
+        const DateOfBirth = moment(DateOfBirth_).format("YYYY-MM-DD")
+        const TransactionTrackingRef = "012220"
+        const AccountReferenceNumber = ""
+        const AccountOpeningTrackingRef = "00000"
+        const ProductCode = "101"
+        const IdentificationImageType = 0   
+      //   Alert.alert("Info: ", this.props.navigation.state.params.phonenum+' Your sign up was successful..', [
+      //     {
+      //         text: "Ok",
+      //         onPress: () => this.props.navigation.push("SignIn", {
+      //           token: "token"
+      //         }),
+      //     },
+      // ]);
+
+
+    //   {
+    //     "tier": "1",
+    //     "password": "password123",
+    //     "isAdmin": false,
+    //     "isSuperAdmin": false,
+    //     "isActive": false,
+    //     "isApproved": false,
+    //     "token": "",
+    //     "transactionPIN": "",
+    //     "id": 8,
+    //     "firstname": "Chika",
+    //     "lastname": "Okoye",
+    //     "phone": "08123456789",
+    //     "email": "chikao@gmail.com",
+    //     "customerID": "006491",
+    //     "updatedAt": "2022-08-18T11:34:16.921Z",
+    //     "createdAt": "2022-08-18T11:34:16.921Z"
+    // }
+        
+        const tier = 3
+        const accountNumber = AccountNumber
+        const customerID = this.props.navigation.state.params.customerID
+
+        const payload = { 
+          accountNumber,
+          customerID,
+          tier
           };
       
       console.log(payload);
@@ -1217,10 +1398,10 @@ handleFirstname = (FirstName) => {
           Alert.alert('Info: ','Not Found')
         }
         this.setState({ errors: error.response.data, isLoading: false });
-      };
-
-    mozfinService
-      .post(`/BankOneWebAPI/api/Account/CreateAccountQuick/2?authtoken=94aa5c7b-feec-4f30-bd68-df1b405d40e1`, payload)
+      }; 
+      console.log("Meeeeesesffcvbvbnbnbjnjhhffx", `/api/v1/auth/updateUser/${this.props.navigation.state.params.id}`)
+    mozfinOnboardingService
+      .put(`/api/v1/auth/updateUser/${this.props.navigation.state.params.id}`, payload)
       .then(onSuccess)
       .catch(onFailure);
   }
@@ -1286,9 +1467,18 @@ handleFirstname = (FirstName) => {
 
     visibleView(){
       this.setState({ view: true, modalVisible_: false });
+      if(this.props.navigation.state.params.screen == ""){
       this.props.navigation.push("OTPCodeOption", {
-                  tier: "3"
+                  tier: "3",
+                  id: this.props.navigation.state.params.id,
+                  phone: this.props.navigation.state.params.phoneno,
+                  email: this.state.Email
                 });
+      }else{
+        this.props.navigation.push("AccountInfo", {
+          tier: "3"
+        });
+      }
     } 
     
   render() {
@@ -1378,7 +1568,7 @@ handleFirstname = (FirstName) => {
                 opacity= {1}
                 color={"#000"}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 keyboardType="text"
                 editable={false}
@@ -1436,7 +1626,7 @@ handleFirstname = (FirstName) => {
                 editable={false}
                 color={"#000"}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.otherNameTextInput.focus(); }}
                 blurOnSubmit={false}                
@@ -1491,7 +1681,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 color={"#000"}
                 editable={false}
@@ -1551,7 +1741,7 @@ handleFirstname = (FirstName) => {
                 fontSize={16}
                 color={"#000"}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 keyboardType="number-pad"
                 returnKeyType="next"
                 editable={false}
@@ -1608,7 +1798,7 @@ handleFirstname = (FirstName) => {
                   paddingEnd= {22}
                   opacity= {1}
                   underlineColorAndroid="transparent"
-                  autoCapitalize="none"
+                  autoCapitalize="sentences"
                   returnKeyType="next"
                   onSubmitEditing={() => { this.AddressTextInput.focus(); }}
                   blurOnSubmit={false}                
@@ -1677,7 +1867,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.PhoneNoTextInput.focus(); }}
                 blurOnSubmit={false}                
@@ -1727,7 +1917,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.AddressTextInput.focus(); }}
                 blurOnSubmit={false}                
@@ -2047,7 +2237,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 keyboardType="text"
                 onSubmitEditing={() => { this.lastNameTextInput.focus(); }}
@@ -2098,7 +2288,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.emailTextInput.focus(); }}
                 blurOnSubmit={false}                
@@ -2158,7 +2348,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.PhoneNoTextInput.focus(); }}
                 blurOnSubmit={false}                
@@ -2219,7 +2409,7 @@ handleFirstname = (FirstName) => {
                 opacity= {1}
                 fontSize={16}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 keyboardType="number-pad"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.AddressTextInput.focus(); }}
@@ -2433,7 +2623,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 keyboardType="text"
                 onSubmitEditing={() => { this.lastNameTextInput.focus(); }}
@@ -2484,7 +2674,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.emailTextInput.focus(); }}
                 blurOnSubmit={false}                
@@ -2533,7 +2723,7 @@ handleFirstname = (FirstName) => {
                 paddingEnd= {22}
                 opacity= {1}
                 underlineColorAndroid="transparent"
-                autoCapitalize="none"
+                autoCapitalize="sentences"
                 returnKeyType="next"
                 onSubmitEditing={() => { this.PhoneNoTextInput.focus(); }}
                 blurOnSubmit={false}                

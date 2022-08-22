@@ -33,7 +33,7 @@ class StatementOfAccount extends Component {
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
           <View style={{ marginVertical: 30 }}>
-            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("ChangePasswuuord")}>
+            <TouchableOpacity style={styles.optionContainer} onPress={()=> this.props.navigation.navigate("StatementAccount")}>
                 <View>
                 <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>My E-mail</Text>
                 </View>

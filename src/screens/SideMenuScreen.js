@@ -25,6 +25,7 @@ import OTPCode from '../screens/OTPCodeScreen';
 import OTPCodeOption from '../screens/OTPCodeOptionScreen';
 import ContactScreen from '../screens/ContactScreen';
 import UpdateUserDetails from '../screens/UpdateUserDetailsScreen';
+import StatementAccountScreen from '../screens/StatementAccountScreen';
 import ChangePassword from '../screens/ChangePassword';
 import ChangePin from '../screens/ChangePin';
 import AboutUs from '../screens/AboutUs';
@@ -507,6 +508,20 @@ const HamburgerNavigation = createDrawerNavigator(
             headerShown: true,
             headerStyle: { backgroundColor: '#002A14' },
               title: "Postpaid Plan",
+              headerTintColor: "#FFF",
+              headerTitleStyle: {
+                fontWeight: "600",
+                textAlign: "center",
+                right: 30
+              },
+              },
+        },
+        StatementAccount: {
+          screen: StatementAccountScreen,
+          navigationOptions: {
+            headerShown: true,
+            headerStyle: { backgroundColor: '#002A14' },
+              title: "My E-mail",
               headerTintColor: "#FFF",
               headerTitleStyle: {
                 fontWeight: "600",

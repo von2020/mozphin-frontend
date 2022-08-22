@@ -45,7 +45,6 @@ const initialState = {
   label: "",
   displayList: false,
   checked: false,
-  checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
   secureTextEntry: true,
@@ -155,65 +154,14 @@ class AddBeneficiary extends Component {
     console.log(payload);
 
     const onSuccess = ({ data }) => {
-      // insert into db...
-      // this._storeData(data, checkedPayload);
-      
-      setClientToken(data.token);
+      // setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
-      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "username": "Chibubu"}
       if (data != null ) {
         this.props.navigation.push("SideMenuScreen", {
           data: data,
         });
-      }
-
-    //   } else if (data.role == "General Manager") {
-    //       this.props.navigation.push("GMDNavScreen")
-    //   } else if (data.role == "Director") {
-    //       this.props.navigation.push("DirectorNavScreen")
-    //   } else if (data.role == "Supervisor") {
-    //       this.props.navigation.push("SupervisorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Staff") {
-    //       this.props.navigation.push("StaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver Admin") {
-    //       this.props.navigation.push("DriverAdminNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver") {
-    //       this.props.navigation.push("DriverStaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Procurement") {
-    //     this.props.navigation.push("pOfficerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Finance") {
-    //       this.props.navigation.push("FinanceNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Facility Officer") {
-    //     this.props.navigation.push("FacilityManagerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Auditor") {
-    //       this.props.navigation.push("AuditorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   }
-      
+      }      
     };
 
     const onFailure = (error) => {
@@ -283,51 +231,6 @@ class AddBeneficiary extends Component {
         console.log(error);
       }
     }
-
-  _retrieveData() {
-    // this.setState({initialState})
-        
-    // AsyncStorage.getItem("userDetails").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     this.setState({
-    //       role: response.role,
-    //       first_name: response.first_name,
-    //       last_name: response.last_name,
-    //     });
-
-    //     console.log("There is no role dey...", response);
-    //     console.log("I role to make role o", this.state.role);
-    //   } else {
-    //     console.log("There is no role dey...", response);
-    //   }
-    // });
-  
-    // AsyncStorage.getItem("checkedBoxBoolean").then((res) => {
-    //   const response = JSON.parse(res);
-    //   if (res !== null) {
-    //     if(response != null && response.checked == true){
-    //       console.log("Reached.......----",this.state);
-    //         this.setState({
-    //         username: response.username,
-    //         password: response.password,
-    //         checked: response.checked,
-    //         });       
-    //     }
-    //   } else {
-    //     console.log("Check box response... Error...", response);
-    //   }
-    // });
-  }
-
-  componentWillMount = ()=> {
-    console.log("I don mount o");
-    // this._retrieveData();
-  }
-
-    updateSecureTextEntry(){
-      this.setState({ secureTextEntry: !this.state.secureTextEntry})
-    } 
 
   render() {
     LogBox.ignoreAllLogs(true);

@@ -20,6 +20,9 @@ import LockIcon from '../assets/svgs/lock';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
 const { width, height } = Dimensions.get("window");
+import mozfinOnboardingService, {
+  setClientOnboardToken,
+} from "../service/MozfinOnboardingService";
 
 const initialState = {
   email: "",
@@ -85,27 +88,11 @@ class PasswordScreen extends Component {
   };
 
   onPressSignUp() {
-    // this.setState({ isLoading: true });
+    this.setState({ isLoading: true });
 
     const { email, username, password, passwordConfirm, city, tellUs } = this.state;
-    // {
-    //   "email": "valid_email@domain.com",
-    //   "username": "any_username",
-    //   "city": "name",
-    //   "birth_year": "YYYY-MM-DD",
-    //   "why_here": "answer to why user wants to join BlackTrust",
-    //   "password": "any_password"
-    // }
-    // if(username == ""){
-    //   this.setState({ isLoading: false, us: "empty" });
-    //   // Alert.alert(null,'Username field is empty')
-    // }else if(email == ""){
-    //     this.setState({ isLoading: false, em: "empty" });
-    //     // Alert.alert(null,'Email field is empty')
-    // }else if(birthYear == "dd/mm/yyyy"){
-    //   this.setState({ isLoading: false, by: "empty" });
-    //   // Alert.alert(null,'Middle Name field is empty')
-    // }else 
+    const user_id = this.props.navigation.state.params.id
+
     if(password == ""){
       this.setState({ isLoading: false, pa: "empty" });
       // Alert.alert(null,'Please Select a Role ')
@@ -114,39 +101,31 @@ class PasswordScreen extends Component {
       // Alert.alert(null,'Phone Number field is empty')
     } else if(password != passwordConfirm){
           this.setState({ isLoading: false, by: "empty", click: true });
-          // Alert.alert(null,'Middle Name field is empty')
     }  else{
-      // const why_here = tellUs
-      // const birth_year = moment(birthYear).format("YYYY-MM-DD")
-      
-    this.setState({
-      modalVisible_: true
-    });
       const payload = { 
-        email, 
-        username, 
-        city,
-        // birth_year, 
-        // why_here, 
+        user_id, 
         password
         };
     
     console.log(payload);
 
     const onSuccess = ({ data }) => {  
-      setClientToken(data.token);
+      // setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
       
       if (data != null) {
-        Alert.alert("Info: ", data.response+"😁", [
-          {
-              text: "Ok",
-              onPress: () => this.props.navigation.push("SignIn", {
-                token: "token"
-              }),
-          },
-      ]);
+        this.setState({
+          modalVisible_: true
+        });
+      //   Alert.alert("Info: ", data.response, [
+      //     {
+      //         text: "Ok",
+      //         onPress: () => this.props.navigation.push("SignIn", {
+      //           token: "token"
+      //         }),
+      //     },
+      // ]);
       }
     };
 
@@ -159,10 +138,10 @@ class PasswordScreen extends Component {
       }
       if(error.response.status == 400){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure you enter the details required😩')
+        Alert.alert('Info: ','Ensure you enter the details required')
       } else if(error.response.status == 500){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure your Network is Stable😩')
+        Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')
@@ -170,46 +149,14 @@ class PasswordScreen extends Component {
       this.setState({ errors: error.response.data, isLoading: false });
     };
 
-    // this.setState({ isLoading: true });
+    this.setState({ isLoading: true });
 
-    // blackTrustService
-    //   .post("/accounts/register", payload)
-    //   .then(onSuccess)
-    //   .catch(onFailure);
+    mozfinOnboardingService
+      .post("/api/v1/auth/updatePassword", payload)
+      .then(onSuccess)
+      .catch(onFailure);
   }
   }
-
-  categoryList() {
-    // this.setState({ isLoading: true });
-
-    const categoryList = [];
-    categoryList.push({
-      value: "Tell us",
-      label: "Tell us",
-    });
-    // blackTrustService
-    //     .get(`/report/categories`)
-    //     .then(data => {
-    //       console.log("list: categoryList", data);
-
-    //       data.data.forEach(element => {
-    //         categoryList.push({
-    //           value: `${element.id}`,
-    //           label: `${element.name}`,
-    //         }); 
-    //         this.setState((state) => (state.categoryList = categoryList));
-    //         this.setState({ isLoading: false });
-
-    //     })
-    //     this.setState({categoryList : categoryList});
-    //       console.log("list: categoryList", categoryList);
-    //     })  
-    //     .catch((err) => {
-    //       console.log(err)
-    //       this.setState({ isLoading: false, isAuthorized: true });
-  
-    //     });
-    }
 
   getNonFieldErrorMessage() {
     let message = null;
@@ -328,11 +275,7 @@ class PasswordScreen extends Component {
   }
 
   componentDidMount(){
-    this.categoryList();  
-    if(this.state.checked == false){
-      this.clearAll()
-    }
-    }
+  }
 
     clearAll = async () => {
     //   try {
@@ -347,18 +290,16 @@ class PasswordScreen extends Component {
     visibleView(){
       this.setState({ view: true, modalVisible_: false });
       this.props.navigation.navigate("TransactionPin", {
-        tier: this.props.navigation.state.params.tier
+        tier: this.props.navigation.state.params.tier,
+        id: this.props.navigation.state.params.id
       })
     }
     
   render() {
     LogBox.ignoreAllLogs(true);
     const { modeDateOfBirth, DateOfBirthShow, isChecked } = this.state;
+    console.log("Hereeeeeeeeeeeeeeeeee password", this.props.navigation.state.params.id)
     return (
-    //   <ImageBackground
-    //     source={require("./../../assets/download.jpeg")}
-    //     style={styles.image}
-    //   >
         <ScrollView
           style={styles.scrollView}
           keyboardShouldPersistTaps="always">
@@ -388,7 +329,7 @@ class PasswordScreen extends Component {
 
                 <TouchableOpacity
                   activeOpacity={0.5}
-                  style={{ lignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
+                  style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
                   onPress={() => this.visibleView()}>
                     <Text style={styles.textStylee}>PROCEED</Text>
                 </TouchableOpacity>   
@@ -403,7 +344,7 @@ class PasswordScreen extends Component {
             <Text style={styles.infooTextStyle}>Set account password to complete sign up process</Text>
 
             <View style={styles.emailTextStyleView_}>
-              <Text style={{fontSize: 13,
+            <Text style={{fontSize: 13,
                             color: this.state.pa == "empty" ? 'red' : "#002A14",
                             fontFamily: "JosefinSans-Bold",
                             textAlign: "left",
@@ -530,7 +471,6 @@ class PasswordScreen extends Component {
             </View>
             </View>
         </ScrollView>
-    // {/* </ImageBackground> */}
     );
   }
 }

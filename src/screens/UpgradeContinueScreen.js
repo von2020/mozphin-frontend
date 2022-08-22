@@ -267,6 +267,8 @@ class UpgradeContinueScreen extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
+    console.log("Stataaaaaaaaeeeeeereerftftfy", this.state.customerID)
+
     return (
         <ScrollView
           style={styles.scrollView}
@@ -307,11 +309,19 @@ class UpgradeContinueScreen extends Component {
                     }}>You can increase your daily transaction limit by upgrading to a tier-3 account</Text>
                 </View>
                 <View style={{ alignSelf: "center" }}>
-                <TouchableOpacity onPress={()=> this.props.navigation.navigate("BVNQuestion")} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                <TouchableOpacity onPress={()=> this.props.navigation.navigate("BVNQuestion",{
+                  screen: "",
+                  customerID: this.props.navigation.state.params.customerID,
+                  id: this.props.navigation.state.params.id,
+                  tier: "3",
+                })} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                     <Text style={styles.getStarted}>UPGRADE</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=> this.props.navigation.navigate("OTPCodeOption", {
-                    tier: "1"
+                    tier: "1",
+                    screen: "",
+                    phone: this.props.navigation.state.params.phone,
+                    email: this.props.navigation.state.params.email
                   })} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#FFF", borderRadius: 10, borderColor: "#002A14", borderWidth: 1, marginBottom: 8, opacity: 1 }}>
                     <Text style={styles.getStarted_}>CONTINUE</Text>
                 </TouchableOpacity>

@@ -40,12 +40,17 @@ import LinkIcon from '../assets/svgs/link';
 import mozfinService, {
   setClientToken,
 } from "../service/MozfinService";
+import mozfinOnboardingService, {
+  setClientOnboardToken,
+} from "../service/MozfinOnboardingService";
 
 
 const { width, height } = Dimensions.get("window");
 
 const initialState = {
   Email: "",
+  email: "",
+  phone: "",
   em: "",
   FirstName: "",
   fn: "",
@@ -55,16 +60,18 @@ const initialState = {
   pn: "",
   password: "",
   pa: "",
-  DateOfBirth_: "dd/mm/yyyy",
+  DateOfBirth_: new Date(),
   by: "",
   usersRole: "",
-  id: "10",
+  // id: "10",
   referralCode: "",
   rc: "",
   tellUs: "",
   tu: "",
   ch: "",
+  id: 0,
   item: {},
+  customerID: "",
   modalVisible_: false,
   minutes: 0,
   isChecked: false,
@@ -90,50 +97,6 @@ const initialState = {
   Gender: 1,
   AccountOfficerCode: "123",
   categoryList: [],
-  flagList: [
-    {
-      value: "Select Country",
-      label: "Select Country",
-    },
-    {
-        value: "United States",
-        label: "United States",
-    },
-    {
-        value: "Canada",
-        label: "Canada",
-    },
-    {
-        value: "Israel",
-        label: "Israel",
-    },
-    {
-      value: "Nigeria",
-      label: "Nigeria",
-  }
-],
-tellUsList: [
-  {
-    value: "Tell us",
-    label: "Tell us",
-  },
-  {
-      value: "Search engine",
-      label: "Search engine",
-  },
-  {
-      value: "Social media",
-      label: "Social media",
-  },
-  {
-      value: "Website referral",
-      label: "Website referral",
-  },
-  {
-    value: "From a friend",
-    label: "From a friend",
-}
-],
 };
 
 class RegisterScreen extends Component {
@@ -145,14 +108,24 @@ class RegisterScreen extends Component {
 
   handleEmail = (Email) => {
     if(Email != ""){
-      if(Email == "chibu@yahoo.com"){
-        this.setState({ Email: Email, em: "good" });
-      }else{
       this.setState({ Email: Email, em: "" });
-      }
     }else {
       this.setState({ Email: Email, em: "empty" });
     }
+      const {
+        FirstName, 
+        LastName, 
+        PhoneNo,
+        DateOfBirth_,
+        ReferralName,
+        isChecked
+       } = this.state;
+      
+        if(Email != "" && FirstName != "" && LastName != "" &&  PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != "" && isChecked ){
+        this.setState({ isComplete: true })
+        }else{
+          this.setState({ isComplete: false, })
+        }
   };
 
   handleFirstname = (FirstName) => {
@@ -161,6 +134,20 @@ class RegisterScreen extends Component {
     }else {
       this.setState({ FirstName: FirstName, fn: "empty" });
     }
+    const {
+      Email, 
+      LastName, 
+      PhoneNo,
+      DateOfBirth_,
+      ReferralName,
+      isChecked
+     } = this.state;
+    
+      if(Email != "" && FirstName != "" && LastName != "" &&  PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != "" && isChecked ){
+      this.setState({ isComplete: true })
+      }else{
+        this.setState({ isComplete: false, })
+      }
   };
 
   handleLastname = (LastName) => {
@@ -169,6 +156,21 @@ class RegisterScreen extends Component {
     }else {
       this.setState({ LastName: LastName, ln: "empty" });
     }
+
+    const {
+      FirstName, 
+      Email, 
+      PhoneNo,
+      DateOfBirth_,
+      ReferralName,
+      isChecked
+     } = this.state;
+    
+      if(Email != "" && FirstName != "" && LastName != "" &&  PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != "" && isChecked ){
+      this.setState({ isComplete: true })
+      }else{
+        this.setState({ isComplete: false, })
+      }
   };
 
   handlePassword = (password) => {  
@@ -177,6 +179,22 @@ class RegisterScreen extends Component {
     }else {
       this.setState({ password: password, pa: "empty" });
     } 
+
+    const {
+      FirstName, 
+      LastName, 
+      Email, 
+      PhoneNo,
+      DateOfBirth_,
+      ReferralName,
+      isChecked
+     } = this.state;
+    
+      if(Email != "" && FirstName != "" && LastName != "" &&  PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != "" && isChecked ){
+      this.setState({ isComplete: true })
+      }else{
+        this.setState({ isComplete: false, })
+      }
   };
 
   handlePhoneNo = (PhoneNo) => {  
@@ -185,6 +203,21 @@ class RegisterScreen extends Component {
     }else {
       this.setState({ PhoneNo: PhoneNo, pn: "empty" });
     } 
+    const {
+      FirstName, 
+      LastName, 
+      password, 
+      Email,
+      DateOfBirth_,
+      ReferralName,
+      isChecked
+     } = this.state;
+    
+      if(Email != "" && FirstName != "" && LastName != "" && PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != "" && isChecked ){
+      this.setState({ isComplete: true })
+      }else{
+        this.setState({ isComplete: false, })
+      }
   };
 
   handleDateOfBirth = (DateOfBirth_) => {  
@@ -193,6 +226,21 @@ class RegisterScreen extends Component {
     }else {
       this.setState({ DateOfBirth_: DateOfBirth_, by: "empty" });
     }
+
+    const {
+        FirstName, 
+        LastName, 
+        PhoneNo,
+        Email,
+        ReferralName,
+        isChecked
+       } = this.state;
+      
+        if(Email != "" && FirstName != "" && LastName != "" && PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != "" && isChecked ){
+        this.setState({ isComplete: true })
+        }else{
+          this.setState({ isComplete: false, })
+        }
   };
 
   handleReferral = (ReferralName) => {  
@@ -201,6 +249,21 @@ class RegisterScreen extends Component {
     }else {
       this.setState({ ReferralName: ReferralName, rc: "empty" });
     }
+
+    const {
+      FirstName, 
+      LastName, 
+      PhoneNo,
+      DateOfBirth_,
+      Email,
+      isChecked
+     } = this.state;
+    
+      if(Email != "" && FirstName != "" && LastName != "" && PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != "" && isChecked ){
+      this.setState({ isComplete: true })
+      }else{
+        this.setState({ isComplete: false, })
+      }
   };
 
   handleTellUs = (tellUs) => {  
@@ -214,6 +277,109 @@ class RegisterScreen extends Component {
   updateSecureTextEntry(){
     this.setState({ secureTextEntry: !this.state.secureTextEntry})
   };
+
+  // onPressSignUp() {
+  //   this.setState({ isLoading: true });
+  //   setClientToken("94aa5c7b-feec-4f30-bd68-df1b405d40e1");
+
+  //   const { Email, FirstName, LastName, PhoneNo, DateOfBirth_, referralCode, tellUs, isChecked, 
+  //   OtherNames,City,
+  //   Address,
+  //   PlaceOfBirth,
+  //   NationalIdentityNo,
+  //   NextOfKinName,
+  //   NextOfKinPhoneNumber,
+  //   ReferralName,
+  //   ReferralPhoneNO,
+  //   CustomerType,
+  //   AccountOfficerCode,
+  //   Gender } = this.state;
+    
+  //   if(FirstName == ""){
+  //     this.setState({ isLoading: false, fn: "empty" });
+  //   }else if(LastName == ""){
+  //     this.setState({ isLoading: false, ln: "empty" });
+  //   }else if(Email == ""){
+  //       this.setState({ isLoading: false, em: "empty" });
+  //   }else if(PhoneNo == ""){
+  //     this.setState({ isLoading: false, pn: "empty" });
+  //   }else if(DateOfBirth_ == new Date()){
+  //     this.setState({ isLoading: false, by: "empty" });
+  //   }else if(ReferralName == ""){
+  //     this.setState({ isLoading: false, rc: "empty" });
+  //   }else if(isChecked == false){
+  //     this.setState({ isLoading: false, ch: "empty" });
+  //   }else{
+  //     // const why_here = tellUs
+  //     const DateOfBirth = moment(DateOfBirth_).format("YYYY-MM-DD")
+  //   //   Alert.alert("Info: ", this.props.navigation.state.params.phonenum+' Your sign up was successful..', [
+  //   //     {
+  //   //         text: "Ok",
+  //   //         onPress: () => this.props.navigation.push("SignIn", {
+  //   //           token: "token"
+  //   //         }),
+  //   //     },
+  //   // ]);
+    
+  //     const payload = { 
+  //       Email, 
+  //       FirstName, 
+  //       LastName,
+  //       DateOfBirth, 
+  //       PhoneNo,
+  //       OtherNames,City,
+  //       Address,
+  //       PlaceOfBirth,
+  //       NationalIdentityNo,
+  //       NextOfKinName,
+  //       NextOfKinPhoneNumber,
+  //       ReferralName,
+  //       ReferralPhoneNO,
+  //       CustomerType,
+  //       AccountOfficerCode,
+  //       Gender
+  //       };
+    
+  //   console.log(payload);
+
+  //   const onSuccess = ({ data }) => {  
+  //     this.setState({ isLoading: false, isAuthorized: true });
+  //     console.log(data);
+  //     if (data != null) {
+
+  //       this.setState({
+  //         item: data,
+  //         modalVisible_: true
+  //       });
+  //     }
+  //   };
+
+  //   const onFailure = (error) => {
+  //     console.log(error && error.response);
+  //     this.setState({ isLoading: false });
+  //     if(error.response == null){
+  //       this.setState({ isLoading: false });
+  //       Alert.alert('Info: ','Network Error')
+  //     }
+  //     if(error.response.status == 400){
+  //       this.setState({ isLoading: false });
+  //       Alert.alert('Info: ','Ensure you enter the details required😩')
+  //     } else if(error.response.status == 500){
+  //       this.setState({ isLoading: false });
+  //       Alert.alert('Info: ','Ensure your Network is Stable😩')
+  //     } else if(error.response.status == 404){
+  //       this.setState({ isLoading: false });
+  //       Alert.alert('Info: ','Not Found')
+  //     }
+  //     this.setState({ errors: error.response.data, isLoading: false });
+  //   };
+
+  //   mozfinService
+  //     .post(`/BankOneWebAPI/api/Customer/CreateCustomer/2?authtoken=${"94aa5c7b-feec-4f30-bd68-df1b405d40e1"}`, payload)
+  //     .then(onSuccess)
+  //     .catch(onFailure);
+  // }
+  // }
 
   onPressSignUp() {
     this.setState({ isLoading: true });
@@ -240,7 +406,7 @@ class RegisterScreen extends Component {
         this.setState({ isLoading: false, em: "empty" });
     }else if(PhoneNo == ""){
       this.setState({ isLoading: false, pn: "empty" });
-    }else if(DateOfBirth_ == "dd/mm/yyyy"){
+    }else if(DateOfBirth_ == new Date()){
       this.setState({ isLoading: false, by: "empty" });
     }else if(ReferralName == ""){
       this.setState({ isLoading: false, rc: "empty" });
@@ -280,6 +446,116 @@ class RegisterScreen extends Component {
     console.log(payload);
 
     const onSuccess = ({ data }) => {  
+
+      // if(data){
+      // this.onPressOnboardSignUp(data)
+      // }
+      // this.setState({ isLoading: false, isAuthorized: true });
+      console.log(data);
+      
+      if (data != null) {
+        var that = this;
+      setTimeout(function(){  
+        that.onPressOnboardSignUp(data)
+        }, 1000);
+        // this.setState({
+        //   item: data,
+        //   modalVisible_: true
+        // });
+      }
+    };
+
+    const onFailure = (error) => {
+      console.log(error && error.response);
+      this.setState({ isLoading: false });
+      if(error.response == null){
+        this.setState({ isLoading: false });
+        Alert.alert('Info: ','Network Error')
+      }
+      if(error.response.status == 400){
+        this.setState({ isLoading: false });
+        Alert.alert('Info: ','Ensure you enter the details required')
+      } else if(error.response.status == 500){
+        this.setState({ isLoading: false });
+        Alert.alert('Info: ','Ensure your Network is Stable')
+      } else if(error.response.status == 404){
+        this.setState({ isLoading: false });
+        Alert.alert('Info: ','Not Found')
+      }
+      this.setState({ errors: error.response.data, isLoading: false });
+    };
+
+    mozfinService
+      .post(`/BankOneWebAPI/api/Customer/CreateCustomer/2?authtoken=${"94aa5c7b-feec-4f30-bd68-df1b405d40e1"}`, payload)
+      .then(onSuccess)
+      .catch(onFailure);
+  }
+  }
+
+  onPressOnboardSignUp(data) {
+    this.setState({ isLoading: true });
+    // setClientOnboardToken("94aa5c7b-feec-4f30-bd68-df1b405d40e1");
+
+    const { Email, FirstName, LastName, PhoneNo, DateOfBirth_, referralCode, tellUs, isChecked, 
+    OtherNames,City,
+    Address,
+    PlaceOfBirth,
+    NationalIdentityNo,
+    NextOfKinName,
+    NextOfKinPhoneNumber,
+    ReferralName,
+    ReferralPhoneNO,
+    CustomerType,
+    AccountOfficerCode,
+    Gender } = this.state;
+    
+    if(FirstName == ""){
+      this.setState({ isLoading: false, fn: "empty" });
+    }else if(LastName == ""){
+      this.setState({ isLoading: false, ln: "empty" });
+    }else if(Email == ""){
+        this.setState({ isLoading: false, em: "empty" });
+    }else if(PhoneNo == ""){
+      this.setState({ isLoading: false, pn: "empty" });
+    }else if(DateOfBirth_ == new Date()){
+      this.setState({ isLoading: false, by: "empty" });
+    }else if(ReferralName == ""){
+      this.setState({ isLoading: false, rc: "empty" });
+    }else if(isChecked == false){
+      this.setState({ isLoading: false, ch: "empty" });
+    }else{
+      // const why_here = tellUs
+      const DateOfBirth = moment(DateOfBirth_).format("YYYY-MM-DD")
+    //   Alert.alert("Info: ", this.props.navigation.state.params.phonenum+' Your sign up was successful..', [
+    //     {
+    //         text: "Ok",
+    //         onPress: () => this.props.navigation.push("SignIn", {
+    //           token: "token"
+    //         }),
+    //     },
+    // ]);
+    
+
+    const firstname = FirstName//data.FirstName
+    const lastname = data.LastName
+    const phone = data.PhoneNo
+    const email = data.Email
+    const customerID = data.CustomerID
+
+    // this.setState({ customerID: customerID }); 
+      const payload = { 
+        firstname, 
+        lastname,
+        phone, 
+        email,
+        customerID
+        };
+    
+    console.log(payload);
+
+    const onSuccess = ({ data }) => { 
+      console.log("Hiiiiiiiiiiiiiiiiii", data.customerID)
+      this.setState({ customerID: data.customerID, id: data.id, email: email, phone: phone  }); 
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
       if (data != null) {
@@ -299,10 +575,10 @@ class RegisterScreen extends Component {
       }
       if(error.response.status == 400){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure you enter the details required😩')
+        Alert.alert('Info: ','Ensure you enter the details required')
       } else if(error.response.status == 500){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure your Network is Stable😩')
+        Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')
@@ -310,8 +586,8 @@ class RegisterScreen extends Component {
       this.setState({ errors: error.response.data, isLoading: false });
     };
 
-    mozfinService
-      .post(`/BankOneWebAPI/api/Customer/CreateCustomer/2?authtoken=${"94aa5c7b-feec-4f30-bd68-df1b405d40e1"}`, payload)
+    mozfinOnboardingService
+      .post('/api/v1/auth/createUser', payload)
       .then(onSuccess)
       .catch(onFailure);
   }
@@ -373,9 +649,6 @@ class RegisterScreen extends Component {
   }
 
   componentDidMount(){
-    if(this.state.checked == false){
-      this.clearAll()
-    }
     }
 
     clearAll = async () => {
@@ -389,15 +662,46 @@ class RegisterScreen extends Component {
     }
 
     visibleView(){
+      console.log("Stataaaaaaaaeeeeeereerftftfy", this.state.id)
       this.setState({ view: true, modalVisible_: false });
       this.props.navigation.push("UpgradeContinue", {
-                  token: "token"
+                  token: "token",
+                  customerID: this.state.customerID,
+                  id: this.state.id,
+                  phone: this.state.phone,
+                  email: this.state.email
                 });
     } 
     
+    Checked = () => {  
+      // if(isChecked != ""){
+      //   this.setState({ isChecked: isChecked, ge: "" });
+      // }else {
+      //   this.setState({ isChecked: isChecked, ge: "empty", isComplete: false });
+      // }
+      const {
+        FirstName, 
+        LastName, 
+        PhoneNo,
+        DateOfBirth_,
+        Email,
+        ReferralName,
+        isChecked
+       } = this.state;
+      
+        if(Email != "" && FirstName != "" && LastName != "" && PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != "" && isChecked ){
+        this.setState({ isComplete: true })
+        }
+    };
+    
   render() {
     LogBox.ignoreAllLogs(true);
-    const { modeDateOfBirth, DateOfBirthShow, isChecked } = this.state;
+    const { modeDateOfBirth, DateOfBirthShow, isComplete,
+            isChecked, FirstName, 
+            LastName,  
+            PhoneNo, DateOfBirth_,
+            ReferralName, Email, } = this.state;
+
     return (
         <ScrollView
           style={styles.scrollView}
@@ -428,7 +732,7 @@ class RegisterScreen extends Component {
 
                 <TouchableOpacity
                   activeOpacity={0.5}
-                  style={{ lignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
+                  style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
                   onPress={() => this.visibleView()}>
                     <Text style={styles.textStylee}>PROCEED</Text>
                 </TouchableOpacity>   
@@ -443,7 +747,7 @@ class RegisterScreen extends Component {
             <Image source={require('../assets/main_icon.png')} resizeMode={'cover'} top={-1} alignSelf={"center"} height={20} width={20}/>
             <Text style={styles.welcomeTextStyle}>Getting Started!</Text>
 
-            <View style={styles.emailTextStyleView_}>
+            <View style={styles.textStyleView__}>
               <Text style={{
                 fontSize: 12,
                 color: this.state.fn == "empty" ? 'red' : "#002A14",
@@ -478,7 +782,7 @@ class RegisterScreen extends Component {
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 returnKeyType="next"
-                keyboardType="text"
+                autoCapitalize="sentences"
                 onSubmitEditing={() => { this.lastNameTextInput.focus(); }}
                 blurOnSubmit={false}                
                 value={this.state.FirstName}
@@ -494,7 +798,7 @@ class RegisterScreen extends Component {
 
             </View>
 
-            <View style={styles.emailTextStyleView}>
+            <View style={styles.textStyleView_}>
               <Text style={{
                 fontSize: 12,
                 color: this.state.ln == "empty" ? 'red' : "#002A14",
@@ -529,6 +833,7 @@ class RegisterScreen extends Component {
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 returnKeyType="next"
+                autoCapitalize="sentences"
                 onSubmitEditing={() => { this.emailTextInput.focus(); }}
                 blurOnSubmit={false}                
                 ref={(input) => { this.lastNameTextInput = input; }}
@@ -545,7 +850,7 @@ class RegisterScreen extends Component {
 
             </View>
             
-            <View style={styles.emailTextStyleView}>
+            <View style={styles.textStyleView_}>
               <Text style={{
                 fontSize: 12,
                 color: this.state.em == "empty" ? 'red' : "#002A14",
@@ -594,7 +899,7 @@ class RegisterScreen extends Component {
               {this.state.em == "empty" && this.state.Email == "" && <Text style={styles.invalidPasswordTextStyle}>Email is empty</Text>}
             </View>
             
-            <View style={styles.emailTextStyleView}>
+            <View style={styles.textStyleView_}>
               <Text style={{
                 fontSize: 12,
                 color: this.state.pn == "empty" ? 'red' : "#002A14",
@@ -627,6 +932,7 @@ class RegisterScreen extends Component {
                 paddingEnd= {22}
                 opacity= {1}
                 fontSize={16}
+                maxLength={11}
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 keyboardType="number-pad"
@@ -646,7 +952,7 @@ class RegisterScreen extends Component {
               {this.state.pn == "empty" && this.state.PhoneNo == "" && <Text style={styles.invalidPasswordTextStyle}>This phone number does not exist</Text>}
             </View>
 
-              <View style={styles.emailTextStyleView}>
+              <View style={styles.textStyleView_}>
               <Text style={{
                 fontSize: 12,
                 color: this.state.by == "empty" ? 'red' : "#002A14",
@@ -683,7 +989,7 @@ class RegisterScreen extends Component {
                   returnKeyType="next"
                   onSubmitEditing={() => { this.ReferralNameTextInput.focus(); }}
                   blurOnSubmit={false}                
-                  placeholder={this.state.DateOfBirth_ != "dd/mm/yyyy" ? this.state.DateOfBirth_.toDateString() : "Choose year"}
+                  placeholder={this.state.DateOfBirth_ == new Date() ? `${moment(new Date()).format("YYYY-MM-DD")}` : `${moment(this.state.DateOfBirth_).format("YYYY-MM-DD")}`}
                   placeholderTextColor={"grey"}
                   editable={false}
                   color={"#000"}
@@ -699,7 +1005,7 @@ class RegisterScreen extends Component {
                 {DateOfBirthShow && (
                       <DateTimePicker
                         testID="dateTimePicker"
-                        value={this.state.DateOfBirth_ ? new Date() : this.state.DateOfBirth_}
+                        value={this.state.DateOfBirth_}
                         mode={modeDateOfBirth}
                         is24Hour={true}
                         maximumDate={new Date()}
@@ -709,10 +1015,10 @@ class RegisterScreen extends Component {
                     )}
 
                 </View>
-                {this.state.by == "empty" && this.state.DateOfBirth_ == "dd/mm/yyyy" && <Text style={styles.invalidPasswordTextStyle}>Date of Birth is empty. Click to select..</Text>}
+                {this.state.by == "empty" && this.state.DateOfBirth_ == new Date() && <Text style={styles.invalidPasswordTextStyle}>Date of Birth is empty. Click to select..</Text>}
             </View>
             
-              <View style={styles.emailTextStyleView}>
+              <View style={styles.textStyleView_}>
               <Text style={{fontSize: 12,
                 color: this.state.rc == "empty" ? 'red' : "#002A14",
                 // fontFamily: "JosefinSans-Bold",
@@ -801,17 +1107,28 @@ class RegisterScreen extends Component {
                 uncheckedIcon={<CheckCloseIcon
                                   red={this.state.ch == "empty" ? "red": ""} />}
                 checked={isChecked}
-                onPress={() =>this.setState({ isChecked: !isChecked })}
+                onPress={() => { 
+                  this.setState({ isChecked: !isChecked })
+                  // this.Checked()
+                  const {
+                    FirstName, 
+                    LastName, 
+                    PhoneNo,
+                    DateOfBirth_,
+                    Email,
+                    ReferralName,
+                   } = this.state;
+                    if(!isChecked){
+                    if(Email != "" && FirstName != "" && LastName != "" && PhoneNo != "" && DateOfBirth_ != new Date() && ReferralName != ""){
+                    this.setState({ isComplete: true })
+                    }
+                  }else{
+                    this.setState({ isComplete: false, })
+                  }
+              }
+              }
                 />
-                  {/* <CheckBox
-                    checked={isChecked}
-                    uncheckedColor={this.state.ch == "empty" && this.state.isChecked == false ? "red" : "#045135"} 
-                    checkedColor={"#045135"}
-                    size={20}
-                    onPress={() => {
-                      this.setState({ isChecked: !isChecked })
-                    }}
-                    />  */}
+                  
                     <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.65, textAlign: "left", top: 20, left: -10 }}>I agree to the{" "}
                     <Text style={{color: "#002A14", fontWeight: "100", fontSize: 12, width: width * 0.8, textAlign: "left", textDecorationLine: "underline", textDecorationColor: "#111A30"}} onPress={()=> this.props.navigation.navigate("TermsAndConditions")}>Terms and Conditions</Text>
                     </Text> 
@@ -819,7 +1136,7 @@ class RegisterScreen extends Component {
 
             <TouchableOpacity
                 onPress={this.onPressSignUp.bind(this)}
-                style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: !isChecked ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
+                style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: !isComplete ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}>
                 <Text style={styles.loginButtonText}>SUBMIT</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -1069,11 +1386,11 @@ const styles = StyleSheet.create({
     opacity: 1,
     fontWeight: "400",
   },
-  emailTextStyleView_: {
+  textStyleView__: {
     marginTop: 20,
     alignSelf: "center",
   },
-  emailTextStyleView: {
+  textStyleView_: {
     marginTop: 15,
     alignSelf: "center",
   },
