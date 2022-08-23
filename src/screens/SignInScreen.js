@@ -98,63 +98,14 @@ class SignInScreen extends Component {
       setClientOnboardToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log("Dataaa",data);
-      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "phone": "Chibubu"}
       if (data != null ) {
-      // if(data.isApproved){
         this.props.navigation.navigate("Dashboard", {
           tier: data.tier,
+          firstname: data.firstname,
+          lastname: data.lastname,
+          accountNumber: data.accountNumber,
         });
-      // } else {
-      //   Alert.alert(null,"Awaiting Approval..")
-      // }
       }
-
-    //   } else if (data.role == "General Manager") {
-    //       this.props.navigation.push("GMDNavScreen")
-    //   } else if (data.role == "Director") {
-    //       this.props.navigation.push("DirectorNavScreen")
-    //   } else if (data.role == "Supervisor") {
-    //       this.props.navigation.push("SupervisorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Staff") {
-    //       this.props.navigation.push("StaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver Admin") {
-    //       this.props.navigation.push("DriverAdminNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver") {
-    //       this.props.navigation.push("DriverStaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Procurement") {
-    //     this.props.navigation.push("pOfficerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Finance") {
-    //       this.props.navigation.push("FinanceNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Facility Officer") {
-    //     this.props.navigation.push("FacilityManagerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Auditor") {
-    //       this.props.navigation.push("AuditorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   }
-      
     };
 
     const onFailure = (error) => {
@@ -199,8 +150,6 @@ class SignInScreen extends Component {
 
   _storeData = async (value) => {
     await this.removeItemValue("userDetails");
-    // await this.removeItemValue("checkedBoxBoolean");
-
     try {
       await AsyncStorage.setItem("userDetails", JSON.stringify(value));
       // await AsyncStorage.setItem("checkedBoxBoolean", JSON.stringify(payload));

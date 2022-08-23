@@ -21,8 +21,8 @@ import { Dropdown } from "react-native-material-dropdown";
 import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
 import { selectContactPhone } from 'react-native-select-contact';
 // import Contacts from 'react-native-contacts';
-import EyeCloseIcon from '../assets/svgs/eye_close';
-import EyeOpenIcon from '../assets/svgs/eye_open';
+import EyeCloseIcon from '../assets/svgs/eyeClose';
+import EyeOpenIcon from '../assets/svgs/eyeOpen';
 import mozfinOnboardingService, {
   setClientOnboardToken,
 } from "../service/MozfinOnboardingService";
@@ -48,9 +48,12 @@ const initialState = {
   value: "",
   label: "",
   contact: "",
-  current_password: "",
+  current_pin: "",
   confirm_pin: "",
   new_pin: "",
+  cop: "",
+  cup: "",
+  np: "",
   msg: "",
   modalVisible_: false,
   userId: 0,
@@ -61,6 +64,7 @@ const initialState = {
   checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
+  isAvailable: false,
   newSecureTextEntry: true,
   currentSecureTextEntry: true,
   confirmSecureTextEntry: true,
@@ -70,29 +74,50 @@ class ChangePin extends Component {
   state = initialState;
 
   handleNewPin = (new_pin) => {
-      this.setState({ new_pin: new_pin });
+      if(new_pin != ""){
+        this.setState({ new_pin: new_pin, np: "" });
+      }else{
+      this.setState({ new_pin: new_pin, np: "empty" });
+      }
+      if(this.state.current_pin != "" && new_pin != "" && this.state.confirm_pin != ""){
+        this.setState({ isAvailable: true });
+      }
   };
 
-  handleCurrentPin = (current_password) => {  
-      this.setState({ current_password: current_password });
+  handleCurrentPin = (current_pin) => {  
+      if(current_pin != ""){
+        this.setState({ current_pin: current_pin, cup: "" });
+      }else{
+      this.setState({ current_pin: current_pin, cup: "empty" });
+      }
+      if(current_pin != "" && this.state.new_pin != "" && this.state.confirm_pin != ""){
+        this.setState({ isAvailable: true });
+      }
   };
 
   handleConfirmPin = (confirm_pin) => {  
-    this.setState({ confirm_pin: confirm_pin });
+    if(confirm_pin != ""){
+      this.setState({ confirm_pin: confirm_pin, cop: "" });
+    }else{
+    this.setState({ confirm_pin: confirm_pin, cop: "empty" });
+    }
+    if(this.state.current_pin != "" && this.state.new_pin != "" && confirm_pin != ""){
+      this.setState({ isAvailable: true });
+    }
   };
 
   onPressLogin() {
     this.setState({ isLoading: true });
 
-    const { current_password, confirm_pin, new_pin, userId } = this.state;
-    if(current_password == ""){
-      this.setState({ isLoading: false, pa: "empty" });
+    const { current_pin, confirm_pin, new_pin, userId } = this.state;
+    if(current_pin == ""){
+      this.setState({ isLoading: false, cup: "empty" });
       // Alert.alert(null,'Please Select a Role ')
     }else if(new_pin == ""){
-      this.setState({ isLoading: false, pa: "empty" });
+      this.setState({ isLoading: false, np: "empty" });
       // Alert.alert(null,'Please Select a Role ')
     }else if(confirm_pin == ""){
-      this.setState({ isLoading: false, pac: "empty" });
+      this.setState({ isLoading: false, cop: "empty" });
       // Alert.alert(null,'Phone Number field is empty')
     } else if(new_pin != confirm_pin){
           this.setState({ isLoading: false, by: "empty", click: true });
@@ -108,7 +133,6 @@ class ChangePin extends Component {
     console.log(payload);
 
     const onSuccess = ({ data }) => {  
-      // setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
       
@@ -139,8 +163,6 @@ class ChangePin extends Component {
       }
       this.setState({ errors: error.response.data, isLoading: false });
     };
-
-    // this.setState({ isLoading: true });
 
     mozfinOnboardingService
       .post("/api/v1/auth/createTransactionPin", payload)
@@ -239,7 +261,7 @@ class ChangePin extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.cup == "empty" && this.state.current_pin == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
@@ -248,30 +270,34 @@ class ChangePin extends Component {
                         textAlign={"left"}
                         returnKeyType="next"
                         maxLength={4}
+                        autoCapitalize="none"
                         onSubmitEditing={() => { this.secondTextInput.focus(); }}
                         blurOnSubmit={false}
-                        value={this.state.current_password}
+                        value={this.state.current_pin}
                         secureTextEntry={this.state.currentSecureTextEntry?true:false}
                         paddingBottom={5}
                         keyboardType={"numeric"}
                         onChangeText={this.handleCurrentPin}
                     />
 
-            <TouchableOpacity 
-              onPress={this.currentUpdateSecureTextEntry.bind(this)}>
+              <TouchableOpacity 
+                onPress={this.currentUpdateSecureTextEntry.bind(this)}>
                 {this.state.currentSecureTextEntry ?
                 <View
                 style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                <EyeOpenIcon/>
+                <EyeOpenIcon
+                red={this.state.cup == "empty" && this.state.current_pin == "" ? "#FF0000" : "#B2BE35"}/>
                 </View>
                  :
                  <View
                  style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                 <EyeCloseIcon/>
+                 <EyeCloseIcon
+                 red={this.state.cup == "empty" && this.state.current_pin == "" ? "#FF0000" : "#B2BE35"}/>
                  </View>
                 }
               </TouchableOpacity>
                     </View>
+                    {this.state.cup == "empty" && this.state.current_pin == "" && <Text style={styles.invalidPasswordTextStyle}>Current Pin is empty</Text>}
                     </View>
 
                     <View style={{ marginTop: 10, marginHorizontal: 20, }}>
@@ -282,7 +308,7 @@ class ChangePin extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.np == "empty" && this.state.new_pin == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
@@ -293,6 +319,7 @@ class ChangePin extends Component {
                         secureTextEntry={this.state.newSecureTextEntry?true:false}
                         paddingBottom={5}
                         maxLength={4}
+                        autoCapitalize="none"
                         ref={(input) => { this.secondTextInput = input; }}
                         returnKeyType="next"
                         keyboardType={"numeric"}
@@ -306,18 +333,20 @@ class ChangePin extends Component {
                             {this.state.newSecureTextEntry ?
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeOpenIcon/>
+                            <EyeOpenIcon
+                            red={this.state.np == "empty" && this.state.new_pin == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             :
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeCloseIcon/>
+                            <EyeCloseIcon
+                            red={this.state.np == "empty" && this.state.new_pin == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             }
                             
                         </TouchableOpacity>
                     </View>
-                    {this.state.pac == "empty" && this.state.new_pin == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Pin is empty</Text>}
+                    {this.state.np == "empty" && this.state.new_pin == "" && <Text style={styles.invalidPasswordTextStyle}>New Pin is empty</Text>}
                     {this.state.new_pin != this.state.confirm_pin && <Text style={styles.invalidPasswordTextStyle}>Pin doesn’t match</Text>}
                     </View>
 
@@ -330,7 +359,7 @@ class ChangePin extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.cop == "empty" && this.state.confirm_pin == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
@@ -338,6 +367,7 @@ class ChangePin extends Component {
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
+                        autoCapitalize="none"
                         keyboardType={"numeric"}
                         ref={(input) => { this.thirdTextInput = input; }}
                         value={this.state.confirm_password}
@@ -350,17 +380,19 @@ class ChangePin extends Component {
                             {this.state.confirmSecureTextEntry ?
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeOpenIcon/>
+                            <EyeOpenIcon
+                            red={this.state.cop == "empty" && this.state.confirm_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             :
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeCloseIcon/>
+                            <EyeCloseIcon
+                            red={this.state.cop == "empty" && this.state.confirm_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             }
                     </TouchableOpacity>
                     </View>
-                    {this.state.pac == "empty" && this.state.new_pin == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Pin is empty</Text>}
+                    {this.state.cop == "empty" && this.state.confirm_pin == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Pin is empty</Text>}
                     {this.state.new_pin != this.state.confirm_pin && <Text style={styles.invalidPasswordTextStyle}>Pin doesn’t match</Text>}
                     </View>
                     

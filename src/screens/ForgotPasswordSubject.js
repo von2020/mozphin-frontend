@@ -15,13 +15,8 @@ import {
   LogBox,
 } from "react-native";
 import  Loader  from './../config/Loader';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Dropdown } from "react-native-material-dropdown";
-import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
-import { selectContactPhone } from 'react-native-select-contact';
-// import Contacts from 'react-native-contacts';
-import EyeCloseIcon from '../assets/svgs/eye_close';
-import EyeOpenIcon from '../assets/svgs/eye_open';
+import EyeCloseIcon from '../assets/svgs/eyeClose';
+import EyeOpenIcon from '../assets/svgs/eyeOpen';
 const { width, height } = Dimensions.get("window");
 import mozfinOnboardingService, {
     setClientOnboardToken,
@@ -32,7 +27,9 @@ const initialState = {
   username: "",
   us: "",
   password: "", 
-  pa: "",
+  np: "",
+  cop: "",
+  to: "",
   errors: {}, 
   role: "",
   first_name: "",
@@ -54,6 +51,7 @@ const initialState = {
   checkedDB: false,
   isAuthorized: false, 
   isLoading: false, 
+  isAvailable: false,
   newSecureTextEntry: true,
   currentSecureTextEntry: true,
   confirmSecureTextEntry: true,
@@ -64,15 +62,37 @@ class ForgotPasswordSubject extends Component {
   state = initialState;
 
   handleNewPassword = (new_password) => {
-      this.setState({ new_password: new_password });
+    if(new_password != ""){
+      this.setState({ new_password: new_password, np: "" });
+    }else{
+    this.setState({ new_password: new_password, np: "empty" });
+    }
+    if(new_password != "" && this.state.confirm_password != ""){
+      this.setState({ isAvailable: true });
+    }
   };
 
   handleToken = (token) => {  
-      this.setState({ token: token });
+      if(token != ""){
+        this.setState({ token: token, to: "" });
+      }else{
+      this.setState({ token: token, to: "empty" });
+      }
   };
 
   handleConfirmPassword = (confirm_password) => {  
     this.setState({ confirm_password: confirm_password });
+    if(confirm_password != ""){
+      this.setState({ confirm_password: confirm_password, cop: "" });
+    }else{
+    this.setState({ confirm_password: confirm_password, cop: "empty" });
+    }
+    if(this.state.new_password != "" && confirm_password != ""){
+      this.setState({ isAvailable: true });
+    }
+    if(this.state.new_password != confirm_password){
+      this.setState({ isAvailable: false });
+    }
   };
 
   onPressSubmit() {
@@ -86,7 +106,7 @@ class ForgotPasswordSubject extends Component {
       this.setState({ isLoading: false, np: "empty" });
       // Alert.alert(null,'Email field is empty')
     } else if(confirm_password == ""){
-      this.setState({ isLoading: false, pac: "empty" });
+      this.setState({ isLoading: false, cop: "empty" });
         // Alert.alert(null,'Phone Number field is empty')
     } else if(new_password != confirm_password){
         this.setState({ isLoading: false, by: "empty", click: true });
@@ -172,7 +192,7 @@ class ForgotPasswordSubject extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.to == "empty" && this.state.token == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
@@ -180,6 +200,7 @@ class ForgotPasswordSubject extends Component {
                         fontWeight={"400"}
                         textAlign={"left"}
                         returnKeyType="next"
+                        autoCapitalize="none"
                         onSubmitEditing={() => { this.secondTextInput.focus(); }}
                         blurOnSubmit={false}
                         value={this.state.token}
@@ -188,6 +209,7 @@ class ForgotPasswordSubject extends Component {
                     />
 
                     </View>
+                    {this.state.to == "empty" && this.state.token == "" && <Text style={styles.invalidPasswordTextStyle}>Token is empty</Text>}
                     </View>
 
                     <View style={{ marginTop: 10, marginHorizontal: 20, }}>
@@ -198,13 +220,14 @@ class ForgotPasswordSubject extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.np == "empty" && this.state.new_password == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
+                        autoCapitalize="none"
                         value={this.state.new_password}
                         secureTextEntry={this.state.newSecureTextEntry?true:false}
                         paddingBottom={5}
@@ -220,18 +243,20 @@ class ForgotPasswordSubject extends Component {
                             {this.state.newSecureTextEntry ?
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeOpenIcon/>
+                            <EyeOpenIcon
+                            red={this.state.np == "empty" && this.state.new_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             :
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeCloseIcon/>
+                            <EyeCloseIcon
+                            red={this.state.np == "empty" && this.state.new_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             }
                             
                         </TouchableOpacity>
                     </View>
-                    {this.state.pac == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
+                    {this.state.np == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>New Password is empty</Text>}
                     {this.state.new_password != this.state.confirm_password && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
                     </View>
 
@@ -244,11 +269,11 @@ class ForgotPasswordSubject extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.cop == "empty" && this.state.confirm_password == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
-                        // paddingEnd={90}
+                        autoCapitalize="none"
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
@@ -263,17 +288,19 @@ class ForgotPasswordSubject extends Component {
                             {this.state.confirmSecureTextEntry ?
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeOpenIcon/>
+                            <EyeOpenIcon
+                            red={this.state.cop == "empty" && this.state.confirm_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             :
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeCloseIcon/>
+                            <EyeCloseIcon
+                            red={this.state.cop == "empty" && this.state.confirm_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             }
                     </TouchableOpacity>
                     </View>
-                    {this.state.pac == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
+                    {this.state.cop == "empty" && this.state.confirm_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
                     {this.state.new_password != this.state.confirm_password && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
                     </View>
 

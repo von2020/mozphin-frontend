@@ -20,8 +20,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from "react-native-material-dropdown";
 import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
 import { selectContactPhone } from 'react-native-select-contact';
-import EyeCloseIcon from '../assets/svgs/eye_close';
-import EyeOpenIcon from '../assets/svgs/eye_open';
+import EyeCloseIcon from '../assets/svgs/eyeClose';
+import EyeOpenIcon from '../assets/svgs/eyeOpen';
 import mozfinOnboardingService, {
   setClientOnboardToken,
 } from "../service/MozfinOnboardingService";
@@ -31,7 +31,9 @@ const initialState = {
   username: "",
   us: "",
   password: "", 
-  pa: "",
+  np: "",
+  cup: "",
+  cop: "",
   errors: {}, 
   role: "",
   first_name: "",
@@ -62,37 +64,63 @@ const initialState = {
   currentSecureTextEntry: true,
   confirmSecureTextEntry: true,
   contactList: [],
+  isAvailable: false,
 };
 
 class ChangePassword extends Component {
   state = initialState;
 
   handleNewPassword = (new_password) => {
-      this.setState({ new_password: new_password });
+      if(new_password != ""){
+        this.setState({ new_password: new_password, np: "" });
+      }else{
+      this.setState({ new_password: new_password, np: "empty" });
+      }
+      if(this.state.current_password != "" && new_password != "" && this.state.confirm_password != ""){
+        this.setState({ isAvailable: true });
+      }
   };
 
   handleCurrentPassword = (current_password) => {  
-      this.setState({ current_password: current_password });
+      if(current_password != ""){
+        this.setState({ current_password: current_password, cup: "" });
+      }else{
+      this.setState({ current_password: current_password, cup: "empty" });
+      }
+      if(current_password != "" && this.state.new_password != "" && this.state.confirm_password != ""){
+        this.setState({ isAvailable: true });
+      }
   };
 
   handleConfirmPassword = (confirm_password) => {  
     this.setState({ confirm_password: confirm_password });
+    if(confirm_password != ""){
+      this.setState({ confirm_password: confirm_password, cop: "" });
+    }else{
+    this.setState({ confirm_password: confirm_password, cop: "empty" });
+    }
+    if(this.state.current_password != "" && this.state.new_password != "" && confirm_password != ""){
+      this.setState({ isAvailable: true });
+    }
+    if(this.state.new_password != confirm_password){
+      this.setState({ isAvailable: false });
+    } 
   };
 
   onPressLogin() {
     this.setState({ isLoading: true });
 
-    const { email, current_password, new_password, confirm_password, userId } = this.state;
+    const { current_password, new_password, confirm_password, userId } = this.state;
     const user_id = userId
 
     if(current_password == ""){
-      this.setState({ isLoading: false, pa: "empty" });
+      this.setState({ isLoading: false, cup: "empty" });
       // Alert.alert(null,'Please Select a Role ')
     }else if(new_password == ""){
-      this.setState({ isLoading: false, pa: "empty" });
+      this.setState({ isLoading: false, np: "empty" });
       // Alert.alert(null,'Please Select a Role ')
     }else if(confirm_password == ""){
-      this.setState({ isLoading: false, pac: "empty" });
+      this.setState({ isLoading: false, cop: "empty" });
       // Alert.alert(null,'Phone Number field is empty')
     } else if(new_password != confirm_password){
           this.setState({ isLoading: false, by: "empty", click: true });
@@ -106,7 +134,6 @@ class ChangePassword extends Component {
     console.log(payload);
 
     const onSuccess = ({ data }) => {  
-      // setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
       
@@ -115,14 +142,6 @@ class ChangePassword extends Component {
           modalVisible_: true,
           msg: data.msg
         });
-      //   Alert.alert("Info: ", data.response, [
-      //     {
-      //         text: "Ok",
-      //         onPress: () => this.props.navigation.push("SignIn", {
-      //           token: "token"
-      //         }),
-      //     },
-      // ]);
       }
     };
 
@@ -196,7 +215,7 @@ class ChangePassword extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { data, airtime, mtn, glo, airtel, nineMobile, displayList, msg } = this.state;
+    const { isAvailable, airtime, mtn, glo, airtel, nineMobile, displayList, msg } = this.state;
     return (
         <ScrollView
           style={styles.scrollView}
@@ -246,7 +265,7 @@ class ChangePassword extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.cup == "empty" && this.state.current_password == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
@@ -254,6 +273,7 @@ class ChangePassword extends Component {
                         fontWeight={"400"}
                         textAlign={"left"}
                         returnKeyType="next"
+                        autoCapitalize="none"
                         onSubmitEditing={() => { this.secondTextInput.focus(); }}
                         blurOnSubmit={false}
                         value={this.state.current_password}
@@ -267,16 +287,19 @@ class ChangePassword extends Component {
                 {this.state.currentSecureTextEntry ?
                 <View
                 style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                <EyeOpenIcon/>
+                <EyeOpenIcon
+                red={this.state.cup == "empty" && this.state.current_password == "" ? "#FF0000" : "#B2BE35"}/>
                 </View>
                  :
                  <View
                  style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                 <EyeCloseIcon/>
+                 <EyeCloseIcon
+                 red={this.state.cup == "empty" && this.state.current_password == "" ? "#FF0000" : "#B2BE35"}/>
                  </View>
                 }
               </TouchableOpacity>
                     </View>
+                    {this.state.cup == "empty" && this.state.current_password == "" && <Text style={styles.invalidPasswordTextStyle}>Current Password is empty</Text>}
                     </View>
 
                     <View style={{ marginTop: 10, marginHorizontal: 20, }}>
@@ -287,7 +310,7 @@ class ChangePassword extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.np == "empty" && this.state.new_password == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
@@ -299,6 +322,7 @@ class ChangePassword extends Component {
                         paddingBottom={5}
                         ref={(input) => { this.secondTextInput = input; }}
                         returnKeyType="next"
+                        autoCapitalize="none"
                         onSubmitEditing={() => { this.thirdTextInput.focus(); }}
                         blurOnSubmit={false}
                         onChangeText={this.handleNewPassword}
@@ -309,18 +333,20 @@ class ChangePassword extends Component {
                             {this.state.newSecureTextEntry ?
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeOpenIcon/>
+                            <EyeOpenIcon 
+                            red={this.state.np == "empty" && this.state.new_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             :
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeCloseIcon/>
+                            <EyeCloseIcon
+                            red={this.state.np == "empty" && this.state.new_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             }
                             
                         </TouchableOpacity>
                     </View>
-                    {this.state.pac == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
+                    {this.state.np == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>New Password is empty</Text>}
                     {this.state.new_password != this.state.confirm_password && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
                     </View>
 
@@ -333,11 +359,11 @@ class ChangePassword extends Component {
                         width: width * 0.9,
                         alignSelf: "center"
                         }}
-                        underlineColorAndroid={"#B2BE35"}
+                        underlineColorAndroid={this.state.cop == "empty" && this.state.confirm_password == "" ? "#FF0000" : "#B2BE35"}
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
-                        // paddingEnd={90}
+                        autoCapitalize="none"
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
@@ -352,23 +378,26 @@ class ChangePassword extends Component {
                             {this.state.confirmSecureTextEntry ?
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeOpenIcon/>
+                            <EyeOpenIcon
+                            red={this.state.cop == "empty" && this.state.confirm_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             :
                             <View
                             style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                            <EyeCloseIcon/>
+                            <EyeCloseIcon
+                            red={this.state.cop == "empty" && this.state.confirm_password == "" ? "#FF0000" : "#B2BE35"}/>
                             </View>
                             }
                     </TouchableOpacity>
                     </View>
-                    {this.state.pac == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
+                    {this.state.cop == "empty" && this.state.confirm_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
                     {this.state.new_password != this.state.confirm_password && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
                     </View>
 
             <TouchableOpacity
                 onPress={this.onPressLogin.bind(this)}
-                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1,  }}>
+                disabled={isAvailable == true ? false : true}
+                style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: isAvailable == false ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1,  }}>
                 <Text style={styles.loginButtonText}>NEXT</Text>
             </TouchableOpacity>
         </ScrollView>

@@ -34,14 +34,7 @@ const initialState = {
   rate: 0,
   modalVisible_: false, 
   isLoading: false, 
-  email: "",
-  customerID: "",
-  firstname: "",
-  lastname: "",
-  id: "",
-  phone: "",
-  tier: "",
-  transactionPIN: "",
+   
 };
 
 class ProfileInformationScreen extends Component {
@@ -292,7 +285,8 @@ class ProfileInformationScreen extends Component {
                 id: response.id,
                 phone: response.phone,
                 tier: response.tier,
-                transactionPIN: response.transactionPIN
+                bvn: response.bvn,
+                accountNumber: response.accountNumber
               });
       
               console.log("There is no role dey...", response);
@@ -305,7 +299,7 @@ class ProfileInformationScreen extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { imageData, email, firstname, lastname, phone, tier } = this.state;
+    const { imageData, email, firstname, lastname, phone, tier, bvn } = this.state;
   //   email: "",
   // customerID: "",
   // firstname: "",
@@ -412,7 +406,7 @@ class ProfileInformationScreen extends Component {
             <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1, paddingLeft: 24 }}>Bank Verification Number</Text>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 0,  }}>
             {this.state.password ? <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>*** *** *** **</Text> : 
-            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>245 307 899 12</Text>}
+            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>{bvn}</Text>}
               <TouchableOpacity 
               onPress={this.updateSecureTextEntry.bind(this)}>
                 {this.state.password ?

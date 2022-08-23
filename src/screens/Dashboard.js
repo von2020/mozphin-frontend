@@ -31,6 +31,7 @@ import SendMoneyIcon from '../assets/svgs/send_money';
 import FundAccountIcon from '../assets/svgs/fund_account';
 import EyeCloseSmallIcon from '../assets/svgs/eyeclosesmall';
 import EyeOpenSmallIcon from '../assets/svgs/eyeopensmall';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -45,7 +46,17 @@ const initialState = {
   errors: {}, 
   isAuthorized: false, 
   secureTextEntry: false,
-  isLoading: false, 
+  isLoading: false,
+  email: "",
+  customerID: "",
+  firstname: "",
+  lastname: "",
+  id: "",
+  phone: "",
+  tier: "",
+  transactionPIN: "",
+  accountNumber: "",
+  bvn: "" 
 };
 class Dashboard extends Component {
  state = initialState;
@@ -122,7 +133,38 @@ list = [
         headerLeft: <HamburgerIcon colour="white"/>,
         headerRight: <ProfilePicIcon/>
     }
-    }
+  }
+
+  componentWillMount = ()=> {
+    this._retrieveData();
+  }
+  // {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzAsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2NjEyMjA2NDIsImV4cCI6MTY2MTQ3OTg0Mn0.qt8Lb4Gx40-lXdDV6L1XUT4QznI8jdULtXHob1Kw8Ro", "createdAt": "2022-08-19T10:58:36.000Z", "customerID": "006513", "email": "cejimuda@telnetng.com", "firstname": "Chibuo", "id": 30, "isActive": false, "isAdmin": false, "isApproved": false, "isSuperAdmin": false, "lastname": "Ejimuda", "phone": "08144444445", "tier": "3", "token": "", "transactionPIN": "1004", "updatedAt": "2022-08-23T01:45:55.000Z"}
+  _retrieveData() {    
+    AsyncStorage.getItem("userDetails").then((res) => {
+      const response = JSON.parse(res);
+      if (res !== null) {
+        this.setState({
+          token: response.token,
+          userId: response.id,
+          accessToken: response.accessToken,
+          email: response.email,
+          customerID: response.customerID,
+          firstname: response.firstname,
+          lastname: response.lastname,
+          id: response.id,
+          phone: response.phone,
+          tier: response.tier,
+          bvn: response.bvn,
+          accountNumber: response.accountNumber
+        });
+
+        console.log("There is no role dey...", response);
+        console.log("I role to make role o", this.state.role);
+      } else {
+        console.log("There is no role dey...", response);
+      }
+    });
+  }
 
     // static navigationOptions = () => {
     //   return {
@@ -152,6 +194,7 @@ list = [
   render() {
       LogBox.ignoreAllLogs(true);
       // console.disableYellowBox = true;
+      const { email, firstname, lastname, phone, accountNumber, bvn, tier } = this.state;
     return (
       <ScrollView
       style={styles.scrollView}
@@ -167,7 +210,7 @@ list = [
                       <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
                         <View>
                         <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>Account number</Text>
-                        <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>0102030405</Text>
+                        <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>{this.props.navigation.state.params.accountNumber}</Text>
                         </View>
                         <Image
                           source={require("../assets/dashicon.png")}
@@ -204,7 +247,7 @@ list = [
 
                         <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
                         <View>
-                        <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>John Doe</Text>
+                        <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>{this.props.navigation.state.params.firstname}{" "}{this.props.navigation.state.params.lastname}</Text>
                         </View>
                         <Image
                           source={require("../assets/doublecircle.png")}

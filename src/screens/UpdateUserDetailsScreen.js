@@ -1360,11 +1360,13 @@ handleFirstname = (FirstName) => {
         const tier = 3
         const accountNumber = AccountNumber
         const customerID = this.props.navigation.state.params.customerID
+        const bvn = this.props.navigation.state.params.bvn
 
         const payload = { 
           accountNumber,
           customerID,
-          tier
+          tier,
+          bvn
           };
       
       console.log(payload);
@@ -1472,7 +1474,9 @@ handleFirstname = (FirstName) => {
                   tier: "3",
                   id: this.props.navigation.state.params.id,
                   phone: this.props.navigation.state.params.phoneno,
-                  email: this.state.Email
+                  email: this.state.Email,
+                  bvn: this.props.navigation.state.params.bvn,
+                  firstname: this.props.navigation.state.params.firstname
                 });
       }else{
         this.props.navigation.push("AccountInfo", {

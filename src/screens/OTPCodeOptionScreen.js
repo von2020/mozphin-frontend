@@ -298,7 +298,9 @@ class OTPCodeOptionScreen extends Component {
           id: this.props.navigation.state.params.id,
           means: "SMS",
           phone: this.props.navigation.state.params.phone,
-          email: this.props.navigation.state.params.email
+          email: this.props.navigation.state.params.email,
+          bvn: this.props.navigation.state.params.bvn,
+          firstname: this.props.navigation.state.params.firstname
         })
       } else if(this.state.em == "clicked"){
         this.props.navigation.navigate("OTPCode", {
@@ -306,7 +308,9 @@ class OTPCodeOptionScreen extends Component {
           id: this.props.navigation.state.params.id,
           means: "Email",
           phone: this.props.navigation.state.params.phone,
-          email: this.props.navigation.state.params.email
+          email: this.props.navigation.state.params.email,
+          bvn: this.props.navigation.state.params.bvn,
+          firstname: this.props.navigation.state.params.firstname
         })
       }
     } 

@@ -118,14 +118,6 @@ class PasswordScreen extends Component {
         this.setState({
           modalVisible_: true
         });
-      //   Alert.alert("Info: ", data.response, [
-      //     {
-      //         text: "Ok",
-      //         onPress: () => this.props.navigation.push("SignIn", {
-      //           token: "token"
-      //         }),
-      //     },
-      // ]);
       }
     };
 
@@ -322,7 +314,7 @@ class PasswordScreen extends Component {
                 <View alignItems={"center"}>
                 <Text style={styles.statusModalText}>SUCCESSFUL!</Text>
                 <Text style={styles.modalText}>
-                {" "}Congratulations John, your tier-{this.props.navigation.state.params.tier} account was successfully created
+                {" "}Congratulations {this.props.navigation.state.params.firstname}, your tier-{this.props.navigation.state.params.tier} account was successfully created
                 </Text>
                 </View>
                 </View>
@@ -447,7 +439,7 @@ class PasswordScreen extends Component {
               {this.state.password != this.state.passwordConfirm && this.state.click && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
               {this.state.passwordConfirm ? 
               <TouchableOpacity 
-              onPress={this.updateConfirmSecureTextEntry.bind(this)}>
+                onPress={this.updateConfirmSecureTextEntry.bind(this)}>
                 {this.state.secureConfirmTextEntry ?
                 <View
                 style={{alignSelf: "flex-end", right: 25, top: -35, }}>

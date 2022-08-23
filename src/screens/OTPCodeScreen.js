@@ -307,7 +307,9 @@ class OTPCodeScreen extends Component {
                 text: "Ok",
                 onPress: () => this.props.navigation.navigate("PasswordScreen", {
                   tier: this.props.navigation.state.params.tier,
-                  id: this.props.navigation.state.params.id
+                  id: this.props.navigation.state.params.id,
+                  bvn: this.props.navigation.state.params.bvn,
+                  firstname: this.props.navigation.state.params.firstname
                 }),
             },
             ]);
