@@ -21,7 +21,7 @@ import Icon3 from '../assets/svgs/icon3';
 import Icon4 from '../assets/svgs/icon4';
 import Icon5 from '../assets/svgs/icon5';
 import Icon6 from '../assets/svgs/icon6';
-
+import NoTransactionIcon from '../assets/svgs/notransaction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get("window");
@@ -37,8 +37,7 @@ const initialState = {
   first_name: "",
   last_name: "",
   token: "",
-  // requester: 0,
-  // upline: 0,
+  view: "",
   checked: false,
   checkedDB: false,
   isAuthorized: false, 
@@ -172,12 +171,7 @@ class TransactionHistory extends Component {
         Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 401){
         this.setState({ isLoading: false });
-        Alert.alert(null,'Incorrect Login Details')
-        if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
-        this.setState({ isLoading: false });
-          this.props.navigation.replace("SignUp");
-          Alert.alert(null,'Please change your password and be activated')
-        }
+        Alert.alert(null,'Incorrect Details')
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')
@@ -222,8 +216,10 @@ class TransactionHistory extends Component {
   }
 
   componentWillMount = ()=> {
-    console.log("I don mount o");
-    // this._retrieveData();
+    var that = this;  
+    setTimeout(function(){  
+        that.setState({ view: "yaaay"});  
+    }, 3000);
   }
 
     updateSecureTextEntry(){
@@ -232,7 +228,7 @@ class TransactionHistory extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-
+    const { view } = this.state;
     return (
         <ScrollView
           style={styles.scrollView}
@@ -240,6 +236,26 @@ class TransactionHistory extends Component {
           
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />
+          {view == "" ? 
+          <View style={styles.scrollView}>
+            <View style={{ marginTop: 20, }}>
+            <View style={{ flexDirection: "row", marginVertical: 23, justifyContent: "center" }}>
+            <TouchableOpacity style={{ marginEnd: 53,}}>
+            <LeftIcon/>
+            </TouchableOpacity>
+          <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", marginBottom: 5 }}>July</Text>
+            <TouchableOpacity style={{ marginStart: 53,}}>
+            <RightIcon/>
+            </TouchableOpacity>
+          </View>
+          <View style={{ margin: 115,}}>
+          <View alignSelf={"center"}>
+          <NoTransactionIcon/> 
+          </View>
+          <Text style={{ fontSize: 20, color: "#CFCFCF", width: width * 0.95, fontWeight: "600", alignSelf: "center", textAlign: "center", marginTop: 5 }}>You haven’t done any transaction yet</Text>
+          </View>
+          </View>
+          </View>:
           <View style={{ marginTop: 20 }}>
           <View style={{ flexDirection: "row", marginVertical: 23, justifyContent: "center" }}>
             <TouchableOpacity style={{ marginEnd: 53,}}>
@@ -349,7 +365,7 @@ class TransactionHistory extends Component {
                 </View>
                 </View>
             </TouchableOpacity>
-            </View>
+            </View>}
         </ScrollView>
     );
   }
@@ -365,6 +381,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+  },
+  scroll: {
+    margin: 150,
+    // alignSelf: "center",
   },
   image: {
     flex: 1,

@@ -12,7 +12,6 @@ import {
   StatusBar,
   Alert,
   Dimensions,
-  Modal,
   LogBox,
 } from "react-native";
 import  Loader  from './../config/Loader';
@@ -23,12 +22,11 @@ import { selectContactPhone } from 'react-native-select-contact';
 // import Contacts from 'react-native-contacts';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
-import mozfinOnboardingService, {
-  setClientOnboardToken,
-} from "../service/MozfinOnboardingService";
-
 const { width, height } = Dimensions.get("window");
-
+import mozfinOnboardingService, {
+    setClientOnboardToken,
+  } from "../service/MozfinOnboardingService";
+  
 // const image = { uri: "./../../assets/safexray-logo.png" };
 const initialState = {
   username: "",
@@ -48,14 +46,9 @@ const initialState = {
   value: "",
   label: "",
   contact: "",
-  current_password: "",
-  confirm_pin: "",
-  new_pin: "",
-  msg: "",
-  modalVisible_: false,
-  userId: 0,
-  accessToken: "",
   token: "",
+  confirm_password: "",
+  new_password: "",
   displayList: false,
   checked: false,
   checkedDB: false,
@@ -64,60 +57,58 @@ const initialState = {
   newSecureTextEntry: true,
   currentSecureTextEntry: true,
   confirmSecureTextEntry: true,
+  contactList: [],
 };
 
-class ChangePin extends Component {
+class ForgotPasswordSubject extends Component {
   state = initialState;
 
-  handleNewPin = (new_pin) => {
-      this.setState({ new_pin: new_pin });
+  handleNewPassword = (new_password) => {
+      this.setState({ new_password: new_password });
   };
 
-  handleCurrentPin = (current_password) => {  
-      this.setState({ current_password: current_password });
+  handleToken = (token) => {  
+      this.setState({ token: token });
   };
 
-  handleConfirmPin = (confirm_pin) => {  
-    this.setState({ confirm_pin: confirm_pin });
+  handleConfirmPassword = (confirm_password) => {  
+    this.setState({ confirm_password: confirm_password });
   };
 
-  onPressLogin() {
+  onPressSubmit() {
     this.setState({ isLoading: true });
-
-    const { current_password, confirm_pin, new_pin, userId } = this.state;
-    if(current_password == ""){
-      this.setState({ isLoading: false, pa: "empty" });
-      // Alert.alert(null,'Please Select a Role ')
-    }else if(new_pin == ""){
-      this.setState({ isLoading: false, pa: "empty" });
-      // Alert.alert(null,'Please Select a Role ')
-    }else if(confirm_pin == ""){
-      this.setState({ isLoading: false, pac: "empty" });
-      // Alert.alert(null,'Phone Number field is empty')
-    } else if(new_pin != confirm_pin){
-          this.setState({ isLoading: false, by: "empty", click: true });
-          // Alert.alert(null,'Middle Name field is empty')
-    }  else{
-    const user_id = userId
-    const transaction_pin = new_pin 
-      const payload = { 
-        user_id, 
-        transaction_pin
-        };
+    const { new_password, confirm_password, token } = this.state;
     
+    if(token == ""){
+        this.setState({ isLoading: false, to: "empty" });
+        // Alert.alert(null,'Email field is empty')
+    }else if(new_password == ""){
+      this.setState({ isLoading: false, np: "empty" });
+      // Alert.alert(null,'Email field is empty')
+    } else if(confirm_password == ""){
+      this.setState({ isLoading: false, pac: "empty" });
+        // Alert.alert(null,'Phone Number field is empty')
+    } else if(new_password != confirm_password){
+        this.setState({ isLoading: false, by: "empty", click: true });
+    } else{
+    const password = new_password
+    const payload = { password };
+    this.setState({ isLoading: false, isAuthorized: true });
+
     console.log(payload);
 
-    const onSuccess = ({ data }) => {  
-      // setClientToken(data.token);
+    const onSuccess = ({ data }) => {
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
-      
+
       if (data != null) {
-        this.setState({
-          modalVisible_: true,
-          msg: data.msg
-        });
-      }
+        Alert.alert(null, data.msg, [
+          {
+              text: "Ok",
+              onPress: () => this.props.navigation.push("SignIn"),
+          },
+          ]);
+      }      
     };
 
     const onFailure = (error) => {
@@ -129,10 +120,13 @@ class ChangePin extends Component {
       }
       if(error.response.status == 400){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ','Ensure you enter the details required')
+        Alert.alert('Info: ',error.response.data.non_field_errors[0])
       } else if(error.response.status == 500){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Ensure your Network is Stable')
+      } else if(error.response.status == 401){
+        this.setState({ isLoading: false });
+        Alert.alert(null,'Incorrect Details')
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')
@@ -140,38 +134,15 @@ class ChangePin extends Component {
       this.setState({ errors: error.response.data, isLoading: false });
     };
 
-    // this.setState({ isLoading: true });
-
+    this.setState({ isLoading: true });
     mozfinOnboardingService
-      .post("/api/v1/auth/createTransactionPin", payload)
+      .post(`/api/v1/auth/resetPassword?token=${token}`, payload)
       .then(onSuccess)
       .catch(onFailure);
   }
   } 
 
-  componentWillMount = ()=> {
-    this._retrieveData();
-  }
-
-  _retrieveData() {    
-    AsyncStorage.getItem("userDetails").then((res) => {
-      const response = JSON.parse(res);
-      if (res !== null) {
-        this.setState({
-          token: response.token,
-          userId: response.id,
-          accessToken: response.accessToken,
-        });
-
-        console.log("There is no role dey...", response);
-        console.log("I role to make role o", this.state.role);
-      } else {
-        console.log("There is no role dey...", response);
-      }
-    });
-  }
-
-  newUpdateSecureTextEntry(){
+    newUpdateSecureTextEntry(){
       this.setState({ newSecureTextEntry: !this.state.newSecureTextEntry})
     }
     
@@ -183,14 +154,9 @@ class ChangePin extends Component {
     this.setState({ confirmSecureTextEntry: !this.state.confirmSecureTextEntry})
     }
 
-    visibleView(){
-      this.setState({ view: true, modalVisible_: false });
-      this.props.navigation.navigate("Settings")
-    }
-
   render() {
     LogBox.ignoreAllLogs(true);
-    const { data, airtime, mtn, glo, airtel, nineMobile, displayList, msg } = this.state;
+    const { data, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
     return (
         <ScrollView
           style={styles.scrollView}
@@ -198,41 +164,8 @@ class ChangePin extends Component {
           
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />  
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={this.state.modalVisible_}
-                onRequestClose={() => {
-                  this.setState({ modalVisible_: false });
-                }}
-                >
-                <View style={styles.modalBackground}>
-                <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                <View>
-                <StatusBar backgroundColor="#000000" barStyle="light-content"/>
-                <Image source={require('../assets/circlemark.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20}/>
-                <View alignItems={"center"}>
-                <Text style={styles.statusModalText}>SUCCESSFUL!</Text>
-                <Text style={styles.modalText}>
-                {" "}User Transaction Pin Updated Successfully
-                </Text>
-                </View>
-                </View>
-
-                <TouchableOpacity
-                  activeOpacity={0.5}
-                  style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
-                  onPress={() => this.visibleView()}>
-                    <Text style={styles.textStylee}>PROCEED</Text>
-                </TouchableOpacity>   
-                        
-                </View>
-              </View>
-              </View>
-              </Modal>
             <View style={{ marginTop: 32, marginHorizontal: 20, }}>
-            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Current Pin</Text>  
+            <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Token</Text>  
             <View style={{ flexDirection: "row" }}>
                     <TextInput
                         style={{
@@ -247,35 +180,18 @@ class ChangePin extends Component {
                         fontWeight={"400"}
                         textAlign={"left"}
                         returnKeyType="next"
-                        maxLength={4}
                         onSubmitEditing={() => { this.secondTextInput.focus(); }}
                         blurOnSubmit={false}
-                        value={this.state.current_password}
-                        secureTextEntry={this.state.currentSecureTextEntry?true:false}
+                        value={this.state.token}
                         paddingBottom={5}
-                        keyboardType={"numeric"}
-                        onChangeText={this.handleCurrentPin}
+                        onChangeText={this.handleToken}
                     />
 
-            <TouchableOpacity 
-              onPress={this.currentUpdateSecureTextEntry.bind(this)}>
-                {this.state.currentSecureTextEntry ?
-                <View
-                style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                <EyeOpenIcon/>
-                </View>
-                 :
-                 <View
-                 style={{alignSelf: "flex-end", right: 33, marginTop: 10, }}>
-                 <EyeCloseIcon/>
-                 </View>
-                }
-              </TouchableOpacity>
                     </View>
                     </View>
 
                     <View style={{ marginTop: 10, marginHorizontal: 20, }}>
-                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>New Pin</Text>  
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>New Password</Text>  
                     <View style={{ flexDirection: "row" }}>
                     <TextInput
                         style={{
@@ -289,16 +205,14 @@ class ChangePin extends Component {
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
-                        value={this.state.new_pin}
+                        value={this.state.new_password}
                         secureTextEntry={this.state.newSecureTextEntry?true:false}
                         paddingBottom={5}
-                        maxLength={4}
                         ref={(input) => { this.secondTextInput = input; }}
                         returnKeyType="next"
-                        keyboardType={"numeric"}
                         onSubmitEditing={() => { this.thirdTextInput.focus(); }}
                         blurOnSubmit={false}
-                        onChangeText={this.handleNewPin}
+                        onChangeText={this.handleNewPassword}
                     />
 
                     <TouchableOpacity 
@@ -317,13 +231,13 @@ class ChangePin extends Component {
                             
                         </TouchableOpacity>
                     </View>
-                    {this.state.pac == "empty" && this.state.new_pin == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Pin is empty</Text>}
-                    {this.state.new_pin != this.state.confirm_pin && <Text style={styles.invalidPasswordTextStyle}>Pin doesn’t match</Text>}
+                    {this.state.pac == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
+                    {this.state.new_password != this.state.confirm_password && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
                     </View>
 
                     <View style={{ marginTop: 10, marginBottom: 16, marginHorizontal: 28 }}>
                     
-                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Confirm Pin</Text>  
+                    <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Confirm Password</Text>  
                     <View style={{ flexDirection: "row" }}>
                     <TextInput
                         style={{
@@ -334,16 +248,15 @@ class ChangePin extends Component {
                         paddingStart={2}
                         paddingVertical={10}
                         marginBottom={10}
-                        maxLength={4}
+                        // paddingEnd={90}
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
-                        keyboardType={"numeric"}
                         ref={(input) => { this.thirdTextInput = input; }}
                         value={this.state.confirm_password}
                         secureTextEntry={this.state.confirmSecureTextEntry?true:false}
                         paddingBottom={5}
-                        onChangeText={this.handleConfirmPin}
+                        onChangeText={this.handleConfirmPassword}
                     />
                     <TouchableOpacity 
                         onPress={this.confirmUpdateSecureTextEntry.bind(this)}>
@@ -360,14 +273,14 @@ class ChangePin extends Component {
                             }
                     </TouchableOpacity>
                     </View>
-                    {this.state.pac == "empty" && this.state.new_pin == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Pin is empty</Text>}
-                    {this.state.new_pin != this.state.confirm_pin && <Text style={styles.invalidPasswordTextStyle}>Pin doesn’t match</Text>}
+                    {this.state.pac == "empty" && this.state.new_password == "" && <Text style={styles.invalidPasswordTextStyle}>Confirm Password is empty</Text>}
+                    {this.state.new_password != this.state.confirm_password && <Text style={styles.invalidPasswordTextStyle}>Password doesn’t match</Text>}
                     </View>
-                    
+
             <TouchableOpacity
-                onPress={this.onPressLogin.bind(this)}
+                onPress={this.onPressSubmit.bind(this)}
                 style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1,  }}>
-                <Text style={styles.loginButtonText}>NEXT</Text>
+                <Text style={styles.loginButtonText}>SUBMIT</Text>
             </TouchableOpacity>
         </ScrollView>
     );
@@ -375,7 +288,7 @@ class ChangePin extends Component {
 }
 
 
-export default ChangePin;
+export default ForgotPasswordSubject;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
@@ -421,61 +334,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     backgroundColor: "#507C543D",
     height: 56
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22
-  },
-  modalView: {
-    margin: 40,
-    width: 346,
-    height: 320,
-    backgroundColor: "white",
-    borderRadius: 10,
-    paddingHorizontal: 30,
-    paddingTop: 30,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowopacity: 0.95,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  textStylee: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-    padding: 5,
-    fontSize: 20,
-  },
-  modalText: {
-    marginBottom: 15,
-    width: width * 0.6,
-    marginHorizontal: 15,
-    fontFamily: "Nunito_400Regular",
-    alignSelf: "center",
-    textAlign: "center",
-    color: "#002A14DE"
-  },
-  statusModalText: {
-    color: "#002A14",
-    fontFamily: "Nunito_400Regular",
-    fontWeight: "700",
-    fontSize: 20,
-    textAlign: "center",
-    alignSelf: "center"
-  },
-  modalBackground:{
-    flex:1,
-    alignItems:'center',
-    flexDirection:'column',
-    justifyContent:'space-around',
-    backgroundColor:'#000000'
   },
   passwordInput: {
     borderColor: "#EEF4FE",

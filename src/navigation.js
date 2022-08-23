@@ -20,6 +20,8 @@ import BVNQuestionScreen from '../src/screens/BVNQuestionScreen';
 import BVNVerification from '../src/screens/BVNVerification';
 import OTPCode from '../src/screens/OTPCodeScreen';
 import OTPCodeOption from '../src/screens/OTPCodeOptionScreen';
+import ForgotPasswordSubject from '../src/screens/ForgotPasswordSubject';
+import ForgotPassword from '../src/screens/ForgotPasswordScreen';
 import SideMenuScreen from '../src/screens/SideMenuScreen';
 import BottomTabs from '../src/screens/BottomTabs';
 import TransactionPinScreen from './screens/TransactionPinScreen';
@@ -597,7 +599,34 @@ const StartUpStackMain = createStackNavigator(
             },
         },
       },
-          
+      ForgotPasswordSubject: {
+        screen: ForgotPasswordSubject,
+        navigationOptions: {
+          headerShown: true,
+          headerStyle: { backgroundColor: '#002A14' },
+          title: "Forgot Password",
+          headerTintColor: "#FFF",
+          headerTitleStyle: {
+              fontWeight: "600",
+              textAlign: "center",
+              right: 30
+          },
+        }
+      }, 
+      ForgotPassword: {
+        screen: ForgotPassword,
+        navigationOptions: {
+          headerShown: true,
+          headerStyle: { backgroundColor: '#002A14' },
+          title: "Forgot Password",
+          headerTintColor: "#FFF",
+          headerTitleStyle: {
+              fontWeight: "600",
+              textAlign: "center",
+              right: 30
+          },
+        }
+      }, 
       }
   );
 

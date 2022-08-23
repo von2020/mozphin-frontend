@@ -19,10 +19,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from "react-native-material-dropdown";
 import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
 import { selectContactPhone } from 'react-native-select-contact';
-import { openInbox } from "react-native-email-link";
 import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Toast from 'react-native-tiny-toast';
+import { openInbox } from "react-native-email-link";
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
 const { width, height } = Dimensions.get("window");
@@ -233,12 +233,7 @@ class StatementAccountScreen extends Component {
         Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 401){
         this.setState({ isLoading: false });
-        Alert.alert(null,'Incorrect Login Details')
-        if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
-        this.setState({ isLoading: false });
-          this.props.navigation.replace("SignUp");
-          Alert.alert(null,'Please change your password and be activated')
-        }
+        Alert.alert(null,'Incorrect Details')
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')

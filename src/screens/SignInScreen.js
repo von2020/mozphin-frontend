@@ -173,11 +173,6 @@ class SignInScreen extends Component {
       } else if(error.response.status == 401){
         this.setState({ isLoading: false });
         Alert.alert(null,error.response.data)
-        if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
-        this.setState({ isLoading: false });
-          this.props.navigation.replace("SignUp");
-          Alert.alert(null,'Please change your password and be activated')
-        }
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','User not found')
@@ -429,7 +424,7 @@ class SignInScreen extends Component {
             {this.state.pa == "empty" && this.state.password == "" && <Text style={styles.invalidPasswordTextStyle}>Password is empty</Text>}
             <TouchableOpacity
                 onPress={() =>
-                  this.props.navigation.navigate("ForgotPasswordScreen")
+                  this.props.navigation.navigate("ForgotPassword")
                 }>             
               <Text style={styles.forgetTextStyle}>Forgot Password?</Text>
               </TouchableOpacity>

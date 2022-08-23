@@ -13,18 +13,20 @@ import {
   Alert,
   Dimensions,
   LogBox,
+  Modal,
 } from "react-native";
 import  Loader  from './../config/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from "react-native-material-dropdown";
 import ArrowDropDownIcon from '../assets/svgs/arrowdropdown';
 import { selectContactPhone } from 'react-native-select-contact';
-// import Contacts from 'react-native-contacts';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
+import mozfinOnboardingService, {
+  setClientOnboardToken,
+} from "../service/MozfinOnboardingService";
 const { width, height } = Dimensions.get("window");
 
-// const image = { uri: "./../../assets/safexray-logo.png" };
 const initialState = {
   username: "",
   us: "",
@@ -40,6 +42,11 @@ const initialState = {
   airtime: "tapped",
   nineMobile: "",
   glo: "",
+  userId: 0,
+  accessToken: "",
+  token: "",
+  modalVisible_: false,
+  msg: "",
   value: "",
   label: "",
   contact: "",
@@ -55,60 +62,6 @@ const initialState = {
   currentSecureTextEntry: true,
   confirmSecureTextEntry: true,
   contactList: [],
-  tellUsList: [
-    {
-        value: "200",
-        label: "1gig (7days)  N200",
-    },
-    {
-        value: "200",
-        label: "350mb (7days)  N200",
-    },
-    {
-        value: "350",
-        label: "750mb (7days)  N350",
-    },
-    {
-      value: "600",
-      label: "1.5gig (7days)  N600",
-    },
-    {
-        value: "1000",
-        label: "3gig  (7days)  N1000",
-    },
-    {
-      value: "1500",
-      label: "6gig  (7days)  N1500",
-    },
-    {
-        value: "500",
-        label: "1gig  (30days)  N500",
-    },
-    {
-      value: "1000",
-      label: "1.5gig  (30days)  N1000",
-    },
-    {
-        value: "1500",
-        label: "2gig  (30days)  N1500",
-    },
-    {
-      value: "1800",
-      label: "2.5gig  (30days)  N1800",
-    },
-    {
-        value: "2000",
-        label: "4.5gig  (30days)  N2000",
-    },
-    {
-      value: "2500",
-      label: "6.5gig  (30days)  N2500",
-    },
-    {
-        value: "3000",
-        label: "9gig  (30days)  N3000",
-    },
-  ],
 };
 
 class ChangePassword extends Component {
@@ -129,84 +82,48 @@ class ChangePassword extends Component {
   onPressLogin() {
     this.setState({ isLoading: true });
 
-    const { username, password, checked } = this.state;
-    
-    if(username == ""){
-      this.setState({ isLoading: false, us: "empty" });
-      // Alert.alert(null,'Email field is empty')
-    }else if(password == ""){
-      this.setState({ isLoading: false, pa: "empty" });
-      // Alert.alert(null,'Password field is empty')
-    }else{
-    const payload = { username, password };
-    const checkedPayload = { username, password, checked };
-    this.setState({ isLoading: false, isAuthorized: true });
+    const { email, current_password, new_password, confirm_password, userId } = this.state;
+    const user_id = userId
 
-    this.props.navigation.push("Dashboard", {
-      data: "data",
-    });
+    if(current_password == ""){
+      this.setState({ isLoading: false, pa: "empty" });
+      // Alert.alert(null,'Please Select a Role ')
+    }else if(new_password == ""){
+      this.setState({ isLoading: false, pa: "empty" });
+      // Alert.alert(null,'Please Select a Role ')
+    }else if(confirm_password == ""){
+      this.setState({ isLoading: false, pac: "empty" });
+      // Alert.alert(null,'Phone Number field is empty')
+    } else if(new_password != confirm_password){
+          this.setState({ isLoading: false, by: "empty", click: true });
+    }  else{
+      const password = new_password
+      const payload = { 
+        user_id, 
+        password
+        };
+    
     console.log(payload);
 
-    const onSuccess = ({ data }) => {
-      // insert into db...
-      // this._storeData(data, checkedPayload);
-      
-      setClientToken(data.token);
+    const onSuccess = ({ data }) => {  
+      // setClientToken(data.token);
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
-      // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "username": "Chibubu"}
-      if (data != null ) {
-        this.props.navigation.push("SideMenuScreen", {
-          data: data,
-        });
-      }
-
-    //   } else if (data.role == "General Manager") {
-    //       this.props.navigation.push("GMDNavScreen")
-    //   } else if (data.role == "Director") {
-    //       this.props.navigation.push("DirectorNavScreen")
-    //   } else if (data.role == "Supervisor") {
-    //       this.props.navigation.push("SupervisorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Staff") {
-    //       this.props.navigation.push("StaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver Admin") {
-    //       this.props.navigation.push("DriverAdminNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver") {
-    //       this.props.navigation.push("DriverStaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Procurement") {
-    //     this.props.navigation.push("pOfficerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Finance") {
-    //       this.props.navigation.push("FinanceNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Facility Officer") {
-    //     this.props.navigation.push("FacilityManagerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Auditor") {
-    //       this.props.navigation.push("AuditorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   }
       
+      if (data != null) {
+        this.setState({
+          modalVisible_: true,
+          msg: data.msg
+        });
+      //   Alert.alert("Info: ", data.response, [
+      //     {
+      //         text: "Ok",
+      //         onPress: () => this.props.navigation.push("SignIn", {
+      //           token: "token"
+      //         }),
+      //     },
+      // ]);
+      }
     };
 
     const onFailure = (error) => {
@@ -218,18 +135,10 @@ class ChangePassword extends Component {
       }
       if(error.response.status == 400){
         this.setState({ isLoading: false });
-        Alert.alert('Info: ',error.response.data.non_field_errors[0])
+        Alert.alert('Info: ','Ensure you enter the details required')
       } else if(error.response.status == 500){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Ensure your Network is Stable')
-      } else if(error.response.status == 401){
-        this.setState({ isLoading: false });
-        Alert.alert(null,'Incorrect Login Details')
-        if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
-        this.setState({ isLoading: false });
-          this.props.navigation.replace("SignUp");
-          Alert.alert(null,'Please change your password and be activated')
-        }
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')
@@ -238,12 +147,40 @@ class ChangePassword extends Component {
     };
 
     this.setState({ isLoading: true });
-    // blackTrustService
-    //   .post("/accounts/login", payload)
-    //   .then(onSuccess)
-    //   .catch(onFailure);
+
+    mozfinOnboardingService
+      .post("/api/v1/auth/updatePassword", payload)
+      .then(onSuccess)
+      .catch(onFailure);
   }
   } 
+
+  componentWillMount = ()=> {
+    this._retrieveData();
+  }
+
+  _retrieveData() {    
+    AsyncStorage.getItem("userDetails").then((res) => {
+      const response = JSON.parse(res);
+      if (res !== null) {
+        this.setState({
+          token: response.token,
+          userId: response.id,
+          accessToken: response.accessToken,
+        });
+
+        console.log("There is no role dey...", response);
+        console.log("I role to make role o", this.state.role);
+      } else {
+        console.log("There is no role dey...", response);
+      }
+    });
+  }
+
+  visibleView(){
+    this.setState({ view: true, modalVisible_: false });
+    this.props.navigation.navigate("Settings")
+  }
 
     newUpdateSecureTextEntry(){
       this.setState({ newSecureTextEntry: !this.state.newSecureTextEntry})
@@ -259,7 +196,7 @@ class ChangePassword extends Component {
 
   render() {
     LogBox.ignoreAllLogs(true);
-    const { data, airtime, mtn, glo, airtel, nineMobile, displayList } = this.state;
+    const { data, airtime, mtn, glo, airtel, nineMobile, displayList, msg } = this.state;
     return (
         <ScrollView
           style={styles.scrollView}
@@ -267,6 +204,40 @@ class ChangePassword extends Component {
           
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content"/>
           <Loader loading={this.state.isLoading} />  
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={this.state.modalVisible_}
+                    onRequestClose={() => {
+                      this.setState({ modalVisible_: false });
+                    }}
+                  >
+                <View style={styles.modalBackground}>
+                <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                <View>
+                <StatusBar backgroundColor="#000000" barStyle="light-content"/>
+                <Image source={require('../assets/circlemark.png')} resizeMode={'cover'} alignSelf={"center"} height={20} width={20}/>
+                <View alignItems={"center"}>
+                <Text style={styles.statusModalText}>SUCCESSFUL!</Text>
+                <Text style={styles.modalText}>
+                {" "}{msg}
+                </Text>
+                </View>
+                </View>
+
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{ alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1 }}
+                  onPress={() => this.visibleView()}>
+                    <Text style={styles.textStylee}>PROCEED</Text>
+                </TouchableOpacity>   
+                        
+                </View>
+              </View>
+              </View>
+              </Modal>
+
             <View style={{ marginTop: 32, marginHorizontal: 20, }}>
             <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Current Password</Text>  
             <View style={{ flexDirection: "row" }}>
@@ -466,6 +437,61 @@ const styles = StyleSheet.create({
     paddingStart: 30,
     paddingEnd: 22,
     opacity: 1,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 40,
+    width: 346,
+    height: 320,
+    backgroundColor: "white",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowopacity: 0.95,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  textStylee: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 5,
+    fontSize: 20,
+  },
+  modalText: {
+    marginBottom: 15,
+    width: width * 0.6,
+    marginHorizontal: 15,
+    fontFamily: "Nunito_400Regular",
+    alignSelf: "center",
+    textAlign: "center",
+    color: "#002A14DE"
+  },
+  statusModalText: {
+    color: "#002A14",
+    fontFamily: "Nunito_400Regular",
+    fontWeight: "700",
+    fontSize: 20,
+    textAlign: "center",
+    alignSelf: "center"
+  },
+  modalBackground:{
+    flex:1,
+    alignItems:'center',
+    flexDirection:'column',
+    justifyContent:'space-around',
+    backgroundColor:'#000000'
   },
   cardStyleLong: {
     marginTop: height * 0.12,

@@ -1,4 +1,3 @@
-// export default NoNotificationIcon;
 import React, { Component } from "react";
 import {
   View,
@@ -232,12 +231,7 @@ class NotificationScreen extends Component {
         Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 401){
         this.setState({ isLoading: false });
-        Alert.alert(null,'Incorrect Login Details')
-        if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
-        this.setState({ isLoading: false });
-          this.props.navigation.replace("SignUp");
-          Alert.alert(null,'Please change your password and be activated')
-        }
+        Alert.alert(null,'Incorrect Details')
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')

@@ -53,7 +53,7 @@ const initialState = {
   secureTextEntry: true,
 };
 
-class BVN_Verification extends Component {
+class BVNVerification extends Component {
   state = initialState;
 
   onChangeTextHandler(len){
@@ -126,7 +126,7 @@ class BVN_Verification extends Component {
         Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 401){
         this.setState({ isLoading: false });
-        Alert.alert(null,'Incorrect Login Details')
+        Alert.alert(null,'Incorrect Details')
         if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
         this.setState({ isLoading: false });
           Alert.alert(null,'Please change your password and be activated')
@@ -275,7 +275,7 @@ class BVN_Verification extends Component {
 }
 
 
-export default BVN_Verification;
+export default BVNVerification;
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {

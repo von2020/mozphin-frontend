@@ -17,6 +17,7 @@ import {
 // import ImagePicker from 'react-native-image-crop-picker';
 // import * as ImagePicker from "react-native-image-picker"//^2.3.4
 // import ImagePicker, { openPicker } from 'react-native-new-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import StarRating from 'react-native-star-rating';
 import Toast from 'react-native-tiny-toast';
@@ -33,6 +34,14 @@ const initialState = {
   rate: 0,
   modalVisible_: false, 
   isLoading: false, 
+  email: "",
+  customerID: "",
+  firstname: "",
+  lastname: "",
+  id: "",
+  phone: "",
+  tier: "",
+  transactionPIN: "",
 };
 
 class ProfileInformationScreen extends Component {
@@ -264,9 +273,47 @@ class ProfileInformationScreen extends Component {
           })
         }
 
+        componentWillMount = ()=> {
+          this._retrieveData();
+        }
+        // {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzAsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2NjEyMjA2NDIsImV4cCI6MTY2MTQ3OTg0Mn0.qt8Lb4Gx40-lXdDV6L1XUT4QznI8jdULtXHob1Kw8Ro", "createdAt": "2022-08-19T10:58:36.000Z", "customerID": "006513", "email": "cejimuda@telnetng.com", "firstname": "Chibuo", "id": 30, "isActive": false, "isAdmin": false, "isApproved": false, "isSuperAdmin": false, "lastname": "Ejimuda", "phone": "08144444445", "tier": "3", "token": "", "transactionPIN": "1004", "updatedAt": "2022-08-23T01:45:55.000Z"}
+        _retrieveData() {    
+          AsyncStorage.getItem("userDetails").then((res) => {
+            const response = JSON.parse(res);
+            if (res !== null) {
+              this.setState({
+                token: response.token,
+                userId: response.id,
+                accessToken: response.accessToken,
+                email: response.email,
+                customerID: response.customerID,
+                firstname: response.firstname,
+                lastname: response.lastname,
+                id: response.id,
+                phone: response.phone,
+                tier: response.tier,
+                transactionPIN: response.transactionPIN
+              });
+      
+              console.log("There is no role dey...", response);
+              console.log("I role to make role o", this.state.role);
+            } else {
+              console.log("There is no role dey...", response);
+            }
+          });
+        }
+
   render() {
     LogBox.ignoreAllLogs(true);
-    const { imageData } = this.state;
+    const { imageData, email, firstname, lastname, phone, tier } = this.state;
+  //   email: "",
+  // customerID: "",
+  // firstname: "",
+  // lastname: "",
+  // id: "",
+  // phone: "",
+  // tier: "",
+  // transactionPIN: "",
     console.log("Imageeeeeeeee", imageData)
     return (
     <ScrollView
@@ -330,21 +377,21 @@ class ProfileInformationScreen extends Component {
             </View>} 
 
             </TouchableOpacity>
-            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "center", marginTop: 5, lineSpacing: 1 }}>John Doe</Text>  
-            <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "center", marginTop: 5, lineSpacing: 1 }}>+234 815 567 8910</Text>
+            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "center", marginTop: 5, lineSpacing: 1 }}>{firstname}{" "}{lastname}</Text>  
+            <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "center", marginTop: 5, lineSpacing: 1 }}>{phone}</Text>
             </View>
               
               <View>
               <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 20.8, width: width, height: 33, textAlign: "left", marginTop: 25, lineSpacing: 1, backgroundColor: "#EFF5B0", padding: 5, paddingLeft: 24 }}>Basic Information</Text>  
               <View>
               <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 8, lineSpacing: 1, paddingLeft: 24 }}>First Name</Text>  
-              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 3, lineSpacing: 1, paddingLeft: 24 }}>John</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 3, lineSpacing: 1, paddingLeft: 24 }}>{firstname}</Text>  
               
               <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 16, lineSpacing: 1, paddingLeft: 24 }}>Last Name</Text>  
-              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 3, lineSpacing: 1, paddingLeft: 24 }}>Doe</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 3, lineSpacing: 1, paddingLeft: 24 }}>{lastname}</Text>  
 
               <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 16, lineSpacing: 1, paddingLeft: 24 }}>Full Name</Text>  
-              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 3, lineSpacing: 1, paddingLeft: 24 }}>John Doe</Text>  
+              <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 3, lineSpacing: 1, paddingLeft: 24 }}>{firstname}{" "}{lastname}</Text>
               </View>
               </View>
 
@@ -352,10 +399,10 @@ class ProfileInformationScreen extends Component {
             <Text style={{color: "#045135", fontWeight: "400", fontSize: 16, lineHeight: 20.8, width: width, height: 33, textAlign: "left", marginTop: 25, lineSpacing: 1, backgroundColor: "#EFF5B0", padding: 5, paddingLeft: 24 }}>Contact Information</Text>  
             <View>
             <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 8, lineSpacing: 1, paddingLeft: 24 }}>Email</Text>  
-            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1, paddingLeft: 24 }}>Johndoeisaboy@cocktail.com</Text>  
+            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1, paddingLeft: 24 }}>{email}</Text>  
 
             <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 16, lineSpacing: 1, paddingLeft: 24 }}>Phone Number</Text>  
-            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1, paddingLeft: 24 }}>+234 815 567 8910</Text>  
+            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1, paddingLeft: 24 }}>{phone}</Text>  
             </View>
             </View>
 

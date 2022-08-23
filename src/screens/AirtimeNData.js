@@ -24,6 +24,7 @@ import { selectContactPhone } from 'react-native-select-contact';
 import OTPInput from "../component/OTP/OTPInput";
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
+import NumberFormat from 'react-number-format';
 import mozfinOnboardingService, {
   setClientOnboardToken,
 } from "../service/MozfinOnboardingService";
@@ -252,12 +253,7 @@ class AirtimeNData extends Component {
         Alert.alert('Info: ','Ensure your Network is Stable')
       } else if(error.response.status == 401){
         this.setState({ isLoading: false });
-        Alert.alert(null,'Incorrect Login Details')
-        if(error.response.data.message == "Your account is not active. Please change your password and be activated!"){
-        this.setState({ isLoading: false });
-          this.props.navigation.replace("SignUp");
-          Alert.alert(null,'Please change your password and be activated')
-        }
+        Alert.alert(null,'Incorrect Details')
       } else if(error.response.status == 404){
         this.setState({ isLoading: false });
         Alert.alert('Info: ','Not Found')
@@ -624,7 +620,7 @@ class AirtimeNData extends Component {
               
           {airtime == "tapped" && <View>
             <View style={{ flexDirection: "row", justifyContent: "space-around", width: width * 0.91, alignSelf: "center", marginTop: 32, marginBottom: 31 }}>
-            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "", amount: "" })}>
+            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "", amount: "", selected: "" })}>
             <Text style={{
                     fontSize: 20,
                     color: "#002A14",
@@ -640,7 +636,7 @@ class AirtimeNData extends Component {
                   }}>Airtime</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "", amount: "" })}>
+            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", label: "", value: "", contact: "", amount: "", selected: "" })}>
             <Text style={{
                     fontSize: 20,
                     color: "#002A14",
@@ -675,7 +671,7 @@ class AirtimeNData extends Component {
             </TouchableOpacity>
             </View>
 
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 0, marginHorizontal: 28, }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 0, marginHorizontal: 20, }}>
             <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Phone Number</Text>  
             <TouchableOpacity onPress={()=> this.getPhoneNumber()}>
             <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", textDecorationLine: "underline" }}>Select from contact</Text>  
@@ -698,8 +694,14 @@ class AirtimeNData extends Component {
                         paddingBottom={5}
                         onChangeText={(text) => this.handleContact(text)}
                     />
-                    <View style={{ marginTop: 10, marginBottom: 56, marginHorizontal: 28, }}>
+                    <View style={{ marginTop: 10, marginBottom: 56, marginHorizontal: 20, }}>
                     <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Recharge Amount</Text>  
+                    <NumberFormat
+                      value={this.state.amount}
+                      displayType={'text'}
+                      thousandSeparator={true}
+                      // prefix={'₦'}
+                      renderText={formattedValue => 
                     <TextInput
                         style={{
                         width: width * 0.9,
@@ -713,9 +715,10 @@ class AirtimeNData extends Component {
                         fontSize={16}
                         fontWeight={"400"}
                         textAlign={"left"}
-                        value={this.state.amount}
+                        value={formattedValue}
                         paddingBottom={5}
                         onChangeText={(text) => this.handleAmount(text)}
+                    />}
                     />
                     </View>
 
@@ -729,7 +732,7 @@ class AirtimeNData extends Component {
 
             {data == "tapped" && <View>
             <View style={{ flexDirection: "row", justifyContent: "space-around", width: width * 0.91, alignSelf: "center", marginTop: 32, marginBottom: 31 }}>
-            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "", amount: "" })}>
+            <TouchableOpacity onPress={()=> this.setState({ airtime: "tapped", data: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "", amount: "", selected: "" })}>
             <Text style={{
                     fontSize: 20,
                     color: "#002A14",
@@ -745,7 +748,7 @@ class AirtimeNData extends Component {
                   }}>Airtime</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "", amount: "" })}>
+            <TouchableOpacity onPress={()=> this.setState({ data: "tapped", airtime: "", mtn: "", airtel: "", glo: "", nineMobile: "", contact: "", amount: "", selected: "" })}>
             <Text style={{
                     fontSize: 20,
                     color: "#002A14",
@@ -780,7 +783,7 @@ class AirtimeNData extends Component {
             </TouchableOpacity>
             </View>
 
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 0, marginHorizontal: 28, }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 0, marginHorizontal: 20, }}>
             <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", }}>Phone Number</Text>  
             <TouchableOpacity onPress={()=> this.getPhoneNumber()}>
             <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", textDecorationLine: "underline" }}>Select from contact</Text>  
@@ -804,7 +807,7 @@ class AirtimeNData extends Component {
                         paddingBottom={5}
                         onChangeText={(text) => this.handleContact(text)}
                     />
-                    <View style={{ marginTop: 10, marginHorizontal: 28, }}>
+                    <View style={{ marginTop: 10, marginHorizontal: 20, }}>
                     <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Select Data Bundle</Text>
                     <TouchableOpacity onPress={()=> this.setState({ displayList: true })} style={{ flexDirection: "row", alignSelf: "center"}}>
                     <TextInput
@@ -843,8 +846,14 @@ class AirtimeNData extends Component {
                       )}/>}
                     </View>
 
-                    <View style={{ marginTop: 10, marginBottom: 56, marginHorizontal: 28, }}>
+                    <View style={{ marginTop: 10, marginBottom: 56, marginHorizontal: 20, }}>
                     <Text style={{color: "#045135", fontWeight: "700", fontSize: 14, lineHeight: 20.8, textAlign: "left", marginTop: 24 }}>Cost</Text>  
+                    <NumberFormat
+                      value={this.state.value}
+                      displayType={'text'}
+                      thousandSeparator={true}
+                      // prefix={'₦'}
+                      renderText={formattedValue => 
                     <TextInput
                         style={{
                         width: width * 0.9,
@@ -860,9 +869,10 @@ class AirtimeNData extends Component {
                         editable={false}
                         fontWeight={"400"}
                         textAlign={"left"}
-                        value={this.state.value}
+                        value={formattedValue}
                         paddingBottom={5}
                         onChangeText={(text) => this.handleAmount(text)}
+                    />}
                     />
                     </View>
 

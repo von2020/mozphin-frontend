@@ -19,10 +19,10 @@ import Feather from 'react-native-vector-icons/Feather';
 import LockIcon from '../assets/svgs/lock';
 import EyeCloseIcon from '../assets/svgs/eye_close';
 import EyeOpenIcon from '../assets/svgs/eye_open';
-const { width, height } = Dimensions.get("window");
 import mozfinOnboardingService, {
   setClientOnboardToken,
 } from "../service/MozfinOnboardingService";
+const { width, height } = Dimensions.get("window");
 
 const initialState = {
   email: "",
