@@ -406,7 +406,7 @@ class ProfileInformationScreen extends Component {
             <Text style={{color: "#045135", fontWeight: "400", fontSize: 12, lineHeight: 20.8, width: width * 0.8, textAlign: "left", marginTop: 5, lineSpacing: 1, paddingLeft: 24 }}>Bank Verification Number</Text>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 0,  }}>
             {this.state.password ? <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>*** *** *** **</Text> : 
-            <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>{bvn}</Text>}
+            bvn ? <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>{bvn}</Text> : <Text style={{color: "#045135", fontWeight: "600", fontSize: 16, lineHeight: 20.8, width: width * 0.8, textAlign: "left", paddingLeft: 24 }}>No Available BVN</Text>}
               <TouchableOpacity 
               onPress={this.updateSecureTextEntry.bind(this)}>
                 {this.state.password ?

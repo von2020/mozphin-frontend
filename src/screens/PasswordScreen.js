@@ -427,7 +427,7 @@ class PasswordScreen extends Component {
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 ref={(input) => { this.secondTextInput = input; }}
-                secureTextEntry={this.state.secureTextEntry?true:false}
+                secureTextEntry={this.state.secureConfirmTextEntry?true:false}
                 value={this.state.passwordConfirm}
                 onChangeText={this.handlePasswordConfirm}
               />

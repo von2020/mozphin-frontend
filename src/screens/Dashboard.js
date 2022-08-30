@@ -138,7 +138,7 @@ list = [
   componentWillMount = ()=> {
     this._retrieveData();
   }
-  // {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzAsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2NjEyMjA2NDIsImV4cCI6MTY2MTQ3OTg0Mn0.qt8Lb4Gx40-lXdDV6L1XUT4QznI8jdULtXHob1Kw8Ro", "createdAt": "2022-08-19T10:58:36.000Z", "customerID": "006513", "email": "cejimuda@telnetng.com", "firstname": "Chibuo", "id": 30, "isActive": false, "isAdmin": false, "isApproved": false, "isSuperAdmin": false, "lastname": "Ejimuda", "phone": "08144444445", "tier": "3", "token": "", "transactionPIN": "1004", "updatedAt": "2022-08-23T01:45:55.000Z"}
+  
   _retrieveData() {    
     AsyncStorage.getItem("userDetails").then((res) => {
       const response = JSON.parse(res);
@@ -210,7 +210,8 @@ list = [
                       <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
                         <View>
                         <Text style={{ color: "#002A14", fontSize: 12, fontWeight: "400" }}>Account number</Text>
-                        <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>{this.props.navigation.state.params.accountNumber}</Text>
+                        {this.props.navigation.state.params.accountNumber ? <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>{this.props.navigation.state.params.accountNumber}</Text> : 
+                        <Text style={{ color: "#002A14", fontSize: 14, fontWeight: "700" }}>No Account Number</Text>}
                         </View>
                         <Image
                           source={require("../assets/dashicon.png")}

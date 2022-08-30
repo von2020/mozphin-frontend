@@ -317,6 +317,8 @@ class UpgradeContinueScreen extends Component {
                     screen: "",
                     phone: this.props.navigation.state.params.phone,
                     email: this.props.navigation.state.params.email,
+                    customerID: this.props.navigation.state.params.customerID,
+                    id: this.props.navigation.state.params.id,
                   })} style={{alignSelf: "center", width: width * 0.81, height: 40, backgroundColor: "#FFF", borderRadius: 10, borderColor: "#002A14", borderWidth: 1, marginBottom: 8, opacity: 1 }}>
                     <Text style={styles.getStarted_}>CONTINUE</Text>
                 </TouchableOpacity>

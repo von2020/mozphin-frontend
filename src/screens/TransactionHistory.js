@@ -23,6 +23,9 @@ import Icon5 from '../assets/svgs/icon5';
 import Icon6 from '../assets/svgs/icon6';
 import NoTransactionIcon from '../assets/svgs/notransaction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import mozfinService, {
+  setClientToken,
+} from "../service/MozfinService";
 
 const { width, height } = Dimensions.get("window");
 
@@ -38,6 +41,7 @@ const initialState = {
   last_name: "",
   token: "",
   view: "",
+  accountNumber: "",
   checked: false,
   checkedDB: false,
   isAuthorized: false, 
@@ -73,17 +77,46 @@ class TransactionHistory extends Component {
     // this.setState({ password: password, pa: "" });//good
   };
 
-  onPressLogin() {
+  componentWillMount = ()=> {
+    this._retrieveData();
+    this.onPressTransDetails();
+  }
+  
+  _retrieveData() {    
+    AsyncStorage.getItem("userDetails").then((res) => {
+      const response = JSON.parse(res);
+      if (res !== null) {
+        this.setState({
+          token: response.token,
+          userId: response.id,
+          // accessToken: response.accessToken,
+          email: response.email,
+          customerID: response.customerID,
+          firstname: response.firstname,
+          lastname: response.lastname,
+          id: response.id,
+          phone: response.phone,
+          tier: response.tier,
+          bvn: response.bvn,
+          accountNumber: response.accountNumber
+        });
+
+        console.log("There is no role dey...", response);
+        console.log("I role to make role o", this.state.role);
+      } else {
+        console.log("There is no role dey...", response);
+      }
+    });
+  }
+
+  onPressTransDetails() {
     this.setState({ isLoading: true });
 
-    const { username, password, checked } = this.state;
+    const { username, password, checked, accountNumber } = this.state;
     
-    if(username == ""){
+    if(accountNumber == ""){
       this.setState({ isLoading: false, us: "empty" });
       // Alert.alert(null,'Email field is empty')
-    }else if(password == ""){
-      this.setState({ isLoading: false, pa: "empty" });
-      // Alert.alert(null,'Password field is empty')
     }else{
     const payload = { username, password };
     const checkedPayload = { username, password, checked };
@@ -102,58 +135,11 @@ class TransactionHistory extends Component {
       this.setState({ isLoading: false, isAuthorized: true });
       console.log(data);
       // {"birth_year": "1997-06-06", "country": "Nigeria", "email": "chibundomejimuda@gmail.com", "last_login_date": "2022-05-30T22:26:06.872604", "role": "3", "token": "8be7c952b1173b4bb4ac45bab27750b6ff60217c", "user_id": 2, "username": "Chibubu"}
-      if (data != null ) {
-        this.props.navigation.push("SideMenuScreen", {
-          data: data,
-        });
-      }
-
-    //   } else if (data.role == "General Manager") {
-    //       this.props.navigation.push("GMDNavScreen")
-    //   } else if (data.role == "Director") {
-    //       this.props.navigation.push("DirectorNavScreen")
-    //   } else if (data.role == "Supervisor") {
-    //       this.props.navigation.push("SupervisorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Staff") {
-    //       this.props.navigation.push("StaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver Admin") {
-    //       this.props.navigation.push("DriverAdminNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Driver") {
-    //       this.props.navigation.push("DriverStaffNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Procurement") {
-    //     this.props.navigation.push("pOfficerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Finance") {
-    //       this.props.navigation.push("FinanceNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   } else if (data.role == "Facility Officer") {
-    //     this.props.navigation.push("FacilityManagerNavScreen", {
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //     });
-    //   } else if (data.role == "Auditor") {
-    //       this.props.navigation.push("AuditorNavScreen", {
-    //         first_name: data.first_name,
-    //         last_name: data.last_name,
-    //       });
-    //   }
-      
+      // if (data != null ) {
+      //   this.props.navigation.push("SideMenuScreen", {
+      //     data: data,
+      //   });
+      // }      
     };
 
     const onFailure = (error) => {
@@ -180,10 +166,10 @@ class TransactionHistory extends Component {
     };
 
     this.setState({ isLoading: true });
-    // blackTrustService
-    //   .post("/accounts/login", payload)
-    //   .then(onSuccess)
-    //   .catch(onFailure);
+    mozfinService
+      .post(`/BankOneWebAPI/api/Account/GetTransactionsPaginated/2?authtoken=94aa5c7b-feec-4f30-bd68-df1b405d40e1&accountNumber=${accountNumber}&fromDate=2020%2F07%2F13&toDate=2020%2F07%2F13&institutionCode=100623&pageNo=1&PageSize=12`, payload)
+      .then(onSuccess)
+      .catch(onFailure);
   }
   } 
 

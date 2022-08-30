@@ -19,11 +19,11 @@ const initialState = {
   username: "",
   us: "",
   password: "", 
-  tier: "1",
+  tier: "",
   errors: {}, 
-  role: "",
-  first_name: "",
-  last_name: "",
+  accountNumber: "",
+  firstname: "",
+  lastname: "",
   token: "",
   checked: false,
   checkedDB: false,
@@ -35,9 +35,40 @@ const initialState = {
 class AccountInformation extends Component {
   state = initialState;
 
+  componentWillMount = ()=> {
+    this._retrieveData();
+  }
+  // {"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzAsImlzQWRtaW4iOmZhbHNlLCJpYXQiOjE2NjEyMjA2NDIsImV4cCI6MTY2MTQ3OTg0Mn0.qt8Lb4Gx40-lXdDV6L1XUT4QznI8jdULtXHob1Kw8Ro", "createdAt": "2022-08-19T10:58:36.000Z", "customerID": "006513", "email": "cejimuda@telnetng.com", "firstname": "Chibuo", "id": 30, "isActive": false, "isAdmin": false, "isApproved": false, "isSuperAdmin": false, "lastname": "Ejimuda", "phone": "08144444445", "tier": "3", "token": "", "transactionPIN": "1004", "updatedAt": "2022-08-23T01:45:55.000Z"}
+  _retrieveData() {    
+    AsyncStorage.getItem("userDetails").then((res) => {
+      const response = JSON.parse(res);
+      if (res !== null) {
+        this.setState({
+          token: response.token,
+          userId: response.id,
+          accessToken: response.accessToken,
+          email: response.email,
+          customerID: response.customerID,
+          firstname: response.firstname,
+          lastname: response.lastname,
+          id: response.id,
+          phone: response.phone,
+          tier: response.tier,
+          bvn: response.bvn,
+          accountNumber: response.accountNumber
+        });
+
+        console.log("There is no role dey...", response);
+        console.log("I role to make role o", this.state.role);
+      } else {
+        console.log("There is no role dey...", response);
+      }
+    });
+  }
+
   render() {
     LogBox.ignoreAllLogs(true);
-
+    const { accountNumber, firstname, lastname, tier } = this.state;
     return (
         <ScrollView
           style={styles.scrollView}
@@ -50,7 +81,7 @@ class AccountInformation extends Component {
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 16, width: width * 0.85, justifyContent: "space-between" }}>    
                 <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>Account Balance</Text>
-                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>NGN 112322.03</Text>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>NGN 112,322.03</Text>
                 </View>
                 </View>
                 
@@ -66,7 +97,7 @@ class AccountInformation extends Component {
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 16, width: width * 0.85, justifyContent: "space-between" }}>    
                 <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>Account Number</Text>
-                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>0234657472</Text>
+                {accountNumber ? <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>{accountNumber}</Text> : <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>No Account Number</Text>}
                 </View>
                 </View>
                 
@@ -82,7 +113,7 @@ class AccountInformation extends Component {
                 <View>
                 <View style={{ flexDirection: "row", marginBottom: 10, marginHorizontal: 16, width: width * 0.85, justifyContent: "space-between" }}>    
                 <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>Account Name</Text>
-                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>John Doe</Text>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600" }}>{firstname} {lastname}</Text>
                 </View>
                 </View>
                 
@@ -102,7 +133,7 @@ class AccountInformation extends Component {
                 </View>
 
                 <View style={{ left: 20, }}>
-                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", textAlign: "right" }}>Tier-{this.state.tier}</Text>
+                <Text style={{ fontSize: 16, color: "#002A14", fontWeight: "600", textAlign: "right" }}>Tier-{tier}</Text>
                 <TouchableOpacity
                 onPress={()=> { 
                   this.props.navigation.navigate("BVNQuestion",{
@@ -112,7 +143,7 @@ class AccountInformation extends Component {
                   })
                   this.setState({ tier: "3" })}}
                 disabled={this.state.tier == "3" ? true : false}
-                style={{ alignSelf: "flex-end", width: 164, height: 30, backgroundColor: this.state.tier == "3" ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
+                style={{ alignSelf: "flex-end", width: 164, height: 30, backgroundColor: tier == "3" ? "rgba(0,42,20,0.81)" : "#002A14", borderRadius: 10, marginBottom: 5, opacity: 1  }}>
                 <Text style={styles.loginButtonText}>UPGRADE</Text>
                 </TouchableOpacity>
                 </View>

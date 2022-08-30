@@ -383,7 +383,7 @@ class StatementAccountScreen extends Component {
                         paddingVertical={5}
                         marginBottom={10}
                         // paddingEnd={90}
-                        placeholder={this.state.DateTo == new Date() ? `From: ${moment(new Date()).format("YYYY-MM-DD")}` : `From: ${moment(this.state.DateTo).format("YYYY-MM-DD")}`}
+                        placeholder={this.state.DateTo == new Date() ? `To: ${moment(new Date()).format("YYYY-MM-DD")}` : `To: ${moment(this.state.DateTo).format("YYYY-MM-DD")}`}
                         placeholderTextColor="#000"        
                         fontSize={12}
                         fontWeight={"400"}
@@ -415,7 +415,7 @@ class StatementAccountScreen extends Component {
                         mode={modeDateTo}
                         is24Hour={true}
                         maximumDate={new Date()}
-                        minimumDate={new Date(year, month, day)}
+                        minimumDate={this.state.DateFrom}
                         display="default"
                         onChange={this.onChangeDateTo.bind(this)}
                         />
